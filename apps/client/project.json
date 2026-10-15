@@ -1,9 +1,9 @@
 {
-  "name": "restaurant-ordering",
+  "name": "client",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/restaurant-ordering/src",
+  "sourceRoot": "apps/client/src",
   "tags": [],
   "targets": {
     "build": {
@@ -11,17 +11,17 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/restaurant-ordering",
-        "browser": "apps/restaurant-ordering/src/main.ts",
-        "tsConfig": "apps/restaurant-ordering/tsconfig.app.json",
+        "outputPath": "dist/apps/client",
+        "browser": "apps/client/src/main.ts",
+        "tsConfig": "apps/client/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/restaurant-ordering/public"
+            "input": "apps/client/public"
           }
         ],
-        "styles": ["apps/restaurant-ordering/src/styles.scss"]
+        "styles": ["apps/client/src/styles.scss"]
       },
       "configurations": {
         "production": {
@@ -52,11 +52,15 @@
       "defaultConfiguration": "development",
       "configurations": {
         "production": {
-          "buildTarget": "restaurant-ordering:build:production"
+          "buildTarget": "client:build:production"
         },
         "development": {
-          "buildTarget": "restaurant-ordering:build:development"
+          "buildTarget": "client:build:development"
         }
+      },
+      "dependsOn": ["server:serve"],
+      "options": {
+        "proxyConfig": "apps/client/proxy.conf.json"
       }
     },
     "lint": {
@@ -72,8 +76,8 @@
       "continuous": true,
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "restaurant-ordering:build",
-        "staticFilePath": "dist/apps/restaurant-ordering/browser",
+        "buildTarget": "client:build",
+        "staticFilePath": "dist/apps/client/browser",
         "spa": true
       }
     }
