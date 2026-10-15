@@ -1,0 +1,13 @@
+autoInstallPeers: true
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
+  nx: true
+  unrs-resolver: true
+overrides:
+  # transitive dev-tooling advisories (nx, webpack-dev-server > sockjs)
+  undici: ^7.29.1
+  uuid: ^11.1.1
