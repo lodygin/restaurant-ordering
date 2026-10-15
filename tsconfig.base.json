@@ -21,7 +21,9 @@
     "noPropertyAccessFromIndexSignature": true,
     "exactOptionalPropertyTypes": true,
     "isolatedModules": true,
-    "paths": {}
+    "paths": {
+      "@restaurant-ordering/web/infrastructure/api": ["./libs/web/infrastructure/api/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

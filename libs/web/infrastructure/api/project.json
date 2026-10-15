@@ -1,0 +1,30 @@
+{
+  "name": "web-infrastructure-api",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/infrastructure/api/src",
+  "projectType": "library",
+  "tags": ["type:lib", "platform:web"],
+  "targets": {
+    "codegen": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        {
+          "projects": ["server"],
+          "target": "openapi"
+        }
+      ],
+      "cache": true,
+      "inputs": [
+        {
+          "dependentTasksOutputFiles": "**/openapi.json"
+        },
+        "{projectRoot}/orval.config.ts"
+      ],
+      "outputs": ["{projectRoot}/src/lib/generated"],
+      "options": {
+        "command": "orval --config orval.config.ts",
+        "cwd": "libs/web/infrastructure/api"
+      }
+    }
+  }
+}

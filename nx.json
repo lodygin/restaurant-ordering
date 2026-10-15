@@ -17,12 +17,22 @@
   "targetDefaults": {
     "@angular/build:application": {
       "cache": true,
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "^codegen"],
       "inputs": ["production", "^production"]
     },
     "@angular/build:unit-test": {
       "cache": true,
-      "inputs": ["default", "^production"]
+      "inputs": ["default", "^production"],
+      "dependsOn": ["^codegen"]
+    },
+    "lint": {
+      "dependsOn": ["^codegen"]
+    },
+    "typecheck": {
+      "dependsOn": ["^codegen"]
+    },
+    "test": {
+      "dependsOn": ["^codegen"]
     }
   },
   "generators": {

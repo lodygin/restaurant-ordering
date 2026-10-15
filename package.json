@@ -22,10 +22,15 @@
     "@angular/platform-browser": "~22.2.0",
     "@angular/router": "~22.2.0",
     "@nestjs/common": "^11.0.0",
+    "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/swagger": "^11.4.7",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "~7.8.0"
+    "rxjs": "~7.8.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@angular-devkit/core": "~22.2.0",
@@ -60,6 +65,7 @@
     "jsdom": "^27.1.0",
     "lint-staged": "^17.6.0",
     "nx": "23.3.0",
+    "orval": "^8.42.0",
     "prettier": "~3.6.2",
     "tslib": "^2.3.0",
     "typescript": "~6.0.3",

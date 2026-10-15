@@ -14,12 +14,25 @@ module.exports = {
       target: 'node',
       compiler: 'tsc',
       main: './src/main.ts',
+      additionalEntryPoints: [
+        { entryName: 'export-openapi', entryPath: './src/cli/export-openapi.ts' },
+      ],
       tsConfig: './tsconfig.app.json',
       assets: ['./src/assets'],
       optimization: false,
       outputHashing: 'none',
       generatePackageJson: true,
       sourceMap: true,
+      transformers: [
+        {
+          name: '@nestjs/swagger/plugin',
+          options: {
+            classValidatorShim: true,
+            dtoFileNameSuffix: ['.dto.ts'],
+            controllerFileNameSuffix: ['.controller.ts'],
+          },
+        },
+      ],
     }),
   ],
 };
