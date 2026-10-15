@@ -47,3 +47,6 @@ Thumbs.db
 .angular
 
 __screenshots__/
+
+# Playwright MCP screenshots and snapshots
+.playwright-mcp
