@@ -63,9 +63,6 @@
       "executor": "@angular/build:dev-server",
       "defaultConfiguration": "development",
       "dependsOn": ["server:serve"],
-      "options": {
-        "proxyConfig": "apps/client/proxy.conf.json"
-      },
       "configurations": {
         "production": {
           "buildTarget": "client:build:production"
