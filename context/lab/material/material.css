@@ -1,0 +1,531 @@
+/*
+ * Angular Material 3 look, built by hand so the mockup shows what the real app gets from
+ * mat.theme(): system tokens (--mat-sys-*), Roboto, M3 shapes and states. Palette: azure, as
+ * `mat.theme((color: (primary: mat.$azure-palette)))` would produce.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block');
+
+:root {
+  --mat-sys-primary: #005cbb;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #d7e3ff;
+  --mat-sys-on-primary-container: #001b3f;
+  --mat-sys-secondary: #565f71;
+  --mat-sys-secondary-container: #dae2f9;
+  --mat-sys-on-secondary-container: #131c2b;
+  --mat-sys-tertiary: #705575;
+  --mat-sys-tertiary-container: #fad8fd;
+  --mat-sys-on-tertiary-container: #28132e;
+  --mat-sys-error: #ba1a1a;
+  --mat-sys-error-container: #ffdad6;
+  --mat-sys-on-error-container: #410002;
+  --mat-sys-surface: #f9f9ff;
+  --mat-sys-surface-container-lowest: #ffffff;
+  --mat-sys-surface-container-low: #f3f3fa;
+  --mat-sys-surface-container: #ededf4;
+  --mat-sys-surface-container-high: #e7e8ee;
+  --mat-sys-surface-container-highest: #e2e2e9;
+  --mat-sys-on-surface: #1a1b20;
+  --mat-sys-on-surface-variant: #44474e;
+  --mat-sys-outline: #74777f;
+  --mat-sys-outline-variant: #c4c6d0;
+  --mat-sys-inverse-surface: #2f3036;
+  --mat-sys-inverse-on-surface: #f0f0f7;
+  --mat-sys-warn-container: #ffddb3;
+  --mat-sys-on-warn-container: #291800;
+
+  --mat-sys-corner-extra-small: 4px;
+  --mat-sys-corner-small: 8px;
+  --mat-sys-corner-medium: 12px;
+  --mat-sys-corner-large: 16px;
+  --mat-sys-corner-extra-large: 28px;
+  --mat-sys-corner-full: 9999px;
+
+  --mat-sys-level1: 0 1px 2px rgb(0 0 0 / 30%), 0 1px 3px 1px rgb(0 0 0 / 15%);
+  --mat-sys-level3: 0 1px 3px rgb(0 0 0 / 30%), 0 4px 8px 3px rgb(0 0 0 / 15%);
+
+  --row-h: 64px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font:
+    400 14px/20px Roboto,
+    system-ui,
+    sans-serif;
+  letter-spacing: 0.25px;
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 400;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.icon {
+  font-family: 'Material Symbols Outlined';
+  font-size: 24px;
+  line-height: 1;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  user-select: none;
+}
+
+/* ---------- mat-toolbar + mat-tab-nav-bar ---------- */
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 64px;
+  padding: 0 16px;
+  background: var(--mat-sys-surface-container);
+}
+
+.toolbar-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 22px;
+  line-height: 28px;
+  color: var(--mat-sys-on-surface);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.toolbar-title .icon {
+  color: var(--mat-sys-primary);
+}
+
+.tab-nav {
+  display: flex;
+  align-self: stretch;
+  margin-left: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-nav a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+}
+
+.tab-nav a:hover {
+  background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+}
+
+.tab-nav a[aria-current='page'] {
+  color: var(--mat-sys-primary);
+}
+
+.tab-nav a[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--mat-sys-primary);
+}
+
+/* Connection: an assist chip in the toolbar. */
+.live {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px 0 8px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-small);
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+}
+
+.live::before {
+  content: 'cloud_done';
+  font-family: 'Material Symbols Outlined';
+  font-size: 18px;
+  color: var(--mat-sys-primary);
+}
+
+.live[data-state='reconnecting']::before {
+  content: 'cloud_sync';
+  color: #8a5100;
+}
+
+.live[data-state='offline']::before {
+  content: 'cloud_off';
+  color: var(--mat-sys-error);
+}
+
+/* M3 banner */
+.conn-banner {
+  position: sticky;
+  top: 64px;
+  z-index: 19;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: var(--mat-sys-surface-container-high);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.conn-banner::before {
+  font-family: 'Material Symbols Outlined';
+  font-size: 24px;
+}
+
+.conn-banner[data-state='reconnecting']::before {
+  content: 'cloud_sync';
+}
+
+.conn-banner[data-state='offline']::before {
+  content: 'cloud_off';
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 24px;
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: var(--mat-sys-corner-full);
+  background: transparent;
+  color: var(--mat-sys-primary);
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+}
+
+.btn:disabled {
+  border-color: color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent);
+  color: color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent);
+  cursor: default;
+}
+
+.btn-primary {
+  border-color: transparent;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--mat-sys-on-primary) 8%, var(--mat-sys-primary));
+  box-shadow: var(--mat-sys-level1);
+}
+
+.btn-primary:disabled {
+  background: color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent);
+}
+
+.btn-tonal {
+  border-color: transparent;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}
+
+.btn-tonal:hover:not(:disabled) {
+  background: color-mix(
+    in srgb,
+    var(--mat-sys-on-secondary-container) 8%,
+    var(--mat-sys-secondary-container)
+  );
+}
+
+.btn-quiet,
+.btn-text {
+  border-color: transparent;
+  padding: 0 12px;
+}
+
+.btn-quiet {
+  color: var(--mat-sys-error);
+}
+
+.btn-quiet:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--mat-sys-error) 8%, transparent);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Quantity stepper: mat-button-toggle-group look */
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: var(--mat-sys-corner-full);
+  overflow: hidden;
+}
+
+.stepper button {
+  width: 40px;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--mat-sys-on-surface);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.stepper button:hover {
+  background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+}
+
+.stepper output {
+  min-width: 32px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+  font-weight: 500;
+}
+
+/* ---------- Form fields (outlined mat-form-field) ---------- */
+
+.field {
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: var(--mat-sys-corner-extra-small);
+  background: transparent;
+  min-width: 0;
+}
+
+.field:hover {
+  border-color: var(--mat-sys-on-surface);
+}
+
+.field:focus {
+  outline: none;
+  border: 2px solid var(--mat-sys-primary);
+  padding: 0 15px;
+}
+
+.money-field {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.money-field::before {
+  content: '$';
+  position: absolute;
+  left: 16px;
+  color: var(--mat-sys-on-surface-variant);
+  pointer-events: none;
+}
+
+.money-field .field {
+  width: 100%;
+  padding-left: 30px;
+  text-align: right;
+}
+
+.money-field .field:focus {
+  padding-left: 29px;
+}
+
+.form-field {
+  display: grid;
+  gap: 4px;
+}
+
+.form-field > span:first-child {
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.hint.error {
+  color: var(--mat-sys-error);
+}
+
+/* ---------- mat-dialog ---------- */
+
+dialog {
+  width: min(460px, calc(100vw - 48px));
+  padding: 24px;
+  border: 0;
+  border-radius: var(--mat-sys-corner-extra-large);
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  box-shadow: var(--mat-sys-level3);
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 32%);
+}
+
+dialog h2 {
+  font-size: 24px;
+  line-height: 32px;
+  margin-bottom: 16px;
+}
+
+dialog p {
+  margin: 0 0 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.dialog-actions .btn {
+  border-color: transparent;
+  padding: 0 12px;
+}
+
+.dialog-actions .btn-primary {
+  padding: 0 24px;
+}
+
+/* ---------- mat-snack-bar ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 50;
+  min-width: 288px;
+  max-width: calc(100vw - 32px);
+  padding: 14px 16px;
+  border-radius: var(--mat-sys-corner-extra-small);
+  background: var(--mat-sys-inverse-surface);
+  color: var(--mat-sys-inverse-on-surface);
+  box-shadow: var(--mat-sys-level3);
+  transform: translate(-50%, 0) scale(0.8);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+
+.toast[data-open] {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+/* ---------- Cards ---------- */
+
+.card {
+  background: var(--mat-sys-surface-container-low);
+  border-radius: var(--mat-sys-corner-medium);
+  box-shadow: var(--mat-sys-level1);
+}
+
+.card-outlined {
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-medium);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .toolbar {
+    gap: 4px;
+    padding: 0 8px 0 12px;
+  }
+
+  .toolbar-title span:last-child {
+    display: none;
+  }
+
+  .tab-nav {
+    margin-left: 0;
+  }
+
+  .tab-nav a {
+    padding: 0 12px;
+  }
+
+  .live {
+    padding: 0 6px;
+    gap: 0;
+  }
+
+  .live span {
+    display: none;
+  }
+}

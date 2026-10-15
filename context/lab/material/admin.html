@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Menu setup · My Kitchen (Material mockup)</title>
+    <link rel="stylesheet" href="material.css" />
+    <link rel="stylesheet" href="../shared/lab-panel.css" />
+    <style>
+      .setup {
+        display: grid;
+        grid-template-columns: 280px minmax(0, 1fr);
+        gap: 24px;
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 24px 24px 80px;
+      }
+
+      .side {
+        position: sticky;
+        top: 88px;
+        align-self: start;
+        display: grid;
+        gap: 16px;
+      }
+
+      .side h1 {
+        font-size: 28px;
+        line-height: 36px;
+      }
+
+      .side p {
+        margin: 0;
+        color: var(--mat-sys-on-surface-variant);
+      }
+
+      /* mat-nav-list */
+      .categories {
+        list-style: none;
+        margin: 0;
+        padding: 8px 0;
+        max-height: calc(100vh - 360px);
+        overflow-y: auto;
+        background: var(--mat-sys-surface-container-low);
+        border-radius: var(--mat-sys-corner-large);
+      }
+
+      .categories button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: calc(100% - 16px);
+        height: 48px;
+        margin: 0 8px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: var(--mat-sys-corner-full);
+        background: none;
+        color: var(--mat-sys-on-surface-variant);
+        font-weight: 500;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .categories button:hover {
+        background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+      }
+
+      .categories button[aria-current='true'] {
+        background: var(--mat-sys-secondary-container);
+        color: var(--mat-sys-on-secondary-container);
+      }
+
+      .categories small {
+        font-size: 12px;
+      }
+
+      .add-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+      }
+
+      .add-row .btn {
+        height: 48px;
+      }
+
+      .panel {
+        overflow: hidden;
+        background: var(--mat-sys-surface-container-lowest);
+        border: 1px solid var(--mat-sys-outline-variant);
+        border-radius: var(--mat-sys-corner-medium);
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px;
+      }
+
+      .panel-head .field {
+        flex: 1;
+        font-size: 22px;
+      }
+
+      /* mat-table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        height: 56px;
+        padding: 0 16px;
+        font-weight: 500;
+        color: var(--mat-sys-on-surface-variant);
+        text-align: left;
+        border-bottom: 1px solid var(--mat-sys-outline-variant);
+      }
+
+      td {
+        height: 64px;
+        padding: 0 16px;
+        border-bottom: 1px solid var(--mat-sys-surface-container-high);
+      }
+
+      tbody tr:hover td {
+        background: color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent);
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      td .field {
+        width: 100%;
+        height: 40px;
+      }
+
+      .col-price {
+        width: 150px;
+      }
+
+      .col-toggle {
+        width: 112px;
+        text-align: center;
+      }
+
+      .col-remove {
+        width: 112px;
+        text-align: right;
+      }
+
+      tr.changed td {
+        animation: changed 2.4s ease-out;
+      }
+
+      @keyframes changed {
+        0%,
+        40% {
+          background: var(--mat-sys-tertiary-container);
+        }
+      }
+
+      /* mat-slide-toggle, M3 */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 32px;
+        vertical-align: middle;
+      }
+
+      .switch input {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .switch span {
+        position: absolute;
+        inset: 0;
+        border: 2px solid var(--mat-sys-outline);
+        border-radius: var(--mat-sys-corner-full);
+        background: var(--mat-sys-surface-container-highest);
+        transition: background 0.15s;
+      }
+
+      .switch span::after {
+        content: '';
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--mat-sys-outline);
+        transition:
+          transform 0.15s,
+          width 0.15s,
+          height 0.15s,
+          top 0.15s,
+          left 0.15s;
+      }
+
+      .switch input:checked + span {
+        border-color: var(--mat-sys-primary);
+        background: var(--mat-sys-primary);
+      }
+
+      .switch input:checked + span::after {
+        top: 2px;
+        left: 2px;
+        width: 24px;
+        height: 24px;
+        background: var(--mat-sys-on-primary);
+        transform: translateX(20px);
+      }
+
+      .switch input:focus-visible + span {
+        outline: 2px solid var(--mat-sys-primary);
+        outline-offset: 2px;
+      }
+
+      /* mat-checkbox */
+      input[type='checkbox'][data-field='openPrice'] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--mat-sys-primary);
+        cursor: pointer;
+      }
+
+      .panel-foot {
+        padding: 12px 16px;
+        font-size: 12px;
+        color: var(--mat-sys-on-surface-variant);
+        border-top: 1px solid var(--mat-sys-outline-variant);
+      }
+
+      .empty {
+        margin: 0;
+        padding: 32px 16px;
+        color: var(--mat-sys-on-surface-variant);
+      }
+
+      @media (max-width: 860px) {
+        .setup {
+          grid-template-columns: 1fr;
+          padding: 16px 16px 120px;
+        }
+
+        .side {
+          position: static;
+        }
+
+        .categories {
+          max-height: 240px;
+        }
+
+        .panel {
+          overflow-x: auto;
+        }
+
+        table {
+          min-width: 680px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="toolbar">
+      <a class="toolbar-title" href="menu.html"
+        ><span class="icon" aria-hidden="true">restaurant</span><span>My Kitchen</span></a
+      >
+      <nav class="tab-nav">
+        <a href="menu.html">Menu</a>
+        <a href="orders.html">Orders</a>
+        <a href="admin.html" aria-current="page">Menu setup</a>
+      </nav>
+      <span class="live" data-conn-indicator data-state="online"><span>Live</span></span>
+    </header>
+    <div class="conn-banner" data-conn-banner role="status" hidden></div>
+
+    <main class="setup">
+      <aside class="side">
+        <h1>Menu setup</h1>
+        <p>Changes go live on the menu as soon as you make them.</p>
+        <ul class="categories" id="categories"></ul>
+        <form class="add-row" id="add-category">
+          <input
+            class="field"
+            name="name"
+            placeholder="New category"
+            aria-label="New category name"
+          />
+          <button class="btn btn-tonal" type="submit">Add</button>
+        </form>
+      </aside>
+
+      <section class="panel" aria-labelledby="category-name">
+        <div class="panel-head">
+          <input class="field" id="category-name" aria-label="Category name" />
+          <button class="btn btn-tonal" type="button" id="add-item">
+            <span class="icon" aria-hidden="true">add</span>Add item
+          </button>
+          <button class="btn btn-quiet" type="button" id="delete-category">Delete category</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th class="col-price">Price</th>
+              <th class="col-toggle">Available</th>
+              <th class="col-toggle">Open price</th>
+              <th class="col-remove"><span class="visually-hidden">Remove</span></th>
+            </tr>
+          </thead>
+          <tbody id="items"></tbody>
+        </table>
+        <p class="empty" id="items-empty" hidden>
+          No items in this category yet. Add the first one.
+        </p>
+        <div class="panel-foot" id="revision"></div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <script src="../shared/lab.js"></script>
+    <script src="../shared/admin.js"></script>
+  </body>
+</html>

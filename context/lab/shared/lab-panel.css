@@ -1,0 +1,98 @@
+/* "Mockup controls" panel shared by every variant. Not part of any design. */
+
+.lab-panel {
+  --lab-ink: #1f1f1f;
+  --lab-muted: #5f6368;
+  --lab-line: #d0d5d2;
+  --lab-gold: #8a6d1f;
+
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 40;
+  width: 270px;
+  background: #fff;
+  color: var(--lab-ink);
+  border: 1.5px dashed var(--lab-gold);
+  border-radius: 12px;
+  font:
+    400 13px/1.4 system-ui,
+    sans-serif;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+}
+
+.lab-panel summary {
+  padding: 10px 14px;
+  font-weight: 700;
+  color: var(--lab-gold);
+  cursor: pointer;
+}
+
+.lab-panel .lab-body {
+  display: grid;
+  gap: 12px;
+  padding: 0 14px 14px;
+}
+
+.lab-panel label {
+  display: grid;
+  gap: 4px;
+  color: var(--lab-muted);
+}
+
+.lab-panel .lab-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--lab-ink);
+}
+
+.lab-panel select,
+.lab-panel button {
+  height: 32px;
+  font: inherit;
+  color: inherit;
+}
+
+.lab-panel select {
+  padding: 0 8px;
+  border: 1px solid var(--lab-line);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.lab-panel [data-lab-reset] {
+  border: 1px solid var(--lab-line);
+  border-radius: 6px;
+  background: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lab-panel .segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--lab-line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.lab-panel .segmented button {
+  height: 30px;
+  border: 0;
+  background: #fff;
+  cursor: pointer;
+}
+
+.lab-panel .segmented button[aria-pressed='true'] {
+  background: var(--lab-ink);
+  color: #fff;
+}
+
+@media (max-width: 960px) {
+  .lab-panel {
+    right: 8px;
+    bottom: 76px;
+    width: 230px;
+  }
+}
