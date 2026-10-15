@@ -5,6 +5,15 @@
   "projectType": "application",
   "tags": ["type:app", "platform:server"],
   "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "parallel": false,
+        "commands": ["tsc -p apps/server/tsconfig.app.json --noEmit"]
+      }
+    },
     "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,

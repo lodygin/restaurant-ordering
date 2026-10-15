@@ -6,6 +6,18 @@
   "sourceRoot": "apps/client/src",
   "tags": ["type:app", "platform:web"],
   "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "parallel": false,
+        "commands": [
+          "ngc -p apps/client/tsconfig.app.json --noEmit",
+          "ngc -p apps/client/tsconfig.spec.json --noEmit"
+        ]
+      }
+    },
     "build": {
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],

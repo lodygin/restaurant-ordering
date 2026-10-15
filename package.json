@@ -7,10 +7,11 @@
     "build": "nx run-many -t build",
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",
-    "verify": "nx run-many -t lint test build",
+    "verify": "nx run-many -t typecheck lint test build",
     "prepare": "husky",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "typecheck": "nx run-many -t typecheck"
   },
   "private": true,
   "dependencies": {
