@@ -8,7 +8,9 @@
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",
     "verify": "nx run-many -t lint test build",
-    "prepare": "husky"
+    "prepare": "husky",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "private": true,
   "dependencies": {
@@ -34,6 +36,7 @@
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "@eslint/js": "^9.8.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.0",
     "@nx/angular": "23.3.0",
@@ -54,6 +57,7 @@
     "eslint-config-prettier": "^10.0.0",
     "husky": "^9.1.7",
     "jsdom": "^27.1.0",
+    "lint-staged": "^17.6.0",
     "nx": "23.3.0",
     "prettier": "~3.6.2",
     "tslib": "^2.3.0",

@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/client/src",
-  "tags": [],
+  "tags": ["type:app", "platform:web"],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
@@ -50,6 +50,10 @@
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "defaultConfiguration": "development",
+      "dependsOn": ["server:serve"],
+      "options": {
+        "proxyConfig": "apps/client/proxy.conf.json"
+      },
       "configurations": {
         "production": {
           "buildTarget": "client:build:production"
@@ -57,14 +61,7 @@
         "development": {
           "buildTarget": "client:build:development"
         }
-      },
-      "dependsOn": ["server:serve"],
-      "options": {
-        "proxyConfig": "apps/client/proxy.conf.json"
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@angular/build:unit-test",

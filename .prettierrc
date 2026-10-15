@@ -1,3 +1,27 @@
 {
-  "singleQuote": true
+  "printWidth": 100,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "arrowParens": "avoid",
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrderParserPlugins": ["typescript", "decorators-legacy"],
+  "importOrder": [
+    "^@angular/",
+    "^@nestjs/",
+    "^rxjs(/|$)",
+    "",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^@restaurant-ordering/",
+    "",
+    "^[./]"
+  ],
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
 }

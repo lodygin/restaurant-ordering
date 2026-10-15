@@ -1,4 +1,5 @@
 import nx from '@nx/eslint-plugin';
+
 import baseConfig from '../../eslint.config.mjs';
 
 export default [
@@ -8,6 +9,7 @@ export default [
   {
     files: ['**/*.ts'],
     rules: {
+      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       '@angular-eslint/directive-selector': [
         'error',
         {

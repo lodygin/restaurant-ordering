@@ -3,5 +3,8 @@
 /coverage
 /.nx/cache
 /.nx/workspace-data
-package-lock.json
 .angular
+pnpm-lock.yaml
+.husky/_
+.idea
+.claude/settings.local.json
