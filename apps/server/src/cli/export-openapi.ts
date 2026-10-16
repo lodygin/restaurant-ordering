@@ -8,7 +8,7 @@ import { AppModule } from '../app/app.module';
 import { createDocumentConfig } from '../app/swagger.config';
 
 async function main(): Promise<void> {
-  // preview builds the module graph without instantiating providers: no in-memory seed, no timers
+  // preview: no providers are instantiated, so no seed
   const app = await NestFactory.create(AppModule, { logger: false, preview: true });
 
   applyApiRouting(app);

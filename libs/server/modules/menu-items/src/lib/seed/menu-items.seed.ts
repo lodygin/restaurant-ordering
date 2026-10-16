@@ -5,11 +5,8 @@ import { type Category } from '@restaurant-ordering/server/modules/categories';
 import { type MenuItem } from '../types';
 
 type CatalogCategory = {
-  /** Matched against the seeded categories by name. */
   category: string;
-  /** Cents; the base price of each dish is picked inside this range. */
   priceRange: [number, number];
-  /** Food also comes as half, kids and sharing portions, which is what makes the menu large. */
   portions: boolean;
   dishes: string[];
   variants: string[];
@@ -295,7 +292,7 @@ const CATALOG: CatalogCategory[] = [
   },
 ];
 
-/** mulberry32: the same seed gives the same menu on every start. */
+// mulberry32
 function createRandom(seed: number): () => number {
   let state = seed;
 
@@ -312,7 +309,6 @@ function roundPrice(cents: number): number {
   return Math.max(50, Math.round(cents / 50) * 50);
 }
 
-/** Items for the seeded categories; a catalog entry whose category is missing is skipped. */
 export function seedMenuItems(categories: Category[]): MenuItem[] {
   const random = createRandom(42);
   const categoryIds = new Map(categories.map(category => [category.name, category.id]));

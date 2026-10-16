@@ -11,14 +11,12 @@ import {
   type UpdateCategoryInput,
 } from './types';
 
-/** In-memory categories; the Map keeps insertion order, which is the order the menu shows. */
 @Injectable()
 export class CategoriesService {
   private readonly categories = new Map<string, Category>();
   private readonly usages: CategoryUsage[] = [];
   private readonly changes = new Subject<CategoryChange>();
 
-  /** Emits synchronously, inside the call that made the change. */
   readonly changes$: Observable<CategoryChange> = this.changes.asObservable();
 
   constructor() {

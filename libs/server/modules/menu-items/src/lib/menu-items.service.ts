@@ -19,13 +19,11 @@ import {
 
 type Pricing = Pick<MenuItem, 'openPrice' | 'price'>;
 
-/** In-memory menu items; the Map keeps insertion order, which is the order the menu shows. */
 @Injectable()
 export class MenuItemsService {
   private readonly items = new Map<string, MenuItem>();
   private readonly changes = new Subject<MenuItemChange>();
 
-  /** Emits synchronously, inside the call that made the change. */
   readonly changes$: Observable<MenuItemChange> = this.changes.asObservable();
 
   constructor(private readonly categories: CategoriesService) {
@@ -104,10 +102,7 @@ export class MenuItemsService {
   }
 }
 
-/**
- * Open-price items carry no price. Turning open price on clears the price; turning it off needs
- * a new price in the same request, never a silent default.
- */
+/** Turning open price off needs a new price in the same request. */
 function resolvePricing(current: Pricing, patch: Partial<Pricing>): Pricing {
   const openPrice = patch.openPrice ?? current.openPrice;
 

@@ -3,7 +3,7 @@ export type MenuItem = {
   categoryId: string;
   name: string;
   description: string;
-  /** Integer cents; null for open-price items, whose price is entered when ordering. */
+  /** Cents; null for open-price items. */
   price: number | null;
   available: boolean;
   openPrice: boolean;
