@@ -15,7 +15,7 @@ import { removeEntity, setAllEntities, setEntity, withEntities } from '@ngrx/sig
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
 import { MenuApi } from '../api/menu.api';
-import { type Category, type MenuItem } from '../models';
+import { type Category, type MenuEntityChange, type MenuItem } from '../models';
 import { type MenuSection, type MenuState } from '../types';
 
 const SNAPSHOT_RETRY_MS = 3000;
@@ -33,87 +33,89 @@ export const MenuStore = signalStore(
     sections: computed(() => toSections(categoryEntities(), itemEntities())),
   })),
 
-  withMethods((store, api = inject(MenuApi)) => ({
-    // snapshot first, then the stream from its revision; a resync completes it and repeat() starts over
-    sync: rxMethod<void>(
-      pipe(
-        switchMap(() => {
-          patchState(store, { status: 'loading' });
+  withMethods((store, api = inject(MenuApi)) => {
+    const applyChange = (change: MenuEntityChange): void => {
+      switch (change.type) {
+        case 'category.created':
+        case 'category.updated':
+          patchState(store, setEntity(change.category, { collection: 'category' }));
 
-          return api.snapshot().pipe(
-            retry({
-              delay: () => {
-                patchState(store, { status: 'error', connection: 'reconnecting' });
+          break;
+        case 'category.deleted':
+          patchState(store, removeEntity(change.categoryId, { collection: 'category' }));
 
-                return timer(SNAPSHOT_RETRY_MS);
-              },
-            }),
-            tap(({ data, revision }) =>
-              patchState(
-                store,
-                { status: 'loaded', revision },
-                setAllEntities(data.categories, { collection: 'category' }),
-                setAllEntities(data.items, { collection: 'item' }),
+          break;
+        case 'item.created':
+        case 'item.updated':
+          patchState(store, setEntity(change.item, { collection: 'item' }));
+
+          break;
+        case 'item.deleted':
+          patchState(store, removeEntity(change.itemId, { collection: 'item' }));
+      }
+    };
+
+    return {
+      // the stream may already be past this edit; the revision itself stays the stream's
+      applyEditResult(revision: number, change: MenuEntityChange): void {
+        if (revision > (store.revision() ?? 0)) {
+          applyChange(change);
+        }
+      },
+
+      // snapshot first, then the stream from its revision; a resync completes it and repeat() starts over
+      sync: rxMethod<void>(
+        pipe(
+          switchMap(() => {
+            patchState(store, { status: 'loading' });
+
+            return api.snapshot().pipe(
+              retry({
+                delay: () => {
+                  patchState(store, { status: 'error', connection: 'reconnecting' });
+
+                  return timer(SNAPSHOT_RETRY_MS);
+                },
+              }),
+              tap(({ data, revision }) =>
+                patchState(
+                  store,
+                  { status: 'loaded', revision },
+                  setAllEntities(data.categories, { collection: 'category' }),
+                  setAllEntities(data.items, { collection: 'item' }),
+                ),
               ),
-            ),
-            switchMap(({ revision }) => api.changes(revision)),
-            takeWhile(event => event.type !== 'message' || event.data.type !== 'resync'),
-            repeat(),
-            tapResponse({
-              next: event => {
-                if (event.type !== 'message') {
-                  patchState(store, {
-                    connection: event.type === 'open' ? 'online' : 'reconnecting',
-                  });
+              switchMap(({ revision }) => api.changes(revision)),
+              takeWhile(event => event.type !== 'message' || event.data.type !== 'resync'),
+              repeat(),
+              tapResponse({
+                next: event => {
+                  if (event.type !== 'message') {
+                    patchState(store, {
+                      connection: event.type === 'open' ? 'online' : 'reconnecting',
+                    });
 
-                  return;
-                }
+                    return;
+                  }
 
-                const { id: revision, data: change } = event;
+                  const { id: revision, data: change } = event;
 
-                // a reconnect replays what the snapshot already holds
-                if (change.type === 'resync' || revision <= (store.revision() ?? 0)) {
-                  return;
-                }
+                  // a reconnect replays what the snapshot already holds
+                  if (change.type === 'resync' || revision <= (store.revision() ?? 0)) {
+                    return;
+                  }
 
-                switch (change.type) {
-                  case 'category.created':
-                  case 'category.updated':
-                    patchState(
-                      store,
-                      { revision },
-                      setEntity(change.category, { collection: 'category' }),
-                    );
-
-                    break;
-                  case 'category.deleted':
-                    patchState(
-                      store,
-                      { revision },
-                      removeEntity(change.categoryId, { collection: 'category' }),
-                    );
-
-                    break;
-                  case 'item.created':
-                  case 'item.updated':
-                    patchState(store, { revision }, setEntity(change.item, { collection: 'item' }));
-
-                    break;
-                  case 'item.deleted':
-                    patchState(
-                      store,
-                      { revision },
-                      removeEntity(change.itemId, { collection: 'item' }),
-                    );
-                }
-              },
-              error: () => patchState(store, { status: 'error', connection: 'offline' }),
-            }),
-          );
-        }),
+                  applyChange(change);
+                  patchState(store, { revision });
+                },
+                error: () => patchState(store, { status: 'error', connection: 'offline' }),
+              }),
+            );
+          }),
+        ),
       ),
-    ),
-  })),
+    };
+  }),
 
   withHooks({ onInit: store => store.sync() }),
 );

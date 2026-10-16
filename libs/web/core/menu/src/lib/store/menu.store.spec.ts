@@ -211,4 +211,24 @@ describe('MenuStore', () => {
     expect(store.status()).toBe('loaded');
     expect(api.snapshots).toHaveLength(2);
   });
+
+  it('applies its own edit before the stream echoes it, leaving the revision to the stream', () => {
+    api.respond(menu);
+    store.applyEditResult(43, { type: 'item.updated', item: { ...tomYum, available: false } });
+
+    expect(store.itemEntityMap()[tomYum.id]?.available).toBe(false);
+    expect(store.revision()).toBe(42);
+  });
+
+  it('ignores its own edit when the stream has already moved past it', () => {
+    api.respond(menu);
+    api.push({
+      type: 'message',
+      id: 44,
+      data: { type: 'item.updated', item: { ...tomYum, price: 1500 } },
+    });
+    store.applyEditResult(43, { type: 'item.updated', item: { ...tomYum, available: false } });
+
+    expect(store.itemEntityMap()[tomYum.id]).toMatchObject({ price: 1500, available: true });
+  });
 });

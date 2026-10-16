@@ -15,3 +15,5 @@ export const menuChangeSchema = z.discriminatedUnion('type', [
 ]);
 
 export type MenuChange = z.infer<typeof menuChangeSchema>;
+
+export type MenuEntityChange = Exclude<MenuChange, { type: 'resync' }>;
