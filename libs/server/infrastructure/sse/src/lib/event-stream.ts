@@ -20,7 +20,7 @@ const DEFAULT_OPTIONS: EventStreamOptions = { capacity: 1000, heartbeatMs: 15_00
 
 export class EventStream<T extends object> {
   private readonly buffer: EventEntry<T>[] = [];
-  private readonly live = new Subject<EventEntry<T>>();
+  private readonly live$$ = new Subject<EventEntry<T>>();
   private readonly options: EventStreamOptions;
 
   constructor(options: Partial<EventStreamOptions> = {}) {
@@ -36,7 +36,7 @@ export class EventStream<T extends object> {
       this.buffer.shift();
     }
 
-    this.live.next(entry);
+    this.live$$.next(entry);
   }
 
   /** Missed events after `lastId` (or a resync if they are gone), then live ones. */
@@ -46,7 +46,7 @@ export class EventStream<T extends object> {
     );
 
     return defer(() =>
-      merge(concat(this.backlog(lastId, latestId), this.live.pipe(map(toMessage))), heartbeat),
+      merge(concat(this.backlog(lastId, latestId), this.live$$.pipe(map(toMessage))), heartbeat),
     );
   }
 
