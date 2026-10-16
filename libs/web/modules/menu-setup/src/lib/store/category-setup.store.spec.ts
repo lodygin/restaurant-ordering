@@ -80,13 +80,13 @@ describe('CategorySetupStore', () => {
     removal.error(
       new HttpErrorResponse({
         status: 409,
-        error: { message: 'The category still has 2 item(s); move or delete them first.' },
+        error: { message: 'The category still has 2 item(s); delete them first.' },
       }),
     );
 
     expect(store.removing()).toEqual([]);
     expect(open).toHaveBeenCalledWith(
-      'The category still has 2 item(s); move or delete them first.',
+      'The category still has 2 item(s); delete them first.',
       'Dismiss',
       { duration: 5000 },
     );

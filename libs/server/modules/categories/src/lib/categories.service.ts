@@ -63,7 +63,7 @@ export class CategoriesService {
 
     if (itemCount > 0) {
       throw new ConflictException({
-        message: `The category still has ${itemCount} item(s); move or delete them first.`,
+        message: `The category still has ${itemCount} item(s); delete them first.`,
         itemCount,
       });
     }

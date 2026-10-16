@@ -6,12 +6,10 @@ describe('apiErrorMessage', () => {
   it('takes the message the server sent', () => {
     const error = new HttpErrorResponse({
       status: 409,
-      error: { message: 'The category still has 2 item(s); move or delete them first.' },
+      error: { message: 'The category still has 2 item(s); delete them first.' },
     });
 
-    expect(apiErrorMessage(error)).toBe(
-      'The category still has 2 item(s); move or delete them first.',
-    );
+    expect(apiErrorMessage(error)).toBe('The category still has 2 item(s); delete them first.');
   });
 
   it('falls back when there is no message to show', () => {

@@ -131,7 +131,7 @@ describe('MenuApi', () => {
     expect(request.request.method).toBe('DELETE');
 
     request.flush(
-      { message: 'The category still has 2 item(s); move or delete them first.', itemCount: 2 },
+      { message: 'The category still has 2 item(s); delete them first.', itemCount: 2 },
       { status: 409, statusText: 'Conflict' },
     );
 
