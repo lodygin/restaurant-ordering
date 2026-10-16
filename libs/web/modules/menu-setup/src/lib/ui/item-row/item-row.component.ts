@@ -6,7 +6,7 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { defer, filter, map, merge, type Observable } from 'rxjs';
 
 import { formatPrice, parsePrice } from '@restaurant-ordering/shared/money';
-import { priceValidator } from '@restaurant-ordering/web/common/form';
+import { disableControl, priceValidator } from '@restaurant-ordering/web/common/form';
 import { type MenuItem, type MenuItemInput } from '@restaurant-ordering/web/core/menu';
 
 import { MenuSetupStore } from '../../store/menu-setup.store';
@@ -136,16 +136,7 @@ export class ItemRowComponent {
     available.setValue(item.available, { emitEvent: false });
     openPrice.setValue(item.openPrice, { emitEvent: false });
 
-    if (locked) {
-      this.form.disable({ emitEvent: false });
-
-      return;
-    }
-
-    this.form.enable({ emitEvent: false });
-
-    if (item.openPrice) {
-      price.disable({ emitEvent: false });
-    }
+    disableControl(this.form, locked, { emitEvent: false });
+    disableControl(price, locked || item.openPrice, { emitEvent: false });
   }
 }
