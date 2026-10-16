@@ -103,22 +103,33 @@ export class CategoryPanelComponent {
       disableControl(this.name, this.disabled(), { emitEvent: false });
     });
 
-    // the row of a just created item renders after the event, so focus it once it is there
-    this.items.created$.pipe(takeUntilDestroyed()).subscribe(item =>
-      afterNextRender(
-        () =>
-          this.rows()
-            .find(row => row.item().id === item.id)
-            ?.focusName(),
-        { injector: this.injector },
-      ),
-    );
+    this.items.created$
+      .pipe(takeUntilDestroyed())
+      .subscribe(({ id }) => this.withRow(id, row => row.focusName()));
+
+    this.items.remoteChanges$
+      .pipe(takeUntilDestroyed())
+      .subscribe(({ id }) => this.withRow(id, row => row.highlight()));
 
     this.categories.rename(
       this.name.valueChanges.pipe(
         filter(() => this.name.valid),
         map(name => ({ id: this.section().category.id, name: name.trim() })),
       ),
+    );
+  }
+
+  // a new item's row renders after the event about it, so wait for the render
+  private withRow(id: string, action: (row: ItemRowComponent) => void): void {
+    afterNextRender(
+      () => {
+        const row = this.rows().find(candidate => candidate.item().id === id);
+
+        if (row) {
+          action(row);
+        }
+      },
+      { injector: this.injector },
     );
   }
 }

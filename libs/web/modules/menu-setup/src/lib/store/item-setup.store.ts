@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { concatMap, exhaustMap, groupBy, mergeMap, pipe, Subject } from 'rxjs';
+import { concatMap, exhaustMap, filter, groupBy, map, mergeMap, pipe, Subject } from 'rxjs';
 
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals';
@@ -9,6 +9,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import {
   MenuApi,
   MenuStore,
+  type MenuEntityChange,
   type MenuItem,
   type MenuItemInput,
 } from '@restaurant-ordering/web/core/menu';
@@ -22,7 +23,10 @@ const initialState: ItemSetupState = { creating: false, edits: {}, removing: [] 
 export const ItemSetupStore = signalStore(
   withState(initialState),
 
-  withProps(() => ({ _created$$: new Subject<MenuItem>() })),
+  withProps(() => ({
+    _created$$: new Subject<MenuItem>(),
+    _ownRevisions: new Set<number>(),
+  })),
   withProps(({ _created$$ }) => ({ created$: _created$$.asObservable() })),
 
   withMethods(
@@ -50,6 +54,10 @@ export const ItemSetupStore = signalStore(
                 .pipe(
                   tapResponse({
                     next: ({ data, revision }) => {
+                      if (revision > (menu.revision() ?? 0)) {
+                        store._ownRevisions.add(revision);
+                      }
+
                       menu.applyEditResult(revision, { type: 'item.created', item: data });
                       store._created$$.next(data);
                     },
@@ -74,8 +82,14 @@ export const ItemSetupStore = signalStore(
 
                   return api.updateItem(id, changes).pipe(
                     tapResponse({
-                      next: ({ data, revision }) =>
-                        menu.applyEditResult(revision, { type: 'item.updated', item: data }),
+                      next: ({ data, revision }) => {
+                        // remembered until its echo arrives, unless the echo already did
+                        if (revision > (menu.revision() ?? 0)) {
+                          store._ownRevisions.add(revision);
+                        }
+
+                        menu.applyEditResult(revision, { type: 'item.updated', item: data });
+                      },
                       error: report,
                       finalize: () =>
                         patchState(store, state => ({
@@ -118,4 +132,18 @@ export const ItemSetupStore = signalStore(
       };
     },
   ),
+
+  // an echo of an edit made here comes after its answer (own revision) or before it (in flight)
+  withProps(({ _ownRevisions, edits, creating }) => ({
+    remoteChanges$: inject(MenuStore).changes$.pipe(
+      filter(({ revision }) => !_ownRevisions.delete(revision)),
+      map(({ data }) => data),
+      filter(
+        (change): change is Extract<MenuEntityChange, { item: MenuItem }> =>
+          (change.type === 'item.created' && !creating()) ||
+          (change.type === 'item.updated' && edits()[change.item.id] === undefined),
+      ),
+      map(({ item }) => item),
+    ),
+  })),
 );

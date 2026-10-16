@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import {
   MenuApi,
   MenuStore,
+  type MenuEntityChange,
   type MenuItem,
   type Revised,
 } from '@restaurant-ordering/web/core/menu';
@@ -28,6 +29,7 @@ describe('ItemSetupStore', () => {
   let removal: Subject<number>;
   let creation: Subject<Revised<MenuItem>>;
   let applyEditResult: ReturnType<typeof vi.fn>;
+  let menuChanges: Subject<Revised<MenuEntityChange>>;
   let open: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -35,6 +37,7 @@ describe('ItemSetupStore', () => {
     removal = new Subject();
     creation = new Subject();
     applyEditResult = vi.fn();
+    menuChanges = new Subject();
     open = vi.fn();
 
     TestBed.configureTestingModule({
@@ -48,7 +51,10 @@ describe('ItemSetupStore', () => {
             removeItem: () => removal,
           },
         },
-        { provide: MenuStore, useValue: { applyEditResult } },
+        {
+          provide: MenuStore,
+          useValue: { applyEditResult, revision: () => 40, changes$: menuChanges },
+        },
         { provide: MatSnackBar, useValue: { open } },
       ],
     });
@@ -127,5 +133,59 @@ describe('ItemSetupStore', () => {
     expect(applyEditResult).toHaveBeenCalledWith(70, { type: 'item.created', item: pho });
     expect(created).toHaveBeenCalledWith(pho);
     expect(store.creating()).toBe(false);
+  });
+
+  describe('remote changes', () => {
+    let remote: ReturnType<typeof vi.fn<(item: MenuItem) => void>>;
+
+    beforeEach(() => {
+      remote = vi.fn();
+      store.remoteChanges$.subscribe(remote);
+    });
+
+    it('passes on an update made elsewhere', () => {
+      menuChanges.next({ data: { type: 'item.updated', item: pho }, revision: 41 });
+
+      expect(remote).toHaveBeenCalledWith(pho);
+    });
+
+    it('skips the echo of an edit made here', () => {
+      store.update({ id: pho.id, changes: { name: 'Pho bo' } });
+      update.next({ data: { ...pho, name: 'Pho bo' }, revision: 41 });
+      update.complete();
+      menuChanges.next({
+        data: { type: 'item.updated', item: { ...pho, name: 'Pho bo' } },
+        revision: 41,
+      });
+
+      expect(remote).not.toHaveBeenCalled();
+    });
+
+    it('passes on an item created elsewhere', () => {
+      menuChanges.next({ data: { type: 'item.created', item: pho }, revision: 41 });
+
+      expect(remote).toHaveBeenCalledWith(pho);
+    });
+
+    it('skips the echo of an item created here, before and after the answer', () => {
+      store.create(pho.categoryId);
+      menuChanges.next({ data: { type: 'item.created', item: pho }, revision: 41 });
+
+      creation.next({ data: pho, revision: 42 });
+      creation.complete();
+      menuChanges.next({ data: { type: 'item.created', item: pho }, revision: 42 });
+
+      expect(remote).not.toHaveBeenCalled();
+    });
+
+    it('skips an echo that arrives before the answer to the edit', () => {
+      store.update({ id: pho.id, changes: { name: 'Pho bo' } });
+      menuChanges.next({
+        data: { type: 'item.updated', item: { ...pho, name: 'Pho bo' } },
+        revision: 41,
+      });
+
+      expect(remote).not.toHaveBeenCalled();
+    });
   });
 });

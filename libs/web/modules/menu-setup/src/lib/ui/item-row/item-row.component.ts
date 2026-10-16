@@ -13,12 +13,14 @@ import {
   InputComponent,
   MoneyFieldComponent,
 } from '@restaurant-ordering/web/ui/form';
+import { HighlightDirective } from '@restaurant-ordering/web/ui/highlight';
 
 import { DEFAULT_ITEM_PRICE } from '../../constants';
 import { ItemSetupStore } from '../../store/item-setup.store';
 
 @Component({
   selector: 'tr[appItemRow]',
+  hostDirectives: [HighlightDirective],
   imports: [
     ReactiveFormsModule,
     MatButton,
@@ -101,6 +103,8 @@ export class ItemRowComponent {
     openPrice: new FormControl(false, { nonNullable: true }),
   });
 
+  private readonly highlighter = inject(HighlightDirective);
+
   private readonly changes$: Observable<Partial<MenuItemInput>> = defer(() => {
     const { name, price, available, openPrice } = this.form.controls;
 
@@ -137,6 +141,10 @@ export class ItemRowComponent {
   focusName(): void {
     this.nameField().focus();
     this.nameField().element.select();
+  }
+
+  highlight(): void {
+    this.highlighter.highlight();
   }
 
   private syncForm(item: MenuItem, locked: boolean): void {
