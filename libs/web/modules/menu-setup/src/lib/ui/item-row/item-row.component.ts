@@ -8,6 +8,7 @@ import { defer, filter, map, merge, type Observable } from 'rxjs';
 import { formatPrice, parsePrice } from '@restaurant-ordering/shared/money';
 import { disableControl, priceValidator } from '@restaurant-ordering/web/common/form';
 import { type MenuItem, type MenuItemInput } from '@restaurant-ordering/web/core/menu';
+import { InputComponent, MoneyFieldComponent } from '@restaurant-ordering/web/ui/form';
 
 import { MenuSetupStore } from '../../store/menu-setup.store';
 
@@ -15,12 +16,19 @@ const DEFAULT_PRICE = 1000;
 
 @Component({
   selector: 'tr[appItemRow]',
-  imports: [ReactiveFormsModule, MatButton, MatCheckbox, MatSlideToggle],
+  imports: [
+    ReactiveFormsModule,
+    MatButton,
+    MatCheckbox,
+    MatSlideToggle,
+    InputComponent,
+    MoneyFieldComponent,
+  ],
   styleUrl: './item-row.component.scss',
   template: `
     <td>
       <input
-        class="field"
+        appInput
         [formControl]="form.controls.name"
         [attr.aria-label]="'Name of ' + item().name"
         title="An item needs a name"
@@ -28,16 +36,16 @@ const DEFAULT_PRICE = 1000;
     </td>
 
     <td>
-      <span class="money">
+      <app-money-field>
         <input
-          class="field"
+          appInput
           inputmode="decimal"
           [formControl]="form.controls.price"
           [placeholder]="form.controls.openPrice.value ? 'At order' : ''"
           [attr.aria-label]="'Price of ' + item().name"
           title="Enter a price above zero, like 12.50"
         />
-      </span>
+      </app-money-field>
     </td>
 
     <td class="center">

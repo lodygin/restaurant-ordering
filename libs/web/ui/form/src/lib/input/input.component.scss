@@ -1,0 +1,27 @@
+:host {
+  inline-size: 100%;
+  block-size: 36px;
+  min-inline-size: 0;
+  padding-block: 0;
+  padding-inline: var(--input-padding-start, 10px) 10px;
+  text-align: var(--input-text-align, start);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-s);
+}
+
+:host(:focus) {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+:host(:disabled) {
+  color: var(--color-muted);
+  background: var(--color-page);
+}
+
+:host(.ng-invalid.ng-touched) {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px var(--color-danger-soft);
+}

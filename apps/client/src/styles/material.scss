@@ -27,6 +27,11 @@ html {
       filled-container-shape: var(--radius-s),
       outlined-container-shape: var(--radius-s),
       text-container-shape: var(--radius-s),
+      // same height and border as the inputs next to them
+      filled-container-height: 36px,
+      outlined-container-height: 36px,
+      text-container-height: 36px,
+      outlined-outline-color: var(--color-line),
     )
   );
 }

@@ -50,7 +50,8 @@
       "@restaurant-ordering/web/modules/menu": ["./libs/web/modules/menu/src/index.ts"],
       "@restaurant-ordering/web/modules/menu-setup": ["./libs/web/modules/menu-setup/src/index.ts"],
       "@restaurant-ordering/web/modules/orders": ["./libs/web/modules/orders/src/index.ts"],
-      "@restaurant-ordering/web/modules/shell": ["./libs/web/modules/shell/src/index.ts"]
+      "@restaurant-ordering/web/modules/shell": ["./libs/web/modules/shell/src/index.ts"],
+      "@restaurant-ordering/web/ui/form": ["./libs/web/ui/form/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

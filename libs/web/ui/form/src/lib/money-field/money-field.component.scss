@@ -1,0 +1,17 @@
+:host {
+  --input-padding-start: 22px;
+  --input-text-align: end;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+
+  &::before {
+    content: '$';
+    position: absolute;
+    inset-inline-start: 10px;
+    color: var(--color-muted);
+    pointer-events: none;
+  }
+}
