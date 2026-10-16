@@ -35,9 +35,11 @@
       ],
       "@restaurant-ordering/web/common/zod": ["./libs/web/common/zod/src/index.ts"],
       "@restaurant-ordering/web/core/menu": ["./libs/web/core/menu/src/index.ts"],
-      "@restaurant-ordering/web/infrastructure/api": ["./libs/web/infrastructure/api/src/index.ts"],
       "@restaurant-ordering/web/infrastructure/http": [
         "./libs/web/infrastructure/http/src/index.ts"
+      ],
+      "@restaurant-ordering/web/infrastructure/rest": [
+        "./libs/web/infrastructure/rest/src/index.ts"
       ],
       "@restaurant-ordering/web/modules/menu": ["./libs/web/modules/menu/src/index.ts"],
       "@restaurant-ordering/web/modules/menu-setup": ["./libs/web/modules/menu-setup/src/index.ts"],

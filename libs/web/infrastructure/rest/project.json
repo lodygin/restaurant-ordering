@@ -1,7 +1,7 @@
 {
-  "name": "web-infrastructure-api",
+  "name": "web-infrastructure-rest",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/web/infrastructure/api/src",
+  "sourceRoot": "libs/web/infrastructure/rest/src",
   "projectType": "library",
   "tags": ["type:lib", "platform:web"],
   "targets": {
@@ -23,7 +23,7 @@
       "outputs": ["{projectRoot}/src/lib/generated"],
       "options": {
         "command": "orval --config orval.config.ts",
-        "cwd": "libs/web/infrastructure/api"
+        "cwd": "libs/web/infrastructure/rest"
       }
     }
   }

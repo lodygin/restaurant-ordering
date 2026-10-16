@@ -8,4 +8,4 @@ pnpm-lock.yaml
 .husky/_
 .idea
 .claude/settings.local.json
-/libs/web/infrastructure/api/src/lib/generated
+/libs/web/infrastructure/rest/src/lib/generated
