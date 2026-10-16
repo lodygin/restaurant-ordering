@@ -22,6 +22,7 @@
     "exactOptionalPropertyTypes": true,
     "isolatedModules": true,
     "paths": {
+      "@restaurant-ordering/server/common/http": ["./libs/server/common/http/src/index.ts"],
       "@restaurant-ordering/web/infrastructure/api": ["./libs/web/infrastructure/api/src/index.ts"]
     }
   },
