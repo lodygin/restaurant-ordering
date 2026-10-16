@@ -1,0 +1,8 @@
+{
+  "name": "server-infrastructure-events",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/server/infrastructure/events/src",
+  "projectType": "library",
+  "tags": ["type:lib", "platform:server"],
+  "targets": {}
+}

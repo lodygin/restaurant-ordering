@@ -1,19 +1,35 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Headers, Query, Sse, type MessageEvent } from '@nestjs/common';
+import { ApiExcludeEndpoint, ApiExtraModels, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { type Observable } from 'rxjs';
 
 import { CategoriesService } from '@restaurant-ordering/server/modules/categories';
 import { MenuItemsService } from '@restaurant-ordering/server/modules/menu-items';
 
-import { MenuResponseDto } from './dtos';
-import { MenuRevisionService } from './menu-revision.service';
+import {
+  CategoryDeletedEventDto,
+  CategorySavedEventDto,
+  MenuEventsQueryDto,
+  MenuItemDeletedEventDto,
+  MenuItemSavedEventDto,
+  MenuResponseDto,
+  ResyncEventDto,
+} from './dtos';
+import { MenuChangesService } from './menu-changes.service';
 
 @ApiTags('menu')
+@ApiExtraModels(
+  CategorySavedEventDto,
+  CategoryDeletedEventDto,
+  MenuItemSavedEventDto,
+  MenuItemDeletedEventDto,
+  ResyncEventDto,
+)
 @Controller('menu')
 export class MenuController {
   constructor(
     private readonly categories: CategoriesService,
     private readonly items: MenuItemsService,
-    private readonly revision: MenuRevisionService,
+    private readonly changes: MenuChangesService,
   ) {}
 
   @Get()
@@ -24,10 +40,20 @@ export class MenuController {
   snapshot(): MenuResponseDto {
     return {
       data: {
-        revision: this.revision.current(),
+        revision: this.changes.current(),
         categories: this.categories.list(),
         items: this.items.list(),
       },
     };
+  }
+
+  // EventSource, not HttpClient: kept out of the spec so orval does not generate a method for it
+  @Sse('events')
+  @ApiExcludeEndpoint()
+  events(
+    @Query() query: MenuEventsQueryDto,
+    @Headers('last-event-id') lastEventId?: string,
+  ): Observable<MessageEvent> {
+    return this.changes.events(lastEventId ? Number(lastEventId) : query.since);
   }
 }
