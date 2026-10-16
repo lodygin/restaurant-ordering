@@ -23,8 +23,8 @@
     "isolatedModules": true,
     "paths": {
       "@restaurant-ordering/server/common/http": ["./libs/server/common/http/src/index.ts"],
-      "@restaurant-ordering/server/infrastructure/events": [
-        "./libs/server/infrastructure/events/src/index.ts"
+      "@restaurant-ordering/server/infrastructure/sse": [
+        "./libs/server/infrastructure/sse/src/index.ts"
       ],
       "@restaurant-ordering/server/modules/categories": [
         "./libs/server/modules/categories/src/index.ts"
