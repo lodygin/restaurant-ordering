@@ -8,6 +8,10 @@ import {
 import { Subject, type Observable } from 'rxjs';
 
 import { CategoriesService } from '@restaurant-ordering/server/modules/categories';
+import {
+  MenuRevisionService,
+  type Revised,
+} from '@restaurant-ordering/server/modules/menu-revision';
 
 import { seedMenuItems } from './seed/menu-items.seed';
 import {
@@ -22,11 +26,14 @@ type Pricing = Pick<MenuItem, 'openPrice' | 'price'>;
 @Injectable()
 export class MenuItemsService {
   private readonly items = new Map<string, MenuItem>();
-  private readonly changes = new Subject<MenuItemChange>();
+  private readonly changes$$ = new Subject<Revised<MenuItemChange>>();
 
-  readonly changes$: Observable<MenuItemChange> = this.changes.asObservable();
+  readonly changes$: Observable<Revised<MenuItemChange>> = this.changes$$.asObservable();
 
-  constructor(private readonly categories: CategoriesService) {
+  constructor(
+    private readonly categories: CategoriesService,
+    private readonly revision: MenuRevisionService,
+  ) {
     seedMenuItems(categories.list()).forEach(item => this.items.set(item.id, item));
     categories.registerUsage({ countIn: categoryId => this.countIn(categoryId) });
   }
@@ -35,7 +42,7 @@ export class MenuItemsService {
     return [...this.items.values()];
   }
 
-  create(input: CreateMenuItemInput): MenuItem {
+  create(input: CreateMenuItemInput): Revised<MenuItem> {
     this.assertCategoryExists(input.categoryId);
 
     const item: MenuItem = {
@@ -48,12 +55,11 @@ export class MenuItemsService {
     };
 
     this.items.set(item.id, item);
-    this.changes.next({ type: 'item.created', item });
 
-    return item;
+    return { data: item, revision: this.commit({ type: 'item.created', item }) };
   }
 
-  update(id: string, input: UpdateMenuItemInput): MenuItem {
+  update(id: string, input: UpdateMenuItemInput): Revised<MenuItem> {
     const current = this.get(id);
 
     if (input.categoryId !== undefined) {
@@ -70,15 +76,23 @@ export class MenuItemsService {
     };
 
     this.items.set(id, item);
-    this.changes.next({ type: 'item.updated', item });
 
-    return item;
+    return { data: item, revision: this.commit({ type: 'item.updated', item }) };
   }
 
-  remove(id: string): void {
+  remove(id: string): number {
     this.get(id);
     this.items.delete(id);
-    this.changes.next({ type: 'item.deleted', itemId: id });
+
+    return this.commit({ type: 'item.deleted', itemId: id });
+  }
+
+  private commit(change: MenuItemChange): number {
+    const revision = this.revision.next();
+
+    this.changes$$.next({ data: change, revision });
+
+    return revision;
   }
 
   private countIn(categoryId: string): number {

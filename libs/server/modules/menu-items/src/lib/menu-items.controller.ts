@@ -37,7 +37,7 @@ export class MenuItemsController {
   @ApiBadRequestResponse({ description: PRICING_MISMATCH })
   @ApiUnprocessableEntityResponse({ description: UNKNOWN_CATEGORY })
   create(@Body() dto: CreateMenuItemDto): MenuItemResponseDto {
-    return { data: this.items.create(dto) };
+    return { data: this.items.create(dto).data };
   }
 
   @Patch(':id')
@@ -49,7 +49,7 @@ export class MenuItemsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateMenuItemDto,
   ): MenuItemResponseDto {
-    return { data: this.items.update(id, dto) };
+    return { data: this.items.update(id, dto).data };
   }
 
   @Delete(':id')

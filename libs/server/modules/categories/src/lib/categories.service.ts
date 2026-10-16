@@ -2,6 +2,11 @@ import { randomUUID } from 'node:crypto';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Subject, type Observable } from 'rxjs';
 
+import {
+  MenuRevisionService,
+  type Revised,
+} from '@restaurant-ordering/server/modules/menu-revision';
+
 import { type CategoryUsage } from './category-usage';
 import { seedCategories } from './seed/categories.seed';
 import {
@@ -15,11 +20,11 @@ import {
 export class CategoriesService {
   private readonly categories = new Map<string, Category>();
   private readonly usages: CategoryUsage[] = [];
-  private readonly changes = new Subject<CategoryChange>();
+  private readonly changes$$ = new Subject<Revised<CategoryChange>>();
 
-  readonly changes$: Observable<CategoryChange> = this.changes.asObservable();
+  readonly changes$: Observable<Revised<CategoryChange>> = this.changes$$.asObservable();
 
-  constructor() {
+  constructor(private readonly revision: MenuRevisionService) {
     seedCategories().forEach(category => this.categories.set(category.id, category));
   }
 
@@ -35,25 +40,23 @@ export class CategoriesService {
     return this.categories.has(id);
   }
 
-  create(input: CreateCategoryInput): Category {
+  create(input: CreateCategoryInput): Revised<Category> {
     const category: Category = { id: randomUUID(), name: input.name };
 
     this.categories.set(category.id, category);
-    this.changes.next({ type: 'category.created', category });
 
-    return category;
+    return { data: category, revision: this.commit({ type: 'category.created', category }) };
   }
 
-  update(id: string, input: UpdateCategoryInput): Category {
+  update(id: string, input: UpdateCategoryInput): Revised<Category> {
     const category: Category = { ...this.get(id), ...input };
 
     this.categories.set(id, category);
-    this.changes.next({ type: 'category.updated', category });
 
-    return category;
+    return { data: category, revision: this.commit({ type: 'category.updated', category }) };
   }
 
-  remove(id: string): void {
+  remove(id: string): number {
     this.get(id);
 
     const itemCount = this.usages.reduce((sum, usage) => sum + usage.countIn(id), 0);
@@ -66,7 +69,16 @@ export class CategoriesService {
     }
 
     this.categories.delete(id);
-    this.changes.next({ type: 'category.deleted', categoryId: id });
+
+    return this.commit({ type: 'category.deleted', categoryId: id });
+  }
+
+  private commit(change: CategoryChange): number {
+    const revision = this.revision.next();
+
+    this.changes$$.next({ data: change, revision });
+
+    return revision;
   }
 
   private get(id: string): Category {

@@ -31,7 +31,7 @@ export class CategoriesController {
   @Post()
   @ApiCreatedResponse({ type: CategoryResponseDto })
   create(@Body() dto: CreateCategoryDto): CategoryResponseDto {
-    return { data: this.categories.create(dto) };
+    return { data: this.categories.create(dto).data };
   }
 
   @Patch(':id')
@@ -41,7 +41,7 @@ export class CategoriesController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateCategoryDto,
   ): CategoryResponseDto {
-    return { data: this.categories.update(id, dto) };
+    return { data: this.categories.update(id, dto).data };
   }
 
   @Delete(':id')

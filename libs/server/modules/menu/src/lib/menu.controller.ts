@@ -4,6 +4,7 @@ import { type Observable } from 'rxjs';
 
 import { CategoriesService } from '@restaurant-ordering/server/modules/categories';
 import { MenuItemsService } from '@restaurant-ordering/server/modules/menu-items';
+import { MenuRevisionService } from '@restaurant-ordering/server/modules/menu-revision';
 
 import {
   CategoryDeletedEventDto,
@@ -30,6 +31,7 @@ export class MenuController {
     private readonly categories: CategoriesService,
     private readonly items: MenuItemsService,
     private readonly changes: MenuChangesService,
+    private readonly revision: MenuRevisionService,
   ) {}
 
   @Get()
@@ -40,7 +42,7 @@ export class MenuController {
   snapshot(): MenuResponseDto {
     return {
       data: {
-        revision: this.changes.current(),
+        revision: this.revision.current(),
         categories: this.categories.list(),
         items: this.items.list(),
       },

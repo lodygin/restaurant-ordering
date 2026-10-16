@@ -1,0 +1,8 @@
+{
+  "name": "server-modules-menu-revision",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/server/modules/menu-revision/src",
+  "projectType": "library",
+  "tags": ["platform:server"],
+  "targets": {}
+}
