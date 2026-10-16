@@ -1,0 +1,24 @@
+@use '@angular/material' as mat;
+
+// Material system tokens point at ours, so components follow tokens.scss
+html {
+  @include mat.theme(
+    (
+      color: mat.$red-palette,
+      typography: (
+        plain-family: 'Instrument Sans Variable',
+        brand-family: 'Bricolage Grotesque Variable',
+      ),
+      density: 0,
+    ),
+    (
+      primary: var(--color-accent),
+      on-primary: var(--color-surface),
+      primary-container: var(--color-accent-soft),
+      surface: var(--color-surface),
+      on-surface: var(--color-ink),
+      on-surface-variant: var(--color-muted),
+      outline-variant: var(--color-line),
+    )
+  );
+}

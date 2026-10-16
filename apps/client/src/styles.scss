@@ -1,1 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@fontsource-variable/bricolage-grotesque/opsz';
+@use '@fontsource-variable/instrument-sans/wght';
+@use './styles/reset';
+@use './styles/tokens';
+@use './styles/base';
+@use './styles/material';
