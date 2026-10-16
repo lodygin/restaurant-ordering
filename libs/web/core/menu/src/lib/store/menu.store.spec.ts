@@ -231,4 +231,19 @@ describe('MenuStore', () => {
 
     expect(store.itemEntityMap()[tomYum.id]).toMatchObject({ price: 1500, available: true });
   });
+
+  it('announces every change it applies from the stream', () => {
+    const changes = vi.fn();
+
+    store.changes$.subscribe(changes);
+    api.respond(menu);
+    api.push({ type: 'message', id: 42, data: { type: 'item.deleted', itemId: tomYum.id } });
+    api.push({ type: 'message', id: 43, data: { type: 'item.deleted', itemId: borscht.id } });
+
+    expect(changes).toHaveBeenCalledOnce();
+    expect(changes).toHaveBeenCalledWith({
+      data: { type: 'item.deleted', itemId: borscht.id },
+      revision: 43,
+    });
+  });
 });

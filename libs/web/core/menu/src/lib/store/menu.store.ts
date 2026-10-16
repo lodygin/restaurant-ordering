@@ -1,5 +1,5 @@
 import { computed, inject } from '@angular/core';
-import { pipe, repeat, retry, switchMap, takeWhile, tap, timer } from 'rxjs';
+import { pipe, repeat, retry, Subject, switchMap, takeWhile, tap, timer } from 'rxjs';
 
 import { tapResponse } from '@ngrx/operators';
 import {
@@ -9,6 +9,7 @@ import {
   withComputed,
   withHooks,
   withMethods,
+  withProps,
   withState,
 } from '@ngrx/signals';
 import { removeEntity, setAllEntities, setEntity, withEntities } from '@ngrx/signals/entities';
@@ -16,7 +17,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
 import { MenuApi } from '../api/menu.api';
 import { type Category, type MenuEntityChange, type MenuItem } from '../models';
-import { type MenuSection, type MenuState } from '../types';
+import { type MenuSection, type MenuState, type Revised } from '../types';
 
 const SNAPSHOT_RETRY_MS = 3000;
 
@@ -32,6 +33,9 @@ export const MenuStore = signalStore(
   withComputed(({ categoryEntities, itemEntities }) => ({
     sections: computed(() => toSections(categoryEntities(), itemEntities())),
   })),
+
+  withProps(() => ({ _changes$$: new Subject<Revised<MenuEntityChange>>() })),
+  withProps(({ _changes$$ }) => ({ changes$: _changes$$.asObservable() })),
 
   withMethods((store, api = inject(MenuApi)) => {
     const applyChange = (change: MenuEntityChange): void => {
@@ -107,6 +111,7 @@ export const MenuStore = signalStore(
 
                   applyChange(change);
                   patchState(store, { revision });
+                  store._changes$$.next({ data: change, revision });
                 },
                 error: () => patchState(store, { status: 'error', connection: 'offline' }),
               }),
