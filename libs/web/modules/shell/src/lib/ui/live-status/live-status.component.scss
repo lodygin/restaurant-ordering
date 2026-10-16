@@ -1,0 +1,39 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-muted);
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 50%;
+    background: var(--color-muted);
+    box-shadow: 0 0 0 3px var(--color-line);
+  }
+}
+
+:host([data-state='online'])::before {
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+:host([data-state='reconnecting'])::before {
+  background: var(--color-flag);
+  box-shadow: 0 0 0 3px var(--color-flag-soft);
+}
+
+.label {
+  // only the dot fits next to the nav; the label stays for screen readers
+  @media (width <= 600px) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

@@ -1,6 +1,6 @@
 export type MenuStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
-export type MenuConnection = 'offline' | 'online' | 'reconnecting';
+export type MenuConnection = 'connecting' | 'online' | 'reconnecting' | 'offline';
 
 export type MenuState = {
   status: MenuStatus;

@@ -1,27 +1,21 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+
+import { MenuStore } from '@restaurant-ordering/web/core/menu';
+
+import { ConnectionBannerComponent } from '../connection-banner';
+import { HeaderComponent } from '../header';
+import { LiveStatusComponent } from '../live-status';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
-  styleUrl: './shell.component.scss',
+  imports: [RouterOutlet, HeaderComponent, LiveStatusComponent, ConnectionBannerComponent],
   template: `
-    <header class="topbar">
-      <a class="brand" routerLink="/menu">My Kitchen</a>
+    <app-header>
+      <app-live-status [connection]="menu.connection()" />
+    </app-header>
 
-      <nav class="nav">
-        @for (link of links; track link.path) {
-          <a
-            [routerLink]="link.path"
-            routerLinkActive
-            #active="routerLinkActive"
-            [attr.aria-current]="active.isActive ? 'page' : null"
-          >
-            {{ link.label }}
-          </a>
-        }
-      </nav>
-    </header>
+    <app-connection-banner [connection]="menu.connection()" />
 
     <main>
       <router-outlet />
@@ -29,9 +23,5 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   `,
 })
 export class ShellComponent {
-  protected readonly links = [
-    { path: '/menu', label: 'Menu' },
-    { path: '/orders', label: 'Orders' },
-    { path: '/menu-setup', label: 'Menu setup' },
-  ];
+  protected readonly menu = inject(MenuStore);
 }

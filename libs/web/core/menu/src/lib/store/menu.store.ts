@@ -20,7 +20,7 @@ import { type MenuSection, type MenuState } from '../types';
 
 const SNAPSHOT_RETRY_MS = 3000;
 
-const initialState: MenuState = { status: 'idle', connection: 'offline', revision: null };
+const initialState: MenuState = { status: 'idle', connection: 'connecting', revision: null };
 
 export const MenuStore = signalStore(
   { providedIn: 'root' },
@@ -43,7 +43,7 @@ export const MenuStore = signalStore(
           return api.snapshot().pipe(
             retry({
               delay: () => {
-                patchState(store, { status: 'error' });
+                patchState(store, { status: 'error', connection: 'reconnecting' });
 
                 return timer(SNAPSHOT_RETRY_MS);
               },

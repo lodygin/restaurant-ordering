@@ -111,6 +111,8 @@ describe('MenuStore', () => {
   });
 
   it('tracks the connection', () => {
+    expect(store.connection()).toBe('connecting');
+
     api.respond(menu);
     api.push({ type: 'open' });
 
@@ -201,6 +203,7 @@ describe('MenuStore', () => {
     api.snapshots[0]?.error(new Error('offline'));
 
     expect(store.status()).toBe('error');
+    expect(store.connection()).toBe('reconnecting');
 
     vi.advanceTimersByTime(3000);
     api.respond(menu);
