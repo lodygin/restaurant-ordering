@@ -41,6 +41,7 @@
       "@restaurant-ordering/web/infrastructure/rest": [
         "./libs/web/infrastructure/rest/src/index.ts"
       ],
+      "@restaurant-ordering/web/infrastructure/sse": ["./libs/web/infrastructure/sse/src/index.ts"],
       "@restaurant-ordering/web/modules/menu": ["./libs/web/modules/menu/src/index.ts"],
       "@restaurant-ordering/web/modules/menu-setup": ["./libs/web/modules/menu-setup/src/index.ts"],
       "@restaurant-ordering/web/modules/orders": ["./libs/web/modules/orders/src/index.ts"],
