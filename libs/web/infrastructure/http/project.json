@@ -1,0 +1,28 @@
+{
+  "name": "web-infrastructure-http",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/infrastructure/http/src",
+  "projectType": "library",
+  "prefix": "app",
+  "tags": ["type:lib", "platform:web"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "parallel": false,
+        "commands": [
+          "ngc -p libs/web/infrastructure/http/tsconfig.lib.json --noEmit",
+          "ngc -p libs/web/infrastructure/http/tsconfig.spec.json --noEmit"
+        ]
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --config libs/web/infrastructure/http/vitest.config.mts"
+      }
+    }
+  }
+}
