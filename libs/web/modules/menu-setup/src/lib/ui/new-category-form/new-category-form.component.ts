@@ -29,16 +29,19 @@ export class NewCategoryFormComponent {
 
   protected readonly categories = inject(CategorySetupStore);
 
-  protected readonly form = new FormGroup({
-    name: new FormControl('', {
-      nonNullable: true,
-      validators: [
-        Validators.required,
-        Validators.pattern(/\S/),
-        Validators.maxLength(CATEGORY_NAME_MAX_LENGTH),
-      ],
-    }),
-  });
+  protected readonly form = new FormGroup(
+    {
+      name: new FormControl('', {
+        nonNullable: true,
+        validators: [
+          Validators.required,
+          Validators.pattern(/\S/),
+          Validators.maxLength(CATEGORY_NAME_MAX_LENGTH),
+        ],
+      }),
+    },
+    { updateOn: 'submit' },
+  );
 
   constructor() {
     effect(() => disableControl(this.form, this.disabled()));
