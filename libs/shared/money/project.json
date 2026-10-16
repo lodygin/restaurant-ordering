@@ -1,0 +1,27 @@
+{
+  "name": "shared-money",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/money/src",
+  "projectType": "library",
+  "tags": ["platform:shared"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "parallel": false,
+        "commands": [
+          "tsc -p libs/shared/money/tsconfig.lib.json --noEmit",
+          "tsc -p libs/shared/money/tsconfig.spec.json --noEmit"
+        ]
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --config libs/shared/money/vitest.config.mts"
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "web-common-form",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/common/form/src",
+  "projectType": "library",
+  "prefix": "app",
+  "tags": ["platform:web"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "parallel": false,
+        "commands": [
+          "ngc -p libs/web/common/form/tsconfig.lib.json --noEmit",
+          "ngc -p libs/web/common/form/tsconfig.spec.json --noEmit"
+        ]
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --config libs/web/common/form/vitest.config.mts"
+      }
+    }
+  }
+}

@@ -36,6 +36,8 @@
       "@restaurant-ordering/server/modules/menu-revision": [
         "./libs/server/modules/menu-revision/src/index.ts"
       ],
+      "@restaurant-ordering/shared/money": ["./libs/shared/money/src/index.ts"],
+      "@restaurant-ordering/web/common/form": ["./libs/web/common/form/src/index.ts"],
       "@restaurant-ordering/web/common/zod": ["./libs/web/common/zod/src/index.ts"],
       "@restaurant-ordering/web/core/menu": ["./libs/web/core/menu/src/index.ts"],
       "@restaurant-ordering/web/infrastructure/http": [
