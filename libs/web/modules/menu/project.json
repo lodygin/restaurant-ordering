@@ -1,0 +1,19 @@
+{
+  "name": "web-modules-menu",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/modules/menu/src",
+  "projectType": "library",
+  "prefix": "app",
+  "tags": ["type:feature", "platform:web"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "parallel": false,
+        "commands": ["ngc -p libs/web/modules/menu/tsconfig.lib.json --noEmit"]
+      }
+    }
+  }
+}

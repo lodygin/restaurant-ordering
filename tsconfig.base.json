@@ -36,7 +36,11 @@
       "@restaurant-ordering/web/infrastructure/api": ["./libs/web/infrastructure/api/src/index.ts"],
       "@restaurant-ordering/web/infrastructure/http": [
         "./libs/web/infrastructure/http/src/index.ts"
-      ]
+      ],
+      "@restaurant-ordering/web/modules/menu": ["./libs/web/modules/menu/src/index.ts"],
+      "@restaurant-ordering/web/modules/menu-setup": ["./libs/web/modules/menu-setup/src/index.ts"],
+      "@restaurant-ordering/web/modules/orders": ["./libs/web/modules/orders/src/index.ts"],
+      "@restaurant-ordering/web/modules/shell": ["./libs/web/modules/shell/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

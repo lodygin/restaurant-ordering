@@ -1,0 +1,19 @@
+{
+  "name": "web-modules-orders",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/modules/orders/src",
+  "projectType": "library",
+  "prefix": "app",
+  "tags": ["type:feature", "platform:web"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "parallel": false,
+        "commands": ["ngc -p libs/web/modules/orders/tsconfig.lib.json --noEmit"]
+      }
+    }
+  }
+}

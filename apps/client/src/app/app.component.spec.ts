@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import { App } from './app';
+import { AppComponent } from './app.component';
 
-describe('App', () => {
+describe('AppComponent', () => {
   it('renders the router outlet', async () => {
     await TestBed.configureTestingModule({
-      imports: [App],
+      imports: [AppComponent],
       providers: [provideRouter([])],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(App);
+    const fixture = TestBed.createComponent(AppComponent);
     await fixture.whenStable();
 
     expect((fixture.nativeElement as HTMLElement).querySelector('router-outlet')).not.toBeNull();
