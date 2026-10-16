@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input } from '@angular/core';
+import { Component, computed, effect, inject, input, viewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -8,11 +8,14 @@ import { defer, filter, map, merge, type Observable } from 'rxjs';
 import { formatPrice, parsePrice } from '@restaurant-ordering/shared/money';
 import { disableControl, priceValidator } from '@restaurant-ordering/web/common/form';
 import { type MenuItem, type MenuItemInput } from '@restaurant-ordering/web/core/menu';
-import { InputComponent, MoneyFieldComponent } from '@restaurant-ordering/web/ui/form';
+import {
+  FocusableDirective,
+  InputComponent,
+  MoneyFieldComponent,
+} from '@restaurant-ordering/web/ui/form';
 
+import { DEFAULT_ITEM_PRICE } from '../../constants';
 import { ItemSetupStore } from '../../store/item-setup.store';
-
-const DEFAULT_PRICE = 1000;
 
 @Component({
   selector: 'tr[appItemRow]',
@@ -23,12 +26,14 @@ const DEFAULT_PRICE = 1000;
     MatSlideToggle,
     InputComponent,
     MoneyFieldComponent,
+    FocusableDirective,
   ],
   styleUrl: './item-row.component.scss',
   template: `
     <td>
       <input
         appInput
+        appFocusable
         [formControl]="form.controls.name"
         [attr.aria-label]="'Name of ' + item().name"
         title="An item needs a name"
@@ -111,10 +116,13 @@ export class ItemRowComponent {
       ),
       available.valueChanges.pipe(map(value => ({ available: value }))),
       openPrice.valueChanges.pipe(
-        map(value => ({ openPrice: value, price: value ? null : DEFAULT_PRICE })),
+        map(value => ({ openPrice: value, price: value ? null : DEFAULT_ITEM_PRICE })),
       ),
     );
   });
+
+  private readonly nameField =
+    viewChild.required<FocusableDirective<HTMLInputElement>>(FocusableDirective);
 
   private readonly editedItem = computed(() => ({
     ...this.item(),
@@ -126,6 +134,11 @@ export class ItemRowComponent {
     effect(() => this.syncForm(this.editedItem(), this.disabled()));
 
     this.items.update(this.changes$.pipe(map(changes => ({ id: this.item().id, changes }))));
+  }
+
+  focusName(): void {
+    this.nameField().focus();
+    this.nameField().element.select();
   }
 
   private syncForm(item: MenuItem, locked: boolean): void {

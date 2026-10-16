@@ -1,20 +1,30 @@
 import { inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { concatMap, exhaustMap, groupBy, mergeMap, pipe } from 'rxjs';
+import { concatMap, exhaustMap, groupBy, mergeMap, pipe, Subject } from 'rxjs';
 
 import { tapResponse } from '@ngrx/operators';
-import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
-import { MenuApi, MenuStore, type MenuItemInput } from '@restaurant-ordering/web/core/menu';
+import {
+  MenuApi,
+  MenuStore,
+  type MenuItem,
+  type MenuItemInput,
+} from '@restaurant-ordering/web/core/menu';
 import { apiErrorMessage } from '@restaurant-ordering/web/infrastructure/http';
 
+import { DEFAULT_ITEM_PRICE, NEW_ITEM_NAME } from '../constants';
 import { type ItemSetupState } from '../types';
 
-const initialState: ItemSetupState = { edits: {}, removing: [] };
+const initialState: ItemSetupState = { creating: false, edits: {}, removing: [] };
 
 export const ItemSetupStore = signalStore(
   withState(initialState),
+
+  // `_` keeps the subject inside the store; consumers only get the stream
+  withProps(() => ({ _created$$: new Subject<MenuItem>() })),
+  withProps(({ _created$$ }) => ({ created$: _created$$.asObservable() })),
 
   withMethods(
     (store, api = inject(MenuApi), menu = inject(MenuStore), snackBar = inject(MatSnackBar)) => {
@@ -22,8 +32,37 @@ export const ItemSetupStore = signalStore(
         snackBar.open(apiErrorMessage(error), 'Dismiss', { duration: 5000 });
       };
 
-      // edits of one item run in order, different items in parallel
       return {
+        // new items start unavailable, so they never reach guests half-filled
+        create: rxMethod<string>(
+          pipe(
+            exhaustMap(categoryId => {
+              patchState(store, { creating: true });
+
+              return api
+                .createItem({
+                  categoryId,
+                  name: NEW_ITEM_NAME,
+                  description: '',
+                  price: DEFAULT_ITEM_PRICE,
+                  available: false,
+                  openPrice: false,
+                })
+                .pipe(
+                  tapResponse({
+                    next: ({ data, revision }) => {
+                      menu.applyEditResult(revision, { type: 'item.created', item: data });
+                      store._created$$.next(data);
+                    },
+                    error: report,
+                    finalize: () => patchState(store, { creating: false }),
+                  }),
+                );
+            }),
+          ),
+        ),
+
+        // edits of one item run in order, different items in parallel
         update: rxMethod<{ id: string; changes: Partial<MenuItemInput> }>(
           pipe(
             groupBy(({ id }) => id),

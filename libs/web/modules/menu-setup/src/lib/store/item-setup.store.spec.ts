@@ -26,19 +26,28 @@ describe('ItemSetupStore', () => {
   let store: InstanceType<typeof ItemSetupStore>;
   let update: Subject<Revised<MenuItem>>;
   let removal: Subject<number>;
+  let creation: Subject<Revised<MenuItem>>;
   let applyEditResult: ReturnType<typeof vi.fn>;
   let open: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     update = new Subject();
     removal = new Subject();
+    creation = new Subject();
     applyEditResult = vi.fn();
     open = vi.fn();
 
     TestBed.configureTestingModule({
       providers: [
         ItemSetupStore,
-        { provide: MenuApi, useValue: { updateItem: () => update, removeItem: () => removal } },
+        {
+          provide: MenuApi,
+          useValue: {
+            createItem: vi.fn(() => creation),
+            updateItem: () => update,
+            removeItem: () => removal,
+          },
+        },
         { provide: MenuStore, useValue: { applyEditResult } },
         { provide: MatSnackBar, useValue: { open } },
       ],
@@ -92,5 +101,31 @@ describe('ItemSetupStore', () => {
     store.remove(pho.id);
 
     expect(removeItem).toHaveBeenCalledTimes(1);
+  });
+
+  it('creates an unavailable item and announces it', () => {
+    const createItem = vi.spyOn(TestBed.inject(MenuApi), 'createItem');
+    const created = vi.fn();
+
+    store.created$.subscribe(created);
+
+    store.create(pho.categoryId);
+
+    expect(createItem).toHaveBeenCalledWith({
+      categoryId: pho.categoryId,
+      name: 'New item',
+      description: '',
+      price: 1000,
+      available: false,
+      openPrice: false,
+    });
+    expect(store.creating()).toBe(true);
+
+    creation.next({ data: pho, revision: 70 });
+    creation.complete();
+
+    expect(applyEditResult).toHaveBeenCalledWith(70, { type: 'item.created', item: pho });
+    expect(created).toHaveBeenCalledWith(pho);
+    expect(store.creating()).toBe(false);
   });
 });
