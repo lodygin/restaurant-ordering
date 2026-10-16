@@ -1,5 +1,5 @@
-import { Component, computed, effect, inject, input, untracked } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, effect, inject, input } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
@@ -73,11 +73,19 @@ export class ItemRowComponent {
 
   protected readonly setup = inject(MenuSetupStore);
 
-  protected readonly form = inject(NonNullableFormBuilder).group({
-    name: ['', { validators: [Validators.required, Validators.pattern(/\S/)], updateOn: 'blur' }],
-    price: ['', { validators: [priceValidator], updateOn: 'blur' }],
-    available: [false],
-    openPrice: [false],
+  protected readonly form = new FormGroup({
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.pattern(/\S/)],
+      updateOn: 'blur',
+    }),
+    price: new FormControl('', {
+      nonNullable: true,
+      validators: [priceValidator],
+      updateOn: 'blur',
+    }),
+    available: new FormControl(false, { nonNullable: true }),
+    openPrice: new FormControl(false, { nonNullable: true }),
   });
 
   // every committed field becomes the patch it stands for
@@ -107,12 +115,7 @@ export class ItemRowComponent {
 
   constructor() {
     // the menu and in-flight edits drive the form; a field the user is fixing is left alone
-    effect(() => {
-      const editedItem = this.editedItem();
-      const locked = this.disabled();
-
-      untracked(() => this.syncForm(editedItem, locked));
-    });
+    effect(() => this.syncForm(this.editedItem(), this.disabled()));
 
     this.setup.updateItem(this.changes$.pipe(map(changes => ({ id: this.item().id, changes }))));
   }
