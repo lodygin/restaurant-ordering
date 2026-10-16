@@ -1,0 +1,8 @@
+{
+  "name": "server-modules-menu-items",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/server/modules/menu-items/src",
+  "projectType": "library",
+  "tags": ["type:lib", "platform:server"],
+  "targets": {}
+}

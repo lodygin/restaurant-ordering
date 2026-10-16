@@ -2,6 +2,8 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 
+import { MenuModule } from '@restaurant-ordering/server/modules/menu';
+
 import appConfig from './app.config';
 
 @Module({
@@ -11,6 +13,7 @@ import appConfig from './app.config';
       envFilePath: ['apps/server/.env', '.env'],
       load: [appConfig],
     }),
+    MenuModule,
   ],
   providers: [
     {
