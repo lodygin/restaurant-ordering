@@ -1,0 +1,39 @@
+:host {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  max-inline-size: 1240px;
+  margin-inline: auto;
+  padding: 28px 24px 80px;
+
+  @media (width <= 860px) {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px 16px 80px;
+  }
+}
+
+.side {
+  position: sticky;
+  top: 84px;
+  display: grid;
+  gap: 12px;
+
+  @media (width <= 860px) {
+    position: static;
+  }
+
+  h1 {
+    font-size: 28px;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--color-muted);
+  }
+}
+
+.empty {
+  color: var(--color-muted);
+}

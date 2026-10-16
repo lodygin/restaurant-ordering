@@ -1,0 +1,68 @@
+:host {
+  display: block;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-m);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-block-end: 1px solid var(--color-line);
+
+  h2 {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    font-size: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+table {
+  inline-size: 100%;
+  min-inline-size: 520px;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-align: start;
+  border-block-end: 1px solid var(--color-line);
+}
+
+.price {
+  inline-size: 140px;
+}
+
+.toggle {
+  inline-size: 104px;
+  text-align: center;
+}
+
+.remove {
+  inline-size: 104px;
+}
+
+.empty {
+  padding: 32px 20px;
+  color: var(--color-muted);
+}
+
+.quiet {
+  --mat-button-text-label-text-color: var(--color-muted);
+
+  &:hover {
+    --mat-button-text-label-text-color: var(--color-danger);
+  }
+}

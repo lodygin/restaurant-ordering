@@ -21,4 +21,12 @@ html {
       outline-variant: var(--color-line),
     )
   );
+
+  @include mat.button-overrides(
+    (
+      filled-container-shape: var(--radius-s),
+      outlined-container-shape: var(--radius-s),
+      text-container-shape: var(--radius-s),
+    )
+  );
 }

@@ -12,7 +12,10 @@ export default [
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       '@angular-eslint/component-selector': [
         'error',
-        { type: 'element', prefix: 'app', style: 'kebab-case' },
+        [
+          { type: 'element', prefix: 'app', style: 'kebab-case' },
+          { type: 'attribute', prefix: 'app', style: 'camelCase' },
+        ],
       ],
     },
   },
