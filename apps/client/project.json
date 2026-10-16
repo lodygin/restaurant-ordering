@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/client/src",
-  "tags": ["type:app", "platform:web"],
+  "tags": ["platform:web"],
   "targets": {
     "typecheck": {
       "executor": "nx:run-commands",

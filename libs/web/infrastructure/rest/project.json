@@ -3,7 +3,7 @@
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/web/infrastructure/rest/src",
   "projectType": "library",
-  "tags": ["type:lib", "platform:web"],
+  "tags": ["platform:web"],
   "targets": {
     "codegen": {
       "executor": "nx:run-commands",

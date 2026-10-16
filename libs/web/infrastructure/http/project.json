@@ -4,7 +4,7 @@
   "sourceRoot": "libs/web/infrastructure/http/src",
   "projectType": "library",
   "prefix": "app",
-  "tags": ["type:lib", "platform:web"],
+  "tags": ["platform:web"],
   "targets": {
     "typecheck": {
       "executor": "nx:run-commands",

@@ -4,7 +4,7 @@
   "sourceRoot": "libs/web/modules/menu-setup/src",
   "projectType": "library",
   "prefix": "app",
-  "tags": ["type:feature", "platform:web"],
+  "tags": ["platform:web"],
   "targets": {
     "typecheck": {
       "executor": "nx:run-commands",
