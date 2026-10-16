@@ -6,12 +6,17 @@ import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
-import { MenuApi, MenuStore, type MenuEntityChange } from '@restaurant-ordering/web/core/menu';
+import {
+  MenuApi,
+  MenuStore,
+  type MenuEntityChange,
+  type MenuItemInput,
+} from '@restaurant-ordering/web/core/menu';
 import { apiErrorMessage } from '@restaurant-ordering/web/infrastructure/http';
 
 import { type MenuSetupState } from '../types';
 
-const initialState: MenuSetupState = { availability: {}, removing: [] };
+const initialState: MenuSetupState = { edits: {}, removing: [] };
 
 export const MenuSetupStore = signalStore(
   withState(initialState),
@@ -43,25 +48,25 @@ export const MenuSetupStore = signalStore(
 
       // edits of one entity run in order, different entities in parallel
       return {
-        setAvailability: rxMethod<{ id: string; available: boolean }>(
+        updateItem: rxMethod<{ id: string; changes: Partial<MenuItemInput> }>(
           pipe(
             groupBy(({ id }) => id),
             mergeMap(edits =>
               edits.pipe(
-                concatMap(({ id, available }) => {
+                concatMap(({ id, changes }) => {
                   patchState(store, state => ({
-                    availability: { ...state.availability, [id]: available },
+                    edits: { ...state.edits, [id]: { ...state.edits[id], ...changes } },
                   }));
 
-                  return api.updateItem(id, { available }).pipe(
+                  return api.updateItem(id, changes).pipe(
                     tapResponse({
                       next: ({ data, revision }) =>
                         menu.applyEditResult(revision, { type: 'item.updated', item: data }),
                       error: report,
                       finalize: () =>
                         patchState(store, state => ({
-                          availability: Object.fromEntries(
-                            Object.entries(state.availability).filter(([key]) => key !== id),
+                          edits: Object.fromEntries(
+                            Object.entries(state.edits).filter(([key]) => key !== id),
                           ),
                         })),
                     }),

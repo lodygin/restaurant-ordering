@@ -33,6 +33,7 @@ import { ItemRowComponent } from '../item-row';
               <th>Item</th>
               <th class="price">Price</th>
               <th class="toggle">Available</th>
+              <th class="toggle">Open price</th>
               <th class="remove"><span class="visually-hidden">Remove</span></th>
             </tr>
           </thead>

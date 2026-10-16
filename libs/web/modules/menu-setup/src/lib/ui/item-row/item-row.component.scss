@@ -8,19 +8,53 @@ td {
   border-block-end: 0;
 }
 
-.name {
-  font-weight: 600;
+.field {
+  inline-size: 100%;
+  block-size: 36px;
+  min-inline-size: 0;
+  padding: 0 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-s);
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-soft);
+  }
+
+  &:disabled {
+    color: var(--color-muted);
+    background: var(--color-page);
+  }
+
+  &.ng-invalid {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px var(--color-danger-soft);
+  }
 }
 
-.price {
-  font-variant-numeric: tabular-nums;
+.money {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &::before {
+    content: '$';
+    position: absolute;
+    inset-inline-start: 10px;
+    color: var(--color-muted);
+    pointer-events: none;
+  }
+
+  .field {
+    padding-inline-start: 22px;
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
 }
 
-.muted {
-  color: var(--color-muted);
-}
-
-.toggle {
+.center {
   text-align: center;
 }
 

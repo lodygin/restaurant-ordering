@@ -54,23 +54,26 @@ describe('MenuSetupStore', () => {
     store = TestBed.inject(MenuSetupStore);
   });
 
-  it('shows the picked availability until the server answers, then applies the answer', () => {
-    store.setAvailability({ id: pho.id, available: false });
+  it('shows the edit until the server answers, then applies the answer', () => {
+    store.updateItem({ id: pho.id, changes: { name: 'Pho bo' } });
 
-    expect(store.availability()).toEqual({ [pho.id]: false });
+    expect(store.edits()).toEqual({ [pho.id]: { name: 'Pho bo' } });
 
-    update.next({ data: pho, revision: 50 });
+    update.next({ data: { ...pho, name: 'Pho bo' }, revision: 50 });
     update.complete();
 
-    expect(applyEditResult).toHaveBeenCalledWith(50, { type: 'item.updated', item: pho });
-    expect(store.availability()).toEqual({});
+    expect(applyEditResult).toHaveBeenCalledWith(50, {
+      type: 'item.updated',
+      item: { ...pho, name: 'Pho bo' },
+    });
+    expect(store.edits()).toEqual({});
   });
 
-  it('falls back to the menu value and reports the error when the update fails', () => {
-    store.setAvailability({ id: pho.id, available: false });
+  it('drops the edit and reports the error when the update fails', () => {
+    store.updateItem({ id: pho.id, changes: { available: true } });
     update.error(new HttpErrorResponse({ status: 500 }));
 
-    expect(store.availability()).toEqual({});
+    expect(store.edits()).toEqual({});
     expect(applyEditResult).not.toHaveBeenCalled();
     expect(open).toHaveBeenCalledWith('Something went wrong. Try again.', 'Dismiss', {
       duration: 5000,
