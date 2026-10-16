@@ -12,13 +12,10 @@
   padding: 16px 20px;
   border-block-end: 1px solid var(--color-line);
 
-  h2 {
+  .name {
     flex: 1;
-    min-inline-size: 0;
-    overflow: hidden;
-    font-size: 20px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    block-size: 42px;
+    font: 700 20px var(--font-display);
   }
 }
 

@@ -1,25 +1,36 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
+import { filter, map } from 'rxjs';
 
+import { CATEGORY_NAME_MAX_LENGTH } from '@restaurant-ordering/shared/categories';
+import { disableControl } from '@restaurant-ordering/web/common/form';
 import { type MenuSection } from '@restaurant-ordering/web/core/menu';
+import { InputComponent } from '@restaurant-ordering/web/ui/form';
 
-import { MenuSetupStore } from '../../store/menu-setup.store';
+import { CategorySetupStore } from '../../store/category-setup.store';
 import { ItemRowComponent } from '../item-row';
 
 @Component({
   selector: 'app-category-panel',
-  imports: [MatButton, ItemRowComponent],
+  imports: [ReactiveFormsModule, MatButton, InputComponent, ItemRowComponent],
   styleUrl: './category-panel.component.scss',
   template: `
     @let category = section().category;
 
     <header class="head">
-      <h2>{{ category.name }}</h2>
+      <input
+        appInput
+        class="name"
+        aria-label="Category name"
+        title="A category needs a name"
+        [formControl]="name"
+      />
       <button
         matButton
         class="quiet"
-        [disabled]="disabled() || setup.removing().includes(category.id)"
-        (click)="setup.removeCategory(category.id)"
+        [disabled]="disabled() || categories.removing().includes(category.id)"
+        (click)="categories.remove(category.id)"
       >
         Delete category
       </button>
@@ -53,5 +64,29 @@ export class CategoryPanelComponent {
   readonly section = input.required<MenuSection>();
   readonly disabled = input(false);
 
-  protected readonly setup = inject(MenuSetupStore);
+  protected readonly categories = inject(CategorySetupStore);
+
+  protected readonly name = new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern(/\S/),
+      Validators.maxLength(CATEGORY_NAME_MAX_LENGTH),
+    ],
+    updateOn: 'blur',
+  });
+
+  constructor() {
+    effect(() => {
+      this.name.setValue(this.section().category.name, { emitEvent: false });
+      disableControl(this.name, this.disabled(), { emitEvent: false });
+    });
+
+    this.categories.rename(
+      this.name.valueChanges.pipe(
+        filter(() => this.name.valid),
+        map(name => ({ id: this.section().category.id, name: name.trim() })),
+      ),
+    );
+  }
 }

@@ -10,7 +10,7 @@ import {
   type Revised,
 } from '@restaurant-ordering/web/core/menu';
 
-import { MenuSetupStore } from './menu-setup.store';
+import { ItemSetupStore } from './item-setup.store';
 
 const pho: MenuItem = {
   id: crypto.randomUUID(),
@@ -22,8 +22,8 @@ const pho: MenuItem = {
   openPrice: false,
 };
 
-describe('MenuSetupStore', () => {
-  let store: InstanceType<typeof MenuSetupStore>;
+describe('ItemSetupStore', () => {
+  let store: InstanceType<typeof ItemSetupStore>;
   let update: Subject<Revised<MenuItem>>;
   let removal: Subject<number>;
   let applyEditResult: ReturnType<typeof vi.fn>;
@@ -37,25 +37,18 @@ describe('MenuSetupStore', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        MenuSetupStore,
-        {
-          provide: MenuApi,
-          useValue: {
-            updateItem: () => update,
-            removeItem: () => removal,
-            removeCategory: () => removal,
-          },
-        },
+        ItemSetupStore,
+        { provide: MenuApi, useValue: { updateItem: () => update, removeItem: () => removal } },
         { provide: MenuStore, useValue: { applyEditResult } },
         { provide: MatSnackBar, useValue: { open } },
       ],
     });
 
-    store = TestBed.inject(MenuSetupStore);
+    store = TestBed.inject(ItemSetupStore);
   });
 
   it('shows the edit until the server answers, then applies the answer', () => {
-    store.updateItem({ id: pho.id, changes: { name: 'Pho bo' } });
+    store.update({ id: pho.id, changes: { name: 'Pho bo' } });
 
     expect(store.edits()).toEqual({ [pho.id]: { name: 'Pho bo' } });
 
@@ -70,7 +63,7 @@ describe('MenuSetupStore', () => {
   });
 
   it('drops the edit and reports the error when the update fails', () => {
-    store.updateItem({ id: pho.id, changes: { available: true } });
+    store.update({ id: pho.id, changes: { available: true } });
     update.error(new HttpErrorResponse({ status: 500 }));
 
     expect(store.edits()).toEqual({});
@@ -81,7 +74,7 @@ describe('MenuSetupStore', () => {
   });
 
   it('applies a removal with its revision', () => {
-    store.removeItem(pho.id);
+    store.remove(pho.id);
 
     expect(store.removing()).toEqual([pho.id]);
 
@@ -92,32 +85,12 @@ describe('MenuSetupStore', () => {
     expect(store.removing()).toEqual([]);
   });
 
-  it('sends one removal per entity while it is in flight', () => {
+  it('sends one removal per item while it is in flight', () => {
     const removeItem = vi.spyOn(TestBed.inject(MenuApi), 'removeItem');
 
-    store.removeItem(pho.id);
-    store.removeItem(pho.id);
+    store.remove(pho.id);
+    store.remove(pho.id);
 
     expect(removeItem).toHaveBeenCalledTimes(1);
-  });
-
-  it('marks a category as removing and shows why the server refused', () => {
-    store.removeCategory('soups');
-
-    expect(store.removing()).toEqual(['soups']);
-
-    removal.error(
-      new HttpErrorResponse({
-        status: 409,
-        error: { message: 'The category still has 2 item(s); move or delete them first.' },
-      }),
-    );
-
-    expect(store.removing()).toEqual([]);
-    expect(open).toHaveBeenCalledWith(
-      'The category still has 2 item(s); move or delete them first.',
-      'Dismiss',
-      { duration: 5000 },
-    );
   });
 });

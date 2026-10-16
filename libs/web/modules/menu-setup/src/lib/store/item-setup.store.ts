@@ -1,24 +1,19 @@
 import { inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { concatMap, exhaustMap, groupBy, mergeMap, pipe, type Observable } from 'rxjs';
+import { concatMap, exhaustMap, groupBy, mergeMap, pipe } from 'rxjs';
 
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
-import {
-  MenuApi,
-  MenuStore,
-  type MenuEntityChange,
-  type MenuItemInput,
-} from '@restaurant-ordering/web/core/menu';
+import { MenuApi, MenuStore, type MenuItemInput } from '@restaurant-ordering/web/core/menu';
 import { apiErrorMessage } from '@restaurant-ordering/web/infrastructure/http';
 
-import { type MenuSetupState } from '../types';
+import { type ItemSetupState } from '../types';
 
-const initialState: MenuSetupState = { edits: {}, removing: [] };
+const initialState: ItemSetupState = { edits: {}, removing: [] };
 
-export const MenuSetupStore = signalStore(
+export const ItemSetupStore = signalStore(
   withState(initialState),
 
   withMethods(
@@ -27,28 +22,9 @@ export const MenuSetupStore = signalStore(
         snackBar.open(apiErrorMessage(error), 'Dismiss', { duration: 5000 });
       };
 
-      const remove = (
-        id: string,
-        request: Observable<number>,
-        change: MenuEntityChange,
-      ): Observable<number> => {
-        patchState(store, state => ({ removing: [...state.removing, id] }));
-
-        return request.pipe(
-          tapResponse({
-            next: revision => menu.applyEditResult(revision, change),
-            error: report,
-            finalize: () =>
-              patchState(store, state => ({
-                removing: state.removing.filter(removing => removing !== id),
-              })),
-          }),
-        );
-      };
-
-      // edits of one entity run in order, different entities in parallel
+      // edits of one item run in order, different items in parallel
       return {
-        updateItem: rxMethod<{ id: string; changes: Partial<MenuItemInput> }>(
+        update: rxMethod<{ id: string; changes: Partial<MenuItemInput> }>(
           pipe(
             groupBy(({ id }) => id),
             mergeMap(edits =>
@@ -77,27 +53,26 @@ export const MenuSetupStore = signalStore(
           ),
         ),
 
-        removeItem: rxMethod<string>(
+        remove: rxMethod<string>(
           pipe(
             groupBy(id => id),
             mergeMap(ids =>
               ids.pipe(
-                exhaustMap(id =>
-                  remove(id, api.removeItem(id), { type: 'item.deleted', itemId: id }),
-                ),
-              ),
-            ),
-          ),
-        ),
+                exhaustMap(id => {
+                  patchState(store, state => ({ removing: [...state.removing, id] }));
 
-        removeCategory: rxMethod<string>(
-          pipe(
-            groupBy(id => id),
-            mergeMap(ids =>
-              ids.pipe(
-                exhaustMap(id =>
-                  remove(id, api.removeCategory(id), { type: 'category.deleted', categoryId: id }),
-                ),
+                  return api.removeItem(id).pipe(
+                    tapResponse({
+                      next: revision =>
+                        menu.applyEditResult(revision, { type: 'item.deleted', itemId: id }),
+                      error: report,
+                      finalize: () =>
+                        patchState(store, state => ({
+                          removing: state.removing.filter(removing => removing !== id),
+                        })),
+                    }),
+                  );
+                }),
               ),
             ),
           ),

@@ -10,7 +10,7 @@ import { disableControl, priceValidator } from '@restaurant-ordering/web/common/
 import { type MenuItem, type MenuItemInput } from '@restaurant-ordering/web/core/menu';
 import { InputComponent, MoneyFieldComponent } from '@restaurant-ordering/web/ui/form';
 
-import { MenuSetupStore } from '../../store/menu-setup.store';
+import { ItemSetupStore } from '../../store/item-setup.store';
 
 const DEFAULT_PRICE = 1000;
 
@@ -67,8 +67,8 @@ const DEFAULT_PRICE = 1000;
       <button
         matButton
         class="quiet"
-        [disabled]="disabled() || setup.removing().includes(item().id)"
-        (click)="setup.removeItem(item().id)"
+        [disabled]="disabled() || items.removing().includes(item().id)"
+        (click)="items.remove(item().id)"
       >
         Remove
       </button>
@@ -79,7 +79,7 @@ export class ItemRowComponent {
   readonly item = input.required<MenuItem>();
   readonly disabled = input(false);
 
-  protected readonly setup = inject(MenuSetupStore);
+  protected readonly items = inject(ItemSetupStore);
 
   protected readonly form = new FormGroup({
     name: new FormControl('', {
@@ -118,14 +118,14 @@ export class ItemRowComponent {
 
   private readonly editedItem = computed(() => ({
     ...this.item(),
-    ...this.setup.edits()[this.item().id],
+    ...this.items.edits()[this.item().id],
   }));
 
   constructor() {
     // the menu and in-flight edits drive the form; a field the user is fixing is left alone
     effect(() => this.syncForm(this.editedItem(), this.disabled()));
 
-    this.setup.updateItem(this.changes$.pipe(map(changes => ({ id: this.item().id, changes }))));
+    this.items.update(this.changes$.pipe(map(changes => ({ id: this.item().id, changes }))));
   }
 
   private syncForm(item: MenuItem, locked: boolean): void {

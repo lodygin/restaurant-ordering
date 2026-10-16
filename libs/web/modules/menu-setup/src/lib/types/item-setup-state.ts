@@ -1,6 +1,6 @@
 import { type MenuItemInput } from '@restaurant-ordering/web/core/menu';
 
-export type MenuSetupState = {
+export type ItemSetupState = {
   edits: Record<string, Partial<MenuItemInput>>;
   removing: string[];
 };
