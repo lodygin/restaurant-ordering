@@ -101,7 +101,6 @@ export class ItemRowComponent {
     openPrice: new FormControl(false, { nonNullable: true }),
   });
 
-  // every committed field becomes the patch it stands for
   private readonly changes$: Observable<Partial<MenuItemInput>> = defer(() => {
     const { name, price, available, openPrice } = this.form.controls;
 
@@ -130,7 +129,6 @@ export class ItemRowComponent {
   }));
 
   constructor() {
-    // the menu and in-flight edits drive the form; a field the user is fixing is left alone
     effect(() => this.syncForm(this.editedItem(), this.disabled()));
 
     this.items.update(this.changes$.pipe(map(changes => ({ id: this.item().id, changes }))));

@@ -22,7 +22,6 @@ const initialState: ItemSetupState = { creating: false, edits: {}, removing: [] 
 export const ItemSetupStore = signalStore(
   withState(initialState),
 
-  // `_` keeps the subject inside the store; consumers only get the stream
   withProps(() => ({ _created$$: new Subject<MenuItem>() })),
   withProps(({ _created$$ }) => ({ created$: _created$$.asObservable() })),
 
