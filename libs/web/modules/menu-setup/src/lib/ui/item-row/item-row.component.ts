@@ -5,6 +5,7 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { defer, filter, map, merge, type Observable } from 'rxjs';
 
+import { ITEM_MAX_PRICE, ITEM_NAME_MAX_LENGTH } from '@restaurant-ordering/shared/menu-items';
 import { formatPrice, parsePrice } from '@restaurant-ordering/shared/money';
 import { disableControl, priceValidator } from '@restaurant-ordering/web/common/form';
 import { type MenuItem, type MenuItemInput } from '@restaurant-ordering/web/core/menu';
@@ -91,12 +92,16 @@ export class ItemRowComponent {
   protected readonly form = new FormGroup({
     name: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.pattern(/\S/)],
+      validators: [
+        Validators.required,
+        Validators.pattern(/\S/),
+        Validators.maxLength(ITEM_NAME_MAX_LENGTH),
+      ],
       updateOn: 'blur',
     }),
     price: new FormControl('', {
       nonNullable: true,
-      validators: [priceValidator],
+      validators: [priceValidator, Validators.max(ITEM_MAX_PRICE / 100)],
       updateOn: 'blur',
     }),
     available: new FormControl(false, { nonNullable: true }),

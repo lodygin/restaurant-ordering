@@ -1,0 +1,17 @@
+{
+  "name": "shared-menu-items",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/menu-items/src",
+  "projectType": "library",
+  "tags": ["platform:shared"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "command": "tsc -p libs/shared/menu-items/tsconfig.lib.json --noEmit"
+      }
+    }
+  }
+}

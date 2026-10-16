@@ -13,12 +13,11 @@ import {
 } from 'class-validator';
 
 import { Trim } from '@restaurant-ordering/server/common/http';
-
 import {
   ITEM_DESCRIPTION_MAX_LENGTH,
+  ITEM_MAX_PRICE,
   ITEM_NAME_MAX_LENGTH,
-  MAX_PRICE,
-} from '../menu-items.constants';
+} from '@restaurant-ordering/shared/menu-items';
 
 export class CreateMenuItemDto {
   @ApiProperty({ format: 'uuid' })
@@ -42,14 +41,14 @@ export class CreateMenuItemDto {
     nullable: true,
     required: false,
     minimum: 1,
-    maximum: MAX_PRICE,
+    maximum: ITEM_MAX_PRICE,
     description:
       'Integer cents. Required for fixed-price items, must be null or absent for open-price ones.',
   })
   @IsOptional()
   @IsInt()
   @Min(1)
-  @Max(MAX_PRICE)
+  @Max(ITEM_MAX_PRICE)
   price?: number | null;
 
   @IsOptional()
