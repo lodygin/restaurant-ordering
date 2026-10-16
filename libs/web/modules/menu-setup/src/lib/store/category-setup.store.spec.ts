@@ -38,7 +38,7 @@ describe('CategorySetupStore', () => {
             removeCategory: () => removal,
           },
         },
-        { provide: MenuStore, useValue: { applyEditResult } },
+        { provide: MenuStore, useValue: { applyEditResult, categoryEntityMap: () => ({}) } },
         { provide: MatSnackBar, useValue: { open } },
       ],
     });

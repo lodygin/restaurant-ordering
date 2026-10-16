@@ -1,11 +1,11 @@
 import { inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { concatMap, exhaustMap, filter, groupBy, map, mergeMap, pipe, Subject } from 'rxjs';
 
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
+import { formatPrice } from '@restaurant-ordering/shared/money';
 import {
   MenuApi,
   MenuStore,
@@ -14,6 +14,7 @@ import {
   type MenuItemInput,
 } from '@restaurant-ordering/web/core/menu';
 import { apiErrorMessage } from '@restaurant-ordering/web/infrastructure/http';
+import { ToastService } from '@restaurant-ordering/web/ui/toast';
 
 import { DEFAULT_ITEM_PRICE, NEW_ITEM_NAME } from '../constants';
 import { type ItemSetupState } from '../types';
@@ -30,10 +31,8 @@ export const ItemSetupStore = signalStore(
   withProps(({ _created$$ }) => ({ created$: _created$$.asObservable() })),
 
   withMethods(
-    (store, api = inject(MenuApi), menu = inject(MenuStore), snackBar = inject(MatSnackBar)) => {
-      const report = (error: unknown): void => {
-        snackBar.open(apiErrorMessage(error), 'Dismiss', { duration: 5000 });
-      };
+    (store, api = inject(MenuApi), menu = inject(MenuStore), toast = inject(ToastService)) => {
+      const report = (error: unknown): void => toast.error(apiErrorMessage(error));
 
       return {
         // new items start unavailable, so they never reach guests half-filled
@@ -60,6 +59,7 @@ export const ItemSetupStore = signalStore(
 
                       menu.applyEditResult(revision, { type: 'item.created', item: data });
                       store._created$$.next(data);
+                      toast.show('New items start as unavailable, switch them on when ready');
                     },
                     error: report,
                     finalize: () => patchState(store, { creating: false }),
@@ -89,6 +89,7 @@ export const ItemSetupStore = signalStore(
                         }
 
                         menu.applyEditResult(revision, { type: 'item.updated', item: data });
+                        toast.show(describeEdit(changes, data));
                       },
                       error: report,
                       finalize: () =>
@@ -111,12 +112,16 @@ export const ItemSetupStore = signalStore(
             mergeMap(ids =>
               ids.pipe(
                 exhaustMap(id => {
+                  const { name } = menu.itemEntityMap()[id] ?? { name: 'Item' };
+
                   patchState(store, state => ({ removing: [...state.removing, id] }));
 
                   return api.removeItem(id).pipe(
                     tapResponse({
-                      next: revision =>
-                        menu.applyEditResult(revision, { type: 'item.deleted', itemId: id }),
+                      next: revision => {
+                        menu.applyEditResult(revision, { type: 'item.deleted', itemId: id });
+                        toast.show(`${name} removed`);
+                      },
                       error: report,
                       finalize: () =>
                         patchState(store, state => ({
@@ -147,3 +152,21 @@ export const ItemSetupStore = signalStore(
     ),
   })),
 );
+
+function describeEdit(changes: Partial<MenuItemInput>, item: MenuItem): string {
+  if (changes.openPrice !== undefined) {
+    return item.openPrice
+      ? `${item.name}: price is now entered when ordering`
+      : `${item.name}: fixed price $${formatPrice(DEFAULT_ITEM_PRICE)}, adjust it if needed`;
+  }
+
+  if (changes.price !== undefined && item.price !== null) {
+    return `${item.name} is now $${formatPrice(item.price)}`;
+  }
+
+  if (changes.available !== undefined) {
+    return `${item.name} is ${item.available ? 'back on' : 'off'} the menu`;
+  }
+
+  return 'Saved';
+}

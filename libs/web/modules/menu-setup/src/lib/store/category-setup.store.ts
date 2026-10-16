@@ -1,5 +1,4 @@
 import { inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { concatMap, exhaustMap, groupBy, mergeMap, pipe } from 'rxjs';
 
 import { tapResponse } from '@ngrx/operators';
@@ -8,6 +7,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
 import { MenuApi, MenuStore } from '@restaurant-ordering/web/core/menu';
 import { apiErrorMessage } from '@restaurant-ordering/web/infrastructure/http';
+import { ToastService } from '@restaurant-ordering/web/ui/toast';
 
 import { type CategorySetupState } from '../types';
 
@@ -17,10 +17,8 @@ export const CategorySetupStore = signalStore(
   withState(initialState),
 
   withMethods(
-    (store, api = inject(MenuApi), menu = inject(MenuStore), snackBar = inject(MatSnackBar)) => {
-      const report = (error: unknown): void => {
-        snackBar.open(apiErrorMessage(error), 'Dismiss', { duration: 5000 });
-      };
+    (store, api = inject(MenuApi), menu = inject(MenuStore), toast = inject(ToastService)) => {
+      const report = (error: unknown): void => toast.error(apiErrorMessage(error));
 
       return {
         select(id: string): void {
@@ -37,6 +35,7 @@ export const CategorySetupStore = signalStore(
                   next: ({ data, revision }) => {
                     menu.applyEditResult(revision, { type: 'category.created', category: data });
                     patchState(store, { selectedId: data.id });
+                    toast.show(`${data.name} added`);
                   },
                   error: report,
                   finalize: () => patchState(store, { creating: false }),
@@ -55,11 +54,13 @@ export const CategorySetupStore = signalStore(
                 concatMap(({ id, name }) =>
                   api.updateCategory(id, { name }).pipe(
                     tapResponse({
-                      next: ({ data, revision }) =>
+                      next: ({ data, revision }) => {
                         menu.applyEditResult(revision, {
                           type: 'category.updated',
                           category: data,
-                        }),
+                        });
+                        toast.show('Category renamed');
+                      },
                       error: report,
                     }),
                   ),
@@ -75,15 +76,19 @@ export const CategorySetupStore = signalStore(
             mergeMap(ids =>
               ids.pipe(
                 exhaustMap(id => {
+                  const { name } = menu.categoryEntityMap()[id] ?? { name: 'Category' };
+
                   patchState(store, state => ({ removing: [...state.removing, id] }));
 
                   return api.removeCategory(id).pipe(
                     tapResponse({
-                      next: revision =>
+                      next: revision => {
                         menu.applyEditResult(revision, {
                           type: 'category.deleted',
                           categoryId: id,
-                        }),
+                        });
+                        toast.show(`${name} deleted`);
+                      },
                       error: report,
                       finalize: () =>
                         patchState(store, state => ({

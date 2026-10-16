@@ -53,7 +53,12 @@ describe('ItemSetupStore', () => {
         },
         {
           provide: MenuStore,
-          useValue: { applyEditResult, revision: () => 40, changes$: menuChanges },
+          useValue: {
+            applyEditResult,
+            revision: () => 40,
+            changes$: menuChanges,
+            itemEntityMap: () => ({}),
+          },
         },
         { provide: MatSnackBar, useValue: { open } },
       ],
@@ -75,6 +80,14 @@ describe('ItemSetupStore', () => {
       item: { ...pho, name: 'Pho bo' },
     });
     expect(store.edits()).toEqual({});
+    expect(open).toHaveBeenCalledWith('Saved', undefined, { duration: 3000 });
+  });
+
+  it('tells what an edit changed', () => {
+    store.update({ id: pho.id, changes: { price: 1250 } });
+    update.next({ data: { ...pho, price: 1250 }, revision: 50 });
+
+    expect(open).toHaveBeenCalledWith('Pho is now $12.50', undefined, { duration: 3000 });
   });
 
   it('drops the edit and reports the error when the update fails', () => {
