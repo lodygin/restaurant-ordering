@@ -5,12 +5,17 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { Subject, type Observable } from 'rxjs';
 
 import { CategoriesService } from '@restaurant-ordering/server/modules/categories';
-import { MenuRevisionService } from '@restaurant-ordering/server/modules/menu-revision';
 
 import { seedMenuItems } from './seed/menu-items.seed';
-import { type CreateMenuItemInput, type MenuItem, type UpdateMenuItemInput } from './types';
+import {
+  type CreateMenuItemInput,
+  type MenuItem,
+  type MenuItemChange,
+  type UpdateMenuItemInput,
+} from './types';
 
 type Pricing = Pick<MenuItem, 'openPrice' | 'price'>;
 
@@ -18,11 +23,12 @@ type Pricing = Pick<MenuItem, 'openPrice' | 'price'>;
 @Injectable()
 export class MenuItemsService {
   private readonly items = new Map<string, MenuItem>();
+  private readonly changes = new Subject<MenuItemChange>();
 
-  constructor(
-    private readonly categories: CategoriesService,
-    private readonly revision: MenuRevisionService,
-  ) {
+  /** Emits synchronously, inside the call that made the change. */
+  readonly changes$: Observable<MenuItemChange> = this.changes.asObservable();
+
+  constructor(private readonly categories: CategoriesService) {
     seedMenuItems(categories.list()).forEach(item => this.items.set(item.id, item));
     categories.registerUsage({ countIn: categoryId => this.countIn(categoryId) });
   }
@@ -44,7 +50,7 @@ export class MenuItemsService {
     };
 
     this.items.set(item.id, item);
-    this.revision.bump();
+    this.changes.next({ type: 'item.created', item });
 
     return item;
   }
@@ -66,7 +72,7 @@ export class MenuItemsService {
     };
 
     this.items.set(id, item);
-    this.revision.bump();
+    this.changes.next({ type: 'item.updated', item });
 
     return item;
   }
@@ -74,7 +80,7 @@ export class MenuItemsService {
   remove(id: string): void {
     this.get(id);
     this.items.delete(id);
-    this.revision.bump();
+    this.changes.next({ type: 'item.deleted', itemId: id });
   }
 
   private countIn(categoryId: string): number {

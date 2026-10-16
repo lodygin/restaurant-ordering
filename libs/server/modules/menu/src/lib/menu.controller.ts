@@ -3,9 +3,9 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { CategoriesService } from '@restaurant-ordering/server/modules/categories';
 import { MenuItemsService } from '@restaurant-ordering/server/modules/menu-items';
-import { MenuRevisionService } from '@restaurant-ordering/server/modules/menu-revision';
 
 import { MenuResponseDto } from './dtos';
+import { MenuRevisionService } from './menu-revision.service';
 
 @ApiTags('menu')
 @Controller('menu')

@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 
 import { CategoriesModule } from '@restaurant-ordering/server/modules/categories';
 import { MenuItemsModule } from '@restaurant-ordering/server/modules/menu-items';
-import { MenuRevisionModule } from '@restaurant-ordering/server/modules/menu-revision';
 
+import { MenuRevisionService } from './menu-revision.service';
 import { MenuController } from './menu.controller';
 
 @Module({
-  imports: [MenuRevisionModule, CategoriesModule, MenuItemsModule],
+  imports: [CategoriesModule, MenuItemsModule],
   controllers: [MenuController],
+  providers: [MenuRevisionService],
 })
 export class MenuModule {}

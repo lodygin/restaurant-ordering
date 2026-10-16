@@ -1,19 +1,27 @@
 import { randomUUID } from 'node:crypto';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-
-import { MenuRevisionService } from '@restaurant-ordering/server/modules/menu-revision';
+import { Subject, type Observable } from 'rxjs';
 
 import { type CategoryUsage } from './category-usage';
 import { seedCategories } from './seed/categories.seed';
-import { type Category, type CreateCategoryInput, type UpdateCategoryInput } from './types';
+import {
+  type Category,
+  type CategoryChange,
+  type CreateCategoryInput,
+  type UpdateCategoryInput,
+} from './types';
 
 /** In-memory categories; the Map keeps insertion order, which is the order the menu shows. */
 @Injectable()
 export class CategoriesService {
   private readonly categories = new Map<string, Category>();
   private readonly usages: CategoryUsage[] = [];
+  private readonly changes = new Subject<CategoryChange>();
 
-  constructor(private readonly revision: MenuRevisionService) {
+  /** Emits synchronously, inside the call that made the change. */
+  readonly changes$: Observable<CategoryChange> = this.changes.asObservable();
+
+  constructor() {
     seedCategories().forEach(category => this.categories.set(category.id, category));
   }
 
@@ -33,7 +41,7 @@ export class CategoriesService {
     const category: Category = { id: randomUUID(), name: input.name };
 
     this.categories.set(category.id, category);
-    this.revision.bump();
+    this.changes.next({ type: 'category.created', category });
 
     return category;
   }
@@ -42,7 +50,7 @@ export class CategoriesService {
     const category: Category = { ...this.get(id), ...input };
 
     this.categories.set(id, category);
-    this.revision.bump();
+    this.changes.next({ type: 'category.updated', category });
 
     return category;
   }
@@ -60,7 +68,7 @@ export class CategoriesService {
     }
 
     this.categories.delete(id);
-    this.revision.bump();
+    this.changes.next({ type: 'category.deleted', categoryId: id });
   }
 
   private get(id: string): Category {
