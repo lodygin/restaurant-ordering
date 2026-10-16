@@ -74,7 +74,7 @@ export class ItemRowComponent {
   protected readonly setup = inject(MenuSetupStore);
 
   protected readonly form = inject(NonNullableFormBuilder).group({
-    name: ['', { validators: [Validators.pattern(/\S/)], updateOn: 'blur' }],
+    name: ['', { validators: [Validators.required, Validators.pattern(/\S/)], updateOn: 'blur' }],
     price: ['', { validators: [priceValidator], updateOn: 'blur' }],
     available: [false],
     openPrice: [false],
