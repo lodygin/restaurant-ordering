@@ -33,6 +33,8 @@
       "@restaurant-ordering/server/modules/menu-items": [
         "./libs/server/modules/menu-items/src/index.ts"
       ],
+      "@restaurant-ordering/web/common/zod": ["./libs/web/common/zod/src/index.ts"],
+      "@restaurant-ordering/web/core/menu": ["./libs/web/core/menu/src/index.ts"],
       "@restaurant-ordering/web/infrastructure/api": ["./libs/web/infrastructure/api/src/index.ts"],
       "@restaurant-ordering/web/infrastructure/http": [
         "./libs/web/infrastructure/http/src/index.ts"

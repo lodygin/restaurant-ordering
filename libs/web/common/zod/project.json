@@ -1,0 +1,19 @@
+{
+  "name": "web-common-zod",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/common/zod/src",
+  "projectType": "library",
+  "prefix": "app",
+  "tags": ["type:util", "platform:web"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "parallel": false,
+        "commands": ["ngc -p libs/web/common/zod/tsconfig.lib.json --noEmit"]
+      }
+    }
+  }
+}
