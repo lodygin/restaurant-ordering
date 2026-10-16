@@ -5,7 +5,7 @@ import { firstValueFrom, Subject, toArray } from 'rxjs';
 
 import { ServerEvents, type ServerEvent } from '@restaurant-ordering/web/infrastructure/sse';
 
-import { type Menu } from '../models';
+import { type Category, type Menu, type MenuItem } from '../models';
 import { MenuApi } from './menu.api';
 
 const menu: Menu = {
@@ -75,5 +75,55 @@ describe('MenuApi', () => {
     stream.next({ type: 'message', id: 8, data: { type: 'item.renamed' } });
 
     await expect(events).rejects.toThrow();
+  });
+
+  it('creates a category and parses the result', async () => {
+    const category: Category = { id: crypto.randomUUID(), name: 'Drinks' };
+    const result = firstValueFrom(api.createCategory({ name: 'Drinks' }));
+    const request = http.expectOne('/api/v1/menu/categories');
+
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({ name: 'Drinks' });
+
+    request.flush({ data: category });
+
+    await expect(result).resolves.toEqual(category);
+  });
+
+  it('patches only the changed fields of an item', async () => {
+    const item: MenuItem = {
+      id: crypto.randomUUID(),
+      categoryId: crypto.randomUUID(),
+      name: 'Pho',
+      description: '',
+      price: 1100,
+      available: false,
+      openPrice: false,
+    };
+
+    const result = firstValueFrom(api.updateItem(item.id, { available: false }));
+    const request = http.expectOne(`/api/v1/menu/items/${item.id}`);
+
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.body).toEqual({ available: false });
+
+    request.flush({ data: item });
+
+    await expect(result).resolves.toEqual(item);
+  });
+
+  it('passes a conflict on category removal through to the caller', async () => {
+    const id = crypto.randomUUID();
+    const result = firstValueFrom(api.removeCategory(id));
+    const request = http.expectOne(`/api/v1/menu/categories/${id}`);
+
+    expect(request.request.method).toBe('DELETE');
+
+    request.flush(
+      { message: 'The category still has 2 item(s); move or delete them first.', itemCount: 2 },
+      { status: 409, statusText: 'Conflict' },
+    );
+
+    await expect(result).rejects.toMatchObject({ status: 409, error: { itemCount: 2 } });
   });
 });

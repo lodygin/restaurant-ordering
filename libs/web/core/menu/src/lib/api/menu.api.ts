@@ -5,7 +5,17 @@ import { parse } from '@restaurant-ordering/web/common/zod';
 import { ApiService, unwrap } from '@restaurant-ordering/web/infrastructure/rest';
 import { ServerEvents, type ServerEvent } from '@restaurant-ordering/web/infrastructure/sse';
 
-import { menuChangeSchema, menuSchema, type Menu, type MenuChange } from '../models';
+import {
+  categorySchema,
+  menuChangeSchema,
+  menuItemSchema,
+  menuSchema,
+  type Category,
+  type Menu,
+  type MenuChange,
+  type MenuItem,
+} from '../models';
+import { type CategoryInput, type MenuItemInput } from '../types';
 
 @Injectable({ providedIn: 'root' })
 export class MenuApi {
@@ -24,5 +34,29 @@ export class MenuApi {
           event.type === 'message' ? { ...event, data: menuChangeSchema.parse(event.data) } : event,
         ),
       );
+  }
+
+  createCategory(input: CategoryInput): Observable<Category> {
+    return this.api.categoriesCreate(input).pipe(unwrap(), parse(categorySchema));
+  }
+
+  updateCategory(id: string, input: Partial<CategoryInput>): Observable<Category> {
+    return this.api.categoriesUpdate(id, input).pipe(unwrap(), parse(categorySchema));
+  }
+
+  removeCategory(id: string): Observable<void> {
+    return this.api.categoriesRemove(id);
+  }
+
+  createItem(input: MenuItemInput): Observable<MenuItem> {
+    return this.api.menuItemsCreate(input).pipe(unwrap(), parse(menuItemSchema));
+  }
+
+  updateItem(id: string, input: Partial<MenuItemInput>): Observable<MenuItem> {
+    return this.api.menuItemsUpdate(id, input).pipe(unwrap(), parse(menuItemSchema));
+  }
+
+  removeItem(id: string): Observable<void> {
+    return this.api.menuItemsRemove(id);
   }
 }
