@@ -9,7 +9,6 @@ import { type Category, type Menu, type MenuItem } from '../models';
 import { MenuApi } from './menu.api';
 
 const menu: Menu = {
-  revision: 7,
   categories: [{ id: crypto.randomUUID(), name: 'Soups' }],
   items: [],
 };
@@ -38,18 +37,18 @@ describe('MenuApi', () => {
 
   afterEach(() => http.verify());
 
-  it('unwraps and parses the snapshot', async () => {
+  it('parses the snapshot together with its revision', async () => {
     const result = firstValueFrom(api.snapshot());
 
-    http.expectOne('/api/v1/menu').flush({ data: menu });
+    http.expectOne('/api/v1/menu').flush({ data: menu, meta: { revision: 7 } });
 
-    await expect(result).resolves.toEqual(menu);
+    await expect(result).resolves.toEqual({ data: menu, revision: 7 });
   });
 
   it('rejects a snapshot that does not match the model', async () => {
     const result = firstValueFrom(api.snapshot());
 
-    http.expectOne('/api/v1/menu').flush({ data: { ...menu, revision: 'latest' } });
+    http.expectOne('/api/v1/menu').flush({ data: menu, meta: { revision: 'latest' } });
 
     await expect(result).rejects.toThrow();
   });
@@ -85,9 +84,9 @@ describe('MenuApi', () => {
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual({ name: 'Drinks' });
 
-    request.flush({ data: category });
+    request.flush({ data: category, meta: { revision: 8 } });
 
-    await expect(result).resolves.toEqual(category);
+    await expect(result).resolves.toEqual({ data: category, revision: 8 });
   });
 
   it('patches only the changed fields of an item', async () => {
@@ -107,9 +106,21 @@ describe('MenuApi', () => {
     expect(request.request.method).toBe('PATCH');
     expect(request.request.body).toEqual({ available: false });
 
-    request.flush({ data: item });
+    request.flush({ data: item, meta: { revision: 9 } });
 
-    await expect(result).resolves.toEqual(item);
+    await expect(result).resolves.toEqual({ data: item, revision: 9 });
+  });
+
+  it('resolves a removal with its revision', async () => {
+    const id = crypto.randomUUID();
+    const result = firstValueFrom(api.removeItem(id));
+    const request = http.expectOne(`/api/v1/menu/items/${id}`);
+
+    expect(request.request.method).toBe('DELETE');
+
+    request.flush({ meta: { revision: 10 } });
+
+    await expect(result).resolves.toBe(10);
   });
 
   it('passes a conflict on category removal through to the caller', async () => {

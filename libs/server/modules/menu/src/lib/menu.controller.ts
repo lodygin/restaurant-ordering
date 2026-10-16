@@ -41,11 +41,8 @@ export class MenuController {
   })
   snapshot(): MenuResponseDto {
     return {
-      data: {
-        revision: this.revision.current(),
-        categories: this.categories.list(),
-        items: this.items.list(),
-      },
+      data: { categories: this.categories.list(), items: this.items.list() },
+      meta: { revision: this.revision.current() },
     };
   }
 

@@ -48,15 +48,15 @@ export const MenuStore = signalStore(
                 return timer(SNAPSHOT_RETRY_MS);
               },
             }),
-            tap(menu =>
+            tap(({ data, revision }) =>
               patchState(
                 store,
-                { status: 'loaded', revision: menu.revision },
-                setAllEntities(menu.categories, { collection: 'category' }),
-                setAllEntities(menu.items, { collection: 'item' }),
+                { status: 'loaded', revision },
+                setAllEntities(data.categories, { collection: 'category' }),
+                setAllEntities(data.items, { collection: 'item' }),
               ),
             ),
-            switchMap(menu => api.changes(menu.revision)),
+            switchMap(({ revision }) => api.changes(revision)),
             takeWhile(event => event.type !== 'message' || event.data.type !== 'resync'),
             repeat(),
             tapResponse({

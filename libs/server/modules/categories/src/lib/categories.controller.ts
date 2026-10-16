@@ -1,22 +1,13 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  HttpCode,
-  HttpStatus,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiCreatedResponse,
-  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+
+import { RevisionResponseDto } from '@restaurant-ordering/server/modules/menu-revision';
 
 import { CategoriesService } from './categories.service';
 import { CategoryResponseDto, CreateCategoryDto, UpdateCategoryDto } from './dtos';
@@ -31,7 +22,9 @@ export class CategoriesController {
   @Post()
   @ApiCreatedResponse({ type: CategoryResponseDto })
   create(@Body() dto: CreateCategoryDto): CategoryResponseDto {
-    return { data: this.categories.create(dto).data };
+    const { data, revision } = this.categories.create(dto);
+
+    return { data, meta: { revision } };
   }
 
   @Patch(':id')
@@ -41,17 +34,18 @@ export class CategoriesController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateCategoryDto,
   ): CategoryResponseDto {
-    return { data: this.categories.update(id, dto).data };
+    const { data, revision } = this.categories.update(id, dto);
+
+    return { data, meta: { revision } };
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiNoContentResponse()
+  @ApiOkResponse({ type: RevisionResponseDto })
   @ApiNotFoundResponse({ description: NOT_FOUND })
   @ApiConflictResponse({
     description: 'The category still has items; the body carries their `itemCount`.',
   })
-  remove(@Param('id', ParseUUIDPipe) id: string): void {
-    this.categories.remove(id);
+  remove(@Param('id', ParseUUIDPipe) id: string): RevisionResponseDto {
+    return { meta: { revision: this.categories.remove(id) } };
   }
 }

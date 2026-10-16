@@ -5,6 +5,7 @@ import { type ServerEvent } from '@restaurant-ordering/web/infrastructure/sse';
 
 import { MenuApi } from '../api/menu.api';
 import { type Category, type Menu, type MenuChange, type MenuItem } from '../models';
+import { type Revised } from '../types';
 import { MenuStore } from './menu.store';
 
 const soups: Category = { id: crypto.randomUUID(), name: 'Soups' };
@@ -28,19 +29,18 @@ const tiramisu = item('Tiramisu', desserts);
 const borscht = item('Borscht', soups);
 
 const menu: Menu = {
-  revision: 42,
   categories: [soups, desserts, specials],
   items: [tomYum, tiramisu, borscht],
 };
 
 class FakeMenuApi {
-  readonly snapshots: Subject<Menu>[] = [];
+  readonly snapshots: Subject<Revised<Menu>>[] = [];
   readonly streams: { since: number; events: Subject<ServerEvent<MenuChange>> }[] = [];
 
   // cold like HttpClient: every subscription (and so every retry) is a new request
-  snapshot(): Observable<Menu> {
+  snapshot(): Observable<Revised<Menu>> {
     return defer(() => {
-      const snapshot = new Subject<Menu>();
+      const snapshot = new Subject<Revised<Menu>>();
 
       this.snapshots.push(snapshot);
 
@@ -56,10 +56,10 @@ class FakeMenuApi {
     return events;
   }
 
-  respond(snapshot: Menu): void {
+  respond(snapshot: Menu, revision = 42): void {
     const pending = this.snapshots.at(-1);
 
-    pending?.next(snapshot);
+    pending?.next({ data: snapshot, revision });
     pending?.complete();
   }
 
@@ -193,7 +193,7 @@ describe('MenuStore', () => {
     expect(api.snapshots).toHaveLength(2);
     expect(api.streams[0]?.events.observed).toBe(false);
 
-    api.respond({ ...menu, revision: 90, items: [tomYum] });
+    api.respond({ ...menu, items: [tomYum] }, 90);
 
     expect(store.itemIds()).toEqual([tomYum.id]);
     expect(api.streams[1]?.since).toBe(90);

@@ -1,8 +1,10 @@
 import { inject, Injectable } from '@angular/core';
-import { map, type Observable } from 'rxjs';
+import { map, pipe, type Observable, type OperatorFunction } from 'rxjs';
+
+import * as z from 'zod/mini';
 
 import { parse } from '@restaurant-ordering/web/common/zod';
-import { ApiService, unwrap } from '@restaurant-ordering/web/infrastructure/rest';
+import { ApiService } from '@restaurant-ordering/web/infrastructure/rest';
 import { ServerEvents, type ServerEvent } from '@restaurant-ordering/web/infrastructure/sse';
 
 import {
@@ -15,15 +17,17 @@ import {
   type MenuChange,
   type MenuItem,
 } from '../models';
-import { type CategoryInput, type MenuItemInput } from '../types';
+import { type CategoryInput, type MenuItemInput, type Revised } from '../types';
+
+const metaSchema = z.object({ revision: z.int() });
 
 @Injectable({ providedIn: 'root' })
 export class MenuApi {
   private readonly api = inject(ApiService);
   private readonly serverEvents = inject(ServerEvents);
 
-  snapshot(): Observable<Menu> {
-    return this.api.menuSnapshot().pipe(unwrap(), parse(menuSchema));
+  snapshot(): Observable<Revised<Menu>> {
+    return this.api.menuSnapshot().pipe(this.revised(menuSchema));
   }
 
   changes(since: number): Observable<ServerEvent<MenuChange>> {
@@ -36,27 +40,41 @@ export class MenuApi {
       );
   }
 
-  createCategory(input: CategoryInput): Observable<Category> {
-    return this.api.categoriesCreate(input).pipe(unwrap(), parse(categorySchema));
+  createCategory(input: CategoryInput): Observable<Revised<Category>> {
+    return this.api.categoriesCreate(input).pipe(this.revised(categorySchema));
   }
 
-  updateCategory(id: string, input: Partial<CategoryInput>): Observable<Category> {
-    return this.api.categoriesUpdate(id, input).pipe(unwrap(), parse(categorySchema));
+  updateCategory(id: string, input: Partial<CategoryInput>): Observable<Revised<Category>> {
+    return this.api.categoriesUpdate(id, input).pipe(this.revised(categorySchema));
   }
 
-  removeCategory(id: string): Observable<void> {
-    return this.api.categoriesRemove(id);
+  removeCategory(id: string): Observable<number> {
+    return this.api.categoriesRemove(id).pipe(this.revision());
   }
 
-  createItem(input: MenuItemInput): Observable<MenuItem> {
-    return this.api.menuItemsCreate(input).pipe(unwrap(), parse(menuItemSchema));
+  createItem(input: MenuItemInput): Observable<Revised<MenuItem>> {
+    return this.api.menuItemsCreate(input).pipe(this.revised(menuItemSchema));
   }
 
-  updateItem(id: string, input: Partial<MenuItemInput>): Observable<MenuItem> {
-    return this.api.menuItemsUpdate(id, input).pipe(unwrap(), parse(menuItemSchema));
+  updateItem(id: string, input: Partial<MenuItemInput>): Observable<Revised<MenuItem>> {
+    return this.api.menuItemsUpdate(id, input).pipe(this.revised(menuItemSchema));
   }
 
-  removeItem(id: string): Observable<void> {
-    return this.api.menuItemsRemove(id);
+  removeItem(id: string): Observable<number> {
+    return this.api.menuItemsRemove(id).pipe(this.revision());
+  }
+
+  private revised<T>(schema: z.ZodMiniType<T>): OperatorFunction<unknown, Revised<T>> {
+    return pipe(
+      parse(z.object({ data: schema, meta: metaSchema })),
+      map(({ data, meta }) => ({ data, revision: meta.revision })),
+    );
+  }
+
+  private revision(): OperatorFunction<unknown, number> {
+    return pipe(
+      parse(z.object({ meta: metaSchema })),
+      map(({ meta }) => meta.revision),
+    );
   }
 }

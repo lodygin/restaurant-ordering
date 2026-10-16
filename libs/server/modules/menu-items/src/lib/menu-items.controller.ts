@@ -1,23 +1,14 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  HttpCode,
-  HttpStatus,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
-  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
+
+import { RevisionResponseDto } from '@restaurant-ordering/server/modules/menu-revision';
 
 import { CreateMenuItemDto, MenuItemResponseDto, UpdateMenuItemDto } from './dtos';
 import { MenuItemsService } from './menu-items.service';
@@ -37,7 +28,9 @@ export class MenuItemsController {
   @ApiBadRequestResponse({ description: PRICING_MISMATCH })
   @ApiUnprocessableEntityResponse({ description: UNKNOWN_CATEGORY })
   create(@Body() dto: CreateMenuItemDto): MenuItemResponseDto {
-    return { data: this.items.create(dto).data };
+    const { data, revision } = this.items.create(dto);
+
+    return { data, meta: { revision } };
   }
 
   @Patch(':id')
@@ -49,14 +42,15 @@ export class MenuItemsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateMenuItemDto,
   ): MenuItemResponseDto {
-    return { data: this.items.update(id, dto).data };
+    const { data, revision } = this.items.update(id, dto);
+
+    return { data, meta: { revision } };
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiNoContentResponse()
+  @ApiOkResponse({ type: RevisionResponseDto })
   @ApiNotFoundResponse({ description: NOT_FOUND })
-  remove(@Param('id', ParseUUIDPipe) id: string): void {
-    this.items.remove(id);
+  remove(@Param('id', ParseUUIDPipe) id: string): RevisionResponseDto {
+    return { meta: { revision: this.items.remove(id) } };
   }
 }
