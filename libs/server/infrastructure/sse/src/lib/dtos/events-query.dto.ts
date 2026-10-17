@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Min } from 'class-validator';
 
-export class MenuEventsQueryDto {
+export class EventsQueryDto {
   @ApiProperty({
     type: 'integer',
     required: false,

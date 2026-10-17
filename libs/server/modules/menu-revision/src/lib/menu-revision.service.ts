@@ -1,17 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
+import { Revision } from '@restaurant-ordering/server/infrastructure/sse';
+
 @Injectable()
-export class MenuRevisionService {
-  // boot time, so a revision from before a restart never matches a new one
-  private revision = Date.now();
-
-  current(): number {
-    return this.revision;
-  }
-
-  next(): number {
-    this.revision += 1;
-
-    return this.revision;
-  }
-}
+export class MenuRevisionService extends Revision {}

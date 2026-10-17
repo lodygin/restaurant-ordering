@@ -2,6 +2,7 @@ import { Controller, Get, Headers, Query, Sse, type MessageEvent } from '@nestjs
 import { ApiExcludeEndpoint, ApiExtraModels, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { type Observable } from 'rxjs';
 
+import { EventsQueryDto, ResyncEventDto } from '@restaurant-ordering/server/infrastructure/sse';
 import { CategoriesService } from '@restaurant-ordering/server/modules/categories';
 import { MenuItemsService } from '@restaurant-ordering/server/modules/menu-items';
 import { MenuRevisionService } from '@restaurant-ordering/server/modules/menu-revision';
@@ -9,11 +10,9 @@ import { MenuRevisionService } from '@restaurant-ordering/server/modules/menu-re
 import {
   CategoryDeletedEventDto,
   CategorySavedEventDto,
-  MenuEventsQueryDto,
   MenuItemDeletedEventDto,
   MenuItemSavedEventDto,
   MenuResponseDto,
-  ResyncEventDto,
 } from './dtos';
 import { MenuChangesService } from './menu-changes.service';
 
@@ -50,7 +49,7 @@ export class MenuController {
   @Sse('events')
   @ApiExcludeEndpoint()
   events(
-    @Query() query: MenuEventsQueryDto,
+    @Query() query: EventsQueryDto,
     @Headers('last-event-id') lastEventId?: string,
   ): Observable<MessageEvent> {
     return this.changes.events(lastEventId ? Number(lastEventId) : query.since);
