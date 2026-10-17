@@ -1,8 +1,27 @@
 :host {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 32px;
   max-inline-size: 1240px;
   margin-inline: auto;
   padding: 0 clamp(16px, 4vw, 24px) 80px;
+
+  @media (width <= 960px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.cart {
+  position: sticky;
+  top: 84px;
+  align-self: start;
+  max-block-size: calc(100dvh - 104px);
+  margin-block-start: 20px;
+
+  @media (width <= 960px) {
+    position: static;
+    max-block-size: none;
+  }
 }
 
 .tools {

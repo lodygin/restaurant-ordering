@@ -47,6 +47,7 @@
       "@restaurant-ordering/web/common/host-element": [
         "./libs/web/common/host-element/src/index.ts"
       ],
+      "@restaurant-ordering/web/common/money": ["./libs/web/common/money/src/index.ts"],
       "@restaurant-ordering/web/common/zod": ["./libs/web/common/zod/src/index.ts"],
       "@restaurant-ordering/web/core/menu": ["./libs/web/core/menu/src/index.ts"],
       "@restaurant-ordering/web/infrastructure/http": [

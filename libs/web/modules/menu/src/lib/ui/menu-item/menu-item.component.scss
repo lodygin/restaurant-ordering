@@ -1,6 +1,6 @@
 :host {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto 128px;
   align-items: center;
   gap: 16px;
   block-size: 100%;
@@ -32,6 +32,11 @@
     font: var(--text-caption);
     color: var(--color-muted);
   }
+}
+
+.action {
+  display: flex;
+  justify-content: flex-end;
 }
 
 :host([data-sold-out]) {

@@ -5,6 +5,7 @@ import { MenuStore } from '@restaurant-ordering/web/core/menu';
 import { InputComponent } from '@restaurant-ordering/web/ui/form';
 
 import { GuestMenuStore } from '../../store/guest-menu.store';
+import { CartComponent } from '../cart';
 import { CategoryChipsComponent } from '../category-chips';
 import { CategoryScrollDirective } from '../category-scroll';
 import { MenuListComponent } from '../menu-list';
@@ -14,6 +15,7 @@ import { MenuListComponent } from '../menu-list';
   imports: [
     ReactiveFormsModule,
     InputComponent,
+    CartComponent,
     CategoryChipsComponent,
     CategoryScrollDirective,
     MenuListComponent,
@@ -21,38 +23,42 @@ import { MenuListComponent } from '../menu-list';
   providers: [GuestMenuStore],
   styleUrl: './menu.component.scss',
   template: `
-    @if (menu.itemIds().length) {
-      <div #tools class="tools">
-        <input
-          appInput
-          type="search"
-          autocomplete="off"
-          aria-label="Search dishes"
-          [placeholder]="'Search ' + guestMenu.itemCount() + ' dishes'"
-          [formControl]="query"
-        />
-        <app-category-chips
-          [categories]="guestMenu.categories()"
-          [activeId]="scroll.activeCategoryId()"
-          (categorySelected)="scroll.scrollTo($event)"
-        />
-      </div>
+    <section class="menu" aria-label="Menu">
+      @if (menu.itemIds().length) {
+        <div #tools class="tools">
+          <input
+            appInput
+            type="search"
+            autocomplete="off"
+            aria-label="Search dishes"
+            [placeholder]="'Search ' + guestMenu.itemCount() + ' dishes'"
+            [formControl]="query"
+          />
+          <app-category-chips
+            [categories]="guestMenu.categories()"
+            [activeId]="scroll.activeCategoryId()"
+            (categorySelected)="scroll.scrollTo($event)"
+          />
+        </div>
 
-      <app-menu-list
-        appCategoryScroll
-        #scroll="appCategoryScroll"
-        [rows]="guestMenu.rows()"
-        [stickyEdge]="tools"
-      />
+        <app-menu-list
+          appCategoryScroll
+          #scroll="appCategoryScroll"
+          [rows]="guestMenu.rows()"
+          [stickyEdge]="tools"
+        />
 
-      @if (!guestMenu.rows().length) {
-        <p class="empty">No dishes match “{{ guestMenu.query() }}”.</p>
+        @if (!guestMenu.rows().length) {
+          <p class="empty">No dishes match “{{ guestMenu.query() }}”.</p>
+        }
+      } @else {
+        <p class="empty">
+          {{ menu.status() === 'loaded' ? 'The menu is empty right now.' : 'Loading the menu…' }}
+        </p>
       }
-    } @else {
-      <p class="empty">
-        {{ menu.status() === 'loaded' ? 'The menu is empty right now.' : 'Loading the menu…' }}
-      </p>
-    }
+    </section>
+
+    <app-cart class="cart" />
   `,
 })
 export class MenuComponent {

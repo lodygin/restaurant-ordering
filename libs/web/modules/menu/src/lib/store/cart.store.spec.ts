@@ -48,7 +48,7 @@ describe('CartStore', () => {
     expect(cart.lines()).toEqual([
       { lineId: pho.id, itemId: pho.id, name: 'Pho', unitPrice: 900, qty: 3, openPrice: false },
     ]);
-    expect(cart.qtyByItem()).toEqual({ [pho.id]: 3 });
+    expect(cart.qtyByItem()).toEqual(new Map([[pho.id, 3]]));
   });
 
   it('keeps an open-price item at different prices on separate lines', () => {
@@ -101,7 +101,7 @@ describe('CartStore', () => {
     cart.add(steak);
     cart.add(catch_, 1, 2400);
 
-    expect(cart.issues()).toEqual({});
+    expect(cart.issues().size).toBe(0);
 
     updateMenu(
       { ...pho, price: 1100 },
@@ -110,18 +110,20 @@ describe('CartStore', () => {
       { ...catch_, price: 2800, openPrice: false },
     );
 
-    expect(cart.issues()).toEqual({
-      [pho.id]: { type: 'price', price: 1100 },
-      [soup.id]: { type: 'unavailable' },
-      [steak.id]: { type: 'now-open' },
-      [`${catch_.id}@2400`]: { type: 'now-fixed', price: 2800 },
-    });
+    expect(cart.issues()).toEqual(
+      new Map([
+        [pho.id, { type: 'price', price: 1100 }],
+        [soup.id, { type: 'unavailable' }],
+        [steak.id, { type: 'now-open' }],
+        [`${catch_.id}@2400`, { type: 'now-fixed', price: 2800 }],
+      ]),
+    );
   });
 
   it('flags a line whose item was deleted', () => {
     cart.add(pho);
     items.set({});
 
-    expect(cart.issues()).toEqual({ [pho.id]: { type: 'unavailable' } });
+    expect(cart.issues()).toEqual(new Map([[pho.id, { type: 'unavailable' }]]));
   });
 });

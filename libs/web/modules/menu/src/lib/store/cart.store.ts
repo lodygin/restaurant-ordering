@@ -24,19 +24,29 @@ export const CartStore = signalStore(
       appliedDiscount,
       total: computed(() => subtotal() - appliedDiscount()),
       count: computed(() => lines().reduce((sum, line) => sum + line.qty, 0)),
-      qtyByItem: computed(() =>
-        lines().reduce<Record<string, number>>(
-          (qty, line) => ({ ...qty, [line.itemId]: (qty[line.itemId] ?? 0) + line.qty }),
-          {},
-        ),
-      ),
-      issues: computed(() =>
-        lines().reduce<Record<string, CartLineIssue>>((issues, line) => {
-          const issue = findIssue(line, menu.itemEntityMap()[line.itemId]);
+      qtyByItem: computed(() => {
+        const qtyByItem = new Map<string, number>();
 
-          return issue ? { ...issues, [line.lineId]: issue } : issues;
-        }, {}),
-      ),
+        for (const { itemId, qty } of lines()) {
+          qtyByItem.set(itemId, (qtyByItem.get(itemId) ?? 0) + qty);
+        }
+
+        return qtyByItem;
+      }),
+      issues: computed(() => {
+        const items = menu.itemEntityMap();
+        const issues = new Map<string, CartLineIssue>();
+
+        for (const line of lines()) {
+          const issue = findIssue(line, items[line.itemId]);
+
+          if (issue) {
+            issues.set(line.lineId, issue);
+          }
+        }
+
+        return issues;
+      }),
     };
   }),
 

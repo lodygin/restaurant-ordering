@@ -1,0 +1,23 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  block-size: 36px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-s);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+button {
+  --mat-icon-button-state-layer-size: 34px;
+  --mat-icon-button-icon-color: var(--color-accent);
+  --mat-icon-button-state-layer-color: var(--color-accent);
+  --mat-icon-button-container-shape: var(--radius-s);
+}
+
+output {
+  min-inline-size: 24px;
+  font: var(--text-body-strong);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
