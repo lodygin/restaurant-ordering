@@ -1,6 +1,7 @@
 import {
   afterNextRender,
   Component,
+  DestroyRef,
   effect,
   inject,
   Injector,
@@ -15,6 +16,7 @@ import { filter, map } from 'rxjs';
 import { CATEGORY_NAME_MAX_LENGTH } from '@restaurant-ordering/shared/categories';
 import { disableControl } from '@restaurant-ordering/web/common/form';
 import { type MenuSection } from '@restaurant-ordering/web/core/menu';
+import { ConfirmService } from '@restaurant-ordering/web/ui/confirm';
 import { InputComponent } from '@restaurant-ordering/web/ui/form';
 
 import { CategorySetupStore } from '../../store/category-setup.store';
@@ -47,7 +49,7 @@ import { ItemRowComponent } from '../item-row';
         matButton
         class="quiet"
         [disabled]="disabled() || categories.removing().includes(category.id)"
-        (click)="categories.remove(category.id)"
+        (click)="remove()"
       >
         Delete category
       </button>
@@ -85,6 +87,8 @@ export class CategoryPanelComponent {
   protected readonly items = inject(ItemSetupStore);
 
   private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly confirm = inject(ConfirmService);
   private readonly rows = viewChildren(ItemRowComponent);
 
   protected readonly name = new FormControl('', {
@@ -117,6 +121,26 @@ export class CategoryPanelComponent {
         map(name => ({ id: this.section().category.id, name: name.trim() })),
       ),
     );
+  }
+
+  // a category with items can't be deleted; the server says so, there is nothing to confirm
+  protected remove(): void {
+    const { category, items } = this.section();
+
+    if (items.length) {
+      this.categories.remove(category.id);
+
+      return;
+    }
+
+    this.confirm
+      .ask({
+        title: `Delete ${category.name}?`,
+        message: 'The category disappears from the menu for guests right away.',
+        action: 'Delete',
+      })
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.categories.remove(category.id));
   }
 
   // a new item's row renders after the event about it, so wait for the render
