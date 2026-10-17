@@ -96,9 +96,13 @@ describe('ItemSetupStore', () => {
 
     expect(store.edits()).toEqual({});
     expect(applyEditResult).not.toHaveBeenCalled();
-    expect(open).toHaveBeenCalledWith('Something went wrong. Try again.', 'Dismiss', {
-      duration: 5000,
-    });
+    expect(open).toHaveBeenCalledWith(
+      'The server ran into a problem. Try again in a moment.',
+      'Dismiss',
+      {
+        duration: 5000,
+      },
+    );
   });
 
   it('applies a removal with its revision', () => {
