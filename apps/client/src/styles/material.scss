@@ -58,3 +58,12 @@ html {
 .mat-mdc-icon-button {
   line-height: 1;
 }
+
+// a text button for removing things: muted until hovered
+.mat-mdc-button.quiet {
+  --mat-button-text-label-text-color: var(--color-muted);
+
+  &:hover {
+    --mat-button-text-label-text-color: var(--color-danger);
+  }
+}

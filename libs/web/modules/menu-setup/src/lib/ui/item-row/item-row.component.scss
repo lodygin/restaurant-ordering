@@ -15,11 +15,3 @@ td {
 .remove {
   text-align: end;
 }
-
-.quiet {
-  --mat-button-text-label-text-color: var(--color-muted);
-
-  &:hover {
-    --mat-button-text-label-text-color: var(--color-danger);
-  }
-}

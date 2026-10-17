@@ -62,14 +62,6 @@ h2 {
   justify-content: space-between;
 }
 
-.quiet {
-  --mat-button-text-label-text-color: var(--color-muted);
-
-  &:hover {
-    --mat-button-text-label-text-color: var(--color-danger);
-  }
-}
-
 .foot {
   display: grid;
   gap: 12px;
