@@ -19,7 +19,7 @@
   font: 700 clamp(18px, 2.5vw + 8px, 22px) / 1 var(--font-display);
   color: var(--color-accent);
   text-decoration: none;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-tight);
   white-space: nowrap;
 }
 
@@ -37,7 +37,7 @@
     padding: 0 clamp(6px, 1.5vw, 12px);
     color: var(--color-muted);
     text-decoration: none;
-    font-weight: 600;
+    font: var(--text-body-strong);
     white-space: nowrap;
     border-block-end: 3px solid transparent;
 

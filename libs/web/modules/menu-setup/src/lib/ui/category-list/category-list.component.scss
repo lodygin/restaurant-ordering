@@ -34,7 +34,7 @@ button {
   }
 
   &[aria-current='true'] {
-    font-weight: 700;
+    font: var(--text-body-strong);
     background: var(--color-accent-soft);
   }
 }

@@ -2,7 +2,7 @@ body {
   min-block-size: 100dvh;
   background: var(--color-page);
   color: var(--color-ink);
-  font: 400 15px/1.45 var(--font-body);
+  font: var(--text-body);
   -webkit-font-smoothing: antialiased;
 }
 

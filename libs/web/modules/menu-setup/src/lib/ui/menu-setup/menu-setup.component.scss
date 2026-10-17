@@ -24,12 +24,12 @@
   }
 
   h1 {
-    font-size: 28px;
-    letter-spacing: -0.02em;
+    font: var(--text-title);
+    letter-spacing: var(--tracking-tight);
   }
 
   p {
-    font-size: 14px;
+    font: var(--text-small);
     color: var(--color-muted);
   }
 }
