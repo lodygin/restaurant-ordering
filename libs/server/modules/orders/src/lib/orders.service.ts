@@ -1,30 +1,47 @@
 import { randomUUID } from 'node:crypto';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, type MessageEvent } from '@nestjs/common';
+import { timer, type Observable } from 'rxjs';
 
+import { EventStream, Revision } from '@restaurant-ordering/server/infrastructure/sse';
 import { MenuItemsService, type MenuItem } from '@restaurant-ordering/server/modules/menu-items';
 
+import { FIRST_ORDER_NUMBER, KITCHEN_TIMELINE_MS } from './constants';
 import {
   type CartLine,
   type Order,
   type OrderChange,
+  type OrderEvent,
   type OrderLine,
+  type OrderStatus,
   type PlaceOrderInput,
 } from './types';
-
-const FIRST_ORDER_NUMBER = 1001;
 
 @Injectable()
 export class OrdersService {
   private readonly orders = new Map<string, Order>();
-  private readonly byIdempotencyKey = new Map<string, Order>();
+  private readonly orderIdByKey = new Map<string, string>();
+  private readonly stream = new EventStream<OrderEvent>();
+  private readonly revision = new Revision();
 
   constructor(private readonly items: MenuItemsService) {}
 
-  place(idempotencyKey: string, input: PlaceOrderInput): Order {
-    const placed = this.byIdempotencyKey.get(idempotencyKey);
+  list(): Order[] {
+    return [...this.orders.values()].reverse();
+  }
 
-    if (placed) {
-      return placed;
+  currentRevision(): number {
+    return this.revision.current();
+  }
+
+  events(lastRevision?: number): Observable<MessageEvent> {
+    return this.stream.subscribe(lastRevision, this.revision.current());
+  }
+
+  place(idempotencyKey: string, input: PlaceOrderInput): Order {
+    const placedId = this.orderIdByKey.get(idempotencyKey);
+
+    if (placedId) {
+      return this.orders.get(placedId) as Order;
     }
 
     const changes: OrderChange[] = [];
@@ -61,6 +78,7 @@ export class OrdersService {
       id: randomUUID(),
       number: FIRST_ORDER_NUMBER + this.orders.size,
       createdAt: new Date().toISOString(),
+      status: 'received',
       lines,
       subtotal,
       discount,
@@ -68,9 +86,31 @@ export class OrdersService {
     };
 
     this.orders.set(order.id, order);
-    this.byIdempotencyKey.set(idempotencyKey, order);
+    this.orderIdByKey.set(idempotencyKey, order.id);
+    this.publish({ type: 'order.placed', order });
+
+    for (const [status, delay] of KITCHEN_TIMELINE_MS) {
+      timer(delay).subscribe(() => this.updateStatus(order.id, status));
+    }
 
     return order;
+  }
+
+  private updateStatus(id: string, status: OrderStatus): void {
+    const current = this.orders.get(id);
+
+    if (!current) {
+      return;
+    }
+
+    const order = { ...current, status };
+
+    this.orders.set(id, order);
+    this.publish({ type: 'order.updated', order });
+  }
+
+  private publish(event: OrderEvent): void {
+    this.stream.publish(this.revision.next(), event);
   }
 }
 

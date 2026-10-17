@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ORDER_STATUSES } from '../constants';
+import { type OrderStatus } from '../types';
+
 export class OrderLineDto {
   @ApiProperty({ format: 'uuid' })
   itemId!: string;
@@ -23,6 +26,12 @@ export class OrderDto {
   @ApiProperty({ format: 'date-time' })
   createdAt!: string;
 
+  @ApiProperty({
+    enum: ORDER_STATUSES,
+    description: 'Moves forward on its own as the kitchen works.',
+  })
+  status!: OrderStatus;
+
   lines!: OrderLineDto[];
 
   @ApiProperty({ type: 'integer', description: 'Integer cents.' })
@@ -37,4 +46,26 @@ export class OrderDto {
 
 export class OrderResponseDto {
   data!: OrderDto;
+}
+
+export class OrdersMetaDto {
+  @ApiProperty({
+    type: 'integer',
+    description: 'Revision of the orders right after this response; live updates resume from it.',
+  })
+  revision!: number;
+}
+
+export class OrdersResponseDto {
+  @ApiProperty({ type: [OrderDto], description: 'Newest first.' })
+  data!: OrderDto[];
+
+  meta!: OrdersMetaDto;
+}
+
+export class OrderEventDto {
+  @ApiProperty({ enum: ['order.placed', 'order.updated'] })
+  type!: 'order.placed' | 'order.updated';
+
+  order!: OrderDto;
 }

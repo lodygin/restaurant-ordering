@@ -1,21 +1,60 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Post,
+  Query,
+  Sse,
+  type MessageEvent,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiExcludeEndpoint,
+  ApiExtraModels,
   ApiHeader,
+  ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { type Observable } from 'rxjs';
 
 import { IdempotencyKey } from '@restaurant-ordering/server/common/idempotency';
+import { EventsQueryDto, ResyncEventDto } from '@restaurant-ordering/server/infrastructure/sse';
 
-import { OrderConflictDto, OrderResponseDto, PlaceOrderDto } from './dtos';
+import {
+  OrderConflictDto,
+  OrderEventDto,
+  OrderResponseDto,
+  OrdersResponseDto,
+  PlaceOrderDto,
+} from './dtos';
 import { OrdersService } from './orders.service';
 
 @ApiTags('orders')
+@ApiExtraModels(OrderEventDto, ResyncEventDto)
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly orders: OrdersService) {}
+
+  @Get()
+  @ApiOkResponse({
+    type: OrdersResponseDto,
+    description: 'All orders with their current revision.',
+  })
+  list(): OrdersResponseDto {
+    return { data: this.orders.list(), meta: { revision: this.orders.currentRevision() } };
+  }
+
+  @Sse('events')
+  @ApiExcludeEndpoint()
+  events(
+    @Query() query: EventsQueryDto,
+    @Headers('last-event-id') lastEventId?: string,
+  ): Observable<MessageEvent> {
+    return this.orders.events(lastEventId ? Number(lastEventId) : query.since);
+  }
 
   @Post()
   @ApiHeader({
