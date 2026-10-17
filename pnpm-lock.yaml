@@ -42,6 +42,9 @@ importers:
       '@fontsource-variable/instrument-sans':
         specifier: ^5.3.0
         version: 5.3.0
+      '@fontsource/material-symbols-outlined':
+        specifier: ^5.3.9
+        version: 5.3.9
       '@nestjs/common':
         specifier: ^11.0.0
         version: 11.2.7(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -1532,6 +1535,9 @@ packages:
 
   '@fontsource-variable/instrument-sans@5.3.0':
     resolution: {integrity: sha512-u4gKbDBTNFGkg997tfQn3eHOhHuquWUFTRT/rwzuKtrxX5P2ekfs2x+LgBPP4P32+cC+vUwF1Cr+IdRoPQbrGw==}
+
+  '@fontsource/material-symbols-outlined@5.3.9':
+    resolution: {integrity: sha512-rPyajEu+UBQvAN78nnlvIReUtHAdaTMlNsrY5uFqf0eu+B9CYScof7AGy1hjF5jq3xARBGbdG9WVpuOi+nJhuQ==}
 
   '@harperfast/extended-iterable@1.0.3':
     resolution: {integrity: sha512-sSAYhQca3rDWtQUHSAPeO7axFIUJOI6hn1gjRC5APVE1a90tuyT8f5WIgRsFhhWA7htNkju2veB9eWL6YHi/Lw==}
@@ -9365,6 +9371,8 @@ snapshots:
   '@fontsource-variable/bricolage-grotesque@5.3.0': {}
 
   '@fontsource-variable/instrument-sans@5.3.0': {}
+
+  '@fontsource/material-symbols-outlined@5.3.9': {}
 
   '@harperfast/extended-iterable@1.0.3':
     optional: true

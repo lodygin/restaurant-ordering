@@ -1,0 +1,65 @@
+:host {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  // room for the 48px touch targets of 36px buttons, so they don't scroll vertically
+  padding-block: 6px;
+  margin-block: -6px;
+}
+
+.chip {
+  --mat-button-outlined-container-shape: 999px;
+  --mat-button-outlined-horizontal-padding: 14px;
+  --mat-button-outlined-label-text-color: var(--color-muted);
+
+  flex: none;
+  isolation: isolate;
+  background: var(--color-surface);
+  transition: none;
+
+  // recoloured rather than switched to filled, which is wider and would shift the strip
+  &[aria-current='true'] {
+    --mat-button-outlined-label-text-color: var(--color-surface);
+    --mat-button-outlined-outline-color: var(--color-accent);
+    --mat-button-outlined-ripple-color: color-mix(in srgb, var(--color-surface) 24%, transparent);
+    --mat-button-outlined-state-layer-color: var(--color-surface);
+
+    background: var(--color-accent);
+  }
+}
+
+.arrow {
+  position: sticky;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  flex: none;
+  inline-size: 64px;
+  transition: opacity 0.2s;
+
+  button {
+    --mat-icon-button-state-layer-size: 36px;
+
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+
+  &.back {
+    inset-inline-start: 0;
+    justify-content: start;
+    margin-inline-end: -70px;
+    background: linear-gradient(to right, var(--color-page) 40%, transparent);
+  }
+
+  &.forward {
+    inset-inline-end: 0;
+    justify-content: end;
+    margin-inline-start: -70px;
+    background: linear-gradient(to left, var(--color-page) 40%, transparent);
+  }
+
+  &[inert] {
+    opacity: 0;
+  }
+}

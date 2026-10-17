@@ -2,7 +2,17 @@
   display: block;
   max-inline-size: 1240px;
   margin-inline: auto;
-  padding: 8px clamp(16px, 4vw, 24px) 80px;
+  padding: 0 clamp(16px, 4vw, 24px) 80px;
+}
+
+.tools {
+  position: sticky;
+  top: 60px;
+  z-index: 10;
+  display: grid;
+  gap: 12px;
+  padding-block: 20px 12px;
+  background: var(--color-page);
 }
 
 .empty {

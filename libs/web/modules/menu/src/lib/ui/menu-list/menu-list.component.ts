@@ -4,9 +4,7 @@ import {
   CdkVirtualScrollableWindow,
   CdkVirtualScrollViewport,
 } from '@angular/cdk/scrolling';
-import { Component, computed, input } from '@angular/core';
-
-import { type MenuSection } from '@restaurant-ordering/web/core/menu';
+import { Component, input } from '@angular/core';
 
 import { MENU_ROW_HEIGHT } from '../../constants';
 import { type MenuRow } from '../../types';
@@ -39,36 +37,11 @@ import { MenuItemComponent } from '../menu-item';
   `,
 })
 export class MenuListComponent {
-  readonly sections = input.required<MenuSection[]>();
+  readonly rows = input.required<MenuRow[]>();
 
   protected readonly rowHeight = MENU_ROW_HEIGHT;
-  protected readonly rows = computed(() => toRows(this.sections()));
 
   protected trackRow(_: number, row: MenuRow): string {
     return row.id;
   }
-}
-
-function toRows(sections: MenuSection[]): MenuRow[] {
-  const rows: MenuRow[] = [];
-
-  for (const { category, items } of sections) {
-    if (!items.length) {
-      continue;
-    }
-
-    rows.push({ type: 'category', id: category.id, category, count: items.length });
-
-    items.forEach((item, index) =>
-      rows.push({
-        type: 'item',
-        id: item.id,
-        item,
-        first: index === 0,
-        last: index === items.length - 1,
-      }),
-    );
-  }
-
-  return rows;
 }

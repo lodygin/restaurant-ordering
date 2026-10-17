@@ -34,3 +34,21 @@ html {
     )
   );
 }
+
+// MatIcon's font set; @fontsource ships only the @font-face
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  direction: ltr;
+  font-feature-settings: 'liga';
+}
+
+// the reset hands buttons the body line height, which pushes icons off centre
+.mat-mdc-icon-button {
+  line-height: 1;
+}
