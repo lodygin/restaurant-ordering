@@ -16,9 +16,9 @@ import {
 } from 'class-validator';
 
 import { ITEM_MAX_PRICE } from '@restaurant-ordering/shared/menu-items';
+import { ORDER_LINE_MAX_QTY } from '@restaurant-ordering/shared/orders';
 
 const MAX_LINES = 100;
-const MAX_QTY = 99;
 
 export class CartLineDto {
   @ApiProperty({ description: 'The cart’s own id for the line; changes in a 409 refer to it.' })
@@ -42,10 +42,10 @@ export class CartLineDto {
   @Max(ITEM_MAX_PRICE)
   unitPrice!: number;
 
-  @ApiProperty({ type: 'integer', minimum: 1, maximum: MAX_QTY })
+  @ApiProperty({ type: 'integer', minimum: 1, maximum: ORDER_LINE_MAX_QTY })
   @IsInt()
   @Min(1)
-  @Max(MAX_QTY)
+  @Max(ORDER_LINE_MAX_QTY)
   qty!: number;
 
   @ApiProperty({ description: 'Whether the item was open-price when it was added.' })

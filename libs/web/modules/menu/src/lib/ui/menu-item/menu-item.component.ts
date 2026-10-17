@@ -1,11 +1,13 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { MatButton } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 
 import { MoneyPipe } from '@restaurant-ordering/web/common/money';
 import { type MenuItem } from '@restaurant-ordering/web/core/menu';
 import { QuantityStepperComponent } from '@restaurant-ordering/web/ui/form';
 
 import { CartStore } from '../../store/cart.store';
+import { PriceDialogComponent } from '../price-dialog';
 
 @Component({
   selector: 'app-menu-item',
@@ -32,7 +34,7 @@ import { CartStore } from '../../store/cart.store';
       @if (!menuItem.available) {
         <button matButton="outlined" disabled>Sold out</button>
       } @else if (menuItem.openPrice) {
-        <button matButton="outlined" disabled>Add…</button>
+        <button matButton="outlined" (click)="openPriceDialog()">Add…</button>
       } @else if (qty()) {
         <app-quantity-stepper
           [value]="qty()"
@@ -52,4 +54,10 @@ export class MenuItemComponent {
   protected readonly cart = inject(CartStore);
 
   protected readonly qty = computed(() => this.cart.qtyByItem().get(this.item().id) ?? 0);
+
+  private readonly dialog = inject(MatDialog);
+
+  protected openPriceDialog(): void {
+    this.dialog.open(PriceDialogComponent, { data: this.item(), width: '440px' });
+  }
 }

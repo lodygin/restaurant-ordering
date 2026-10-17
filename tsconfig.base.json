@@ -43,6 +43,7 @@
       "@restaurant-ordering/shared/categories": ["./libs/shared/categories/src/index.ts"],
       "@restaurant-ordering/shared/menu-items": ["./libs/shared/menu-items/src/index.ts"],
       "@restaurant-ordering/shared/money": ["./libs/shared/money/src/index.ts"],
+      "@restaurant-ordering/shared/orders": ["./libs/shared/orders/src/index.ts"],
       "@restaurant-ordering/web/common/form": ["./libs/web/common/form/src/index.ts"],
       "@restaurant-ordering/web/common/host-element": [
         "./libs/web/common/host-element/src/index.ts"

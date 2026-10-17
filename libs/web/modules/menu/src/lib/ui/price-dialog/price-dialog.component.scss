@@ -1,0 +1,33 @@
+form {
+  display: grid;
+  gap: 14px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  font: var(--text-body-strong);
+}
+
+.description {
+  margin-block-end: 14px;
+  color: var(--color-muted);
+}
+
+.notice {
+  margin-block-end: 14px;
+  padding: 10px 12px;
+  border-radius: var(--radius-s);
+  background: var(--color-accent-soft);
+  font: var(--text-small);
+
+  &.error {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+  }
+}
+
+.error {
+  font: var(--text-caption);
+  color: var(--color-danger);
+}
