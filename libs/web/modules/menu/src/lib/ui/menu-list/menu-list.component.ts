@@ -4,7 +4,11 @@ import {
   CdkVirtualScrollableWindow,
   CdkVirtualScrollViewport,
 } from '@angular/cdk/scrolling';
-import { Component, input } from '@angular/core';
+import { afterNextRender, Component, inject, Injector, input, viewChildren } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
+
+import { MenuStore } from '@restaurant-ordering/web/core/menu';
 
 import { MENU_ROW_HEIGHT } from '../../constants';
 import { type MenuRow } from '../../types';
@@ -41,7 +45,33 @@ export class MenuListComponent {
 
   protected readonly rowHeight = MENU_ROW_HEIGHT;
 
+  private readonly items = viewChildren(MenuItemComponent);
+  private readonly injector = inject(Injector);
+
+  constructor() {
+    inject(MenuStore)
+      .changes$.pipe(
+        map(({ data }) =>
+          data.type === 'item.created' || data.type === 'item.updated' ? data.item.id : null,
+        ),
+        filter(id => id !== null),
+        takeUntilDestroyed(),
+      )
+      .subscribe(id => this.highlightRow(id));
+  }
+
   protected trackRow(_: number, row: MenuRow): string {
     return row.id;
+  }
+
+  // a new item's row renders after the change that brought it, and an off-screen row never does
+  private highlightRow(itemId: string): void {
+    afterNextRender(
+      () =>
+        this.items()
+          .find(row => row.item().id === itemId)
+          ?.highlight(),
+      { injector: this.injector },
+    );
   }
 }

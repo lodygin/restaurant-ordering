@@ -5,12 +5,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { MoneyPipe } from '@restaurant-ordering/web/common/money';
 import { type MenuItem } from '@restaurant-ordering/web/core/menu';
 import { QuantityStepperComponent } from '@restaurant-ordering/web/ui/form';
+import { HighlightDirective } from '@restaurant-ordering/web/ui/highlight';
 
 import { CartStore } from '../../store/cart.store';
 import { PriceDialogComponent } from '../price-dialog';
 
 @Component({
   selector: 'app-menu-item',
+  hostDirectives: [HighlightDirective],
   imports: [MatButton, MoneyPipe, QuantityStepperComponent],
   host: { '[attr.data-sold-out]': '!item().available || null' },
   styleUrl: './menu-item.component.scss',
@@ -56,6 +58,11 @@ export class MenuItemComponent {
   protected readonly qty = computed(() => this.cart.qtyByItem().get(this.item().id) ?? 0);
 
   private readonly dialog = inject(MatDialog);
+  private readonly highlighter = inject(HighlightDirective);
+
+  highlight(): void {
+    this.highlighter.highlight();
+  }
 
   protected openPriceDialog(): void {
     this.dialog.open(PriceDialogComponent, { data: this.item(), width: '440px' });
