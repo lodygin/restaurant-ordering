@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+
+.row {
+  block-size: var(--row-height);
+}
+
+h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: end;
+  align-items: baseline;
+  gap: 10px;
+  block-size: 100%;
+  padding-block-end: 10px;
+  font: var(--text-title);
+  letter-spacing: var(--tracking-tight);
+
+  small {
+    font: var(--text-small);
+    color: var(--color-muted);
+  }
+}
+
+app-menu-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-block-start: 0;
+
+  &.first {
+    border-block-start: 1px solid var(--color-line);
+    border-start-start-radius: var(--radius-m);
+    border-start-end-radius: var(--radius-m);
+  }
+
+  &.last {
+    border-end-start-radius: var(--radius-m);
+    border-end-end-radius: var(--radius-m);
+  }
+}

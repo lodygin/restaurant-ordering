@@ -1,0 +1,46 @@
+:host {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  block-size: 100%;
+  padding-inline: 16px;
+}
+
+.name,
+.description {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.name {
+  font: var(--text-body-strong);
+}
+
+.description {
+  font: var(--text-caption);
+  color: var(--color-muted);
+}
+
+.price {
+  font: var(--text-body-strong);
+  text-align: end;
+
+  &.open {
+    font: var(--text-caption);
+    color: var(--color-muted);
+  }
+}
+
+:host([data-sold-out]) {
+  .name,
+  .price {
+    color: var(--color-muted);
+  }
+
+  .price {
+    text-decoration: line-through;
+  }
+}

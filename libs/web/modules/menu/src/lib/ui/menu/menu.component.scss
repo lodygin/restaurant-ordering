@@ -1,0 +1,11 @@
+:host {
+  display: block;
+  max-inline-size: 1240px;
+  margin-inline: auto;
+  padding: 8px clamp(16px, 4vw, 24px) 80px;
+}
+
+.empty {
+  padding-block: 48px;
+  color: var(--color-muted);
+}
