@@ -12,7 +12,16 @@
       "inputs": ["default", "^default"],
       "options": {
         "parallel": false,
-        "commands": ["ngc -p libs/web/modules/menu/tsconfig.lib.json --noEmit"]
+        "commands": [
+          "ngc -p libs/web/modules/menu/tsconfig.lib.json --noEmit",
+          "ngc -p libs/web/modules/menu/tsconfig.spec.json --noEmit"
+        ]
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --config libs/web/modules/menu/vitest.config.mts"
       }
     }
   }
