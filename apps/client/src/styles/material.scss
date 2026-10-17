@@ -33,6 +33,12 @@ html {
       outlined-outline-color: var(--color-line),
     )
   );
+
+  @include mat.bottom-sheet-overrides(
+    (
+      container-background-color: var(--color-page),
+    )
+  );
 }
 
 // MatIcon's font set; @fontsource ships only the @font-face

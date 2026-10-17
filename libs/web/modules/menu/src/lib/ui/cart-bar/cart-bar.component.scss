@@ -1,0 +1,14 @@
+:host {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border-block-start: 1px solid var(--color-line);
+  font: var(--text-body-strong);
+}

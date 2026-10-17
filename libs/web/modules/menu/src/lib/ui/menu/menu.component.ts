@@ -1,15 +1,20 @@
 import { createNoopScrollStrategy } from '@angular/cdk/overlay';
 import { Component, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MAT_BOTTOM_SHEET_DEFAULT_OPTIONS, MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialog } from '@angular/material/dialog';
 
 import { MenuStore } from '@restaurant-ordering/web/core/menu';
 import { InputComponent } from '@restaurant-ordering/web/ui/form';
 
+import { CartStore } from '../../store/cart.store';
 import { GuestMenuStore } from '../../store/guest-menu.store';
 import { CartComponent } from '../cart';
+import { CartBarComponent } from '../cart-bar';
 import { CategoryChipsComponent } from '../category-chips';
 import { CategoryScrollDirective } from '../category-scroll';
+import { ChangesDialogComponent } from '../changes-dialog';
 import { MenuListComponent } from '../menu-list';
 
 @Component({
@@ -18,6 +23,7 @@ import { MenuListComponent } from '../menu-list';
     ReactiveFormsModule,
     InputComponent,
     CartComponent,
+    CartBarComponent,
     CategoryChipsComponent,
     CategoryScrollDirective,
     MenuListComponent,
@@ -26,8 +32,13 @@ import { MenuListComponent } from '../menu-list';
     GuestMenuStore,
     // blocking the page scroll resets the window to the top, and the virtual list renders the wrong rows
     MatDialog,
+    MatBottomSheet,
     {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: { scrollStrategy: createNoopScrollStrategy() },
+    },
+    {
+      provide: MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
       useValue: { scrollStrategy: createNoopScrollStrategy() },
     },
   ],
@@ -69,6 +80,7 @@ import { MenuListComponent } from '../menu-list';
     </section>
 
     <app-cart class="cart" />
+    <app-cart-bar class="cart-bar" />
   `,
 })
 export class MenuComponent {
@@ -78,6 +90,12 @@ export class MenuComponent {
   protected readonly query = new FormControl('', { nonNullable: true });
 
   constructor() {
+    const dialog = inject(MatDialog);
+
     this.guestMenu.search(this.query.valueChanges);
+
+    inject(CartStore)
+      .conflicts$.pipe(takeUntilDestroyed())
+      .subscribe(changes => dialog.open(ChangesDialogComponent, { data: changes, width: '480px' }));
   }
 }

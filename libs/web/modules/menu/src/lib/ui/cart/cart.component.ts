@@ -1,7 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
 
 import { MoneyPipe } from '@restaurant-ordering/web/common/money';
@@ -9,7 +7,6 @@ import { MenuStore } from '@restaurant-ordering/web/core/menu';
 import { QuantityStepperComponent } from '@restaurant-ordering/web/ui/form';
 
 import { CartStore } from '../../store/cart.store';
-import { ChangesDialogComponent } from '../changes-dialog';
 import { DiscountFieldComponent } from '../discount-field';
 
 @Component({
@@ -111,14 +108,4 @@ import { DiscountFieldComponent } from '../discount-field';
 export class CartComponent {
   protected readonly cart = inject(CartStore);
   protected readonly menu = inject(MenuStore);
-
-  private readonly dialog = inject(MatDialog);
-
-  constructor() {
-    this.cart.conflicts$
-      .pipe(takeUntilDestroyed())
-      .subscribe(changes =>
-        this.dialog.open(ChangesDialogComponent, { data: changes, width: '480px' }),
-      );
-  }
 }
