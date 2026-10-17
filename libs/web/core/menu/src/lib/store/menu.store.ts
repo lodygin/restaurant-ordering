@@ -1,7 +1,6 @@
 import { computed, inject } from '@angular/core';
 import { pipe, repeat, retry, Subject, switchMap, takeWhile, tap, timer } from 'rxjs';
 
-import { tapResponse } from '@ngrx/operators';
 import {
   patchState,
   signalStore,
@@ -92,28 +91,33 @@ export const MenuStore = signalStore(
               switchMap(({ revision }) => api.changes(revision)),
               takeWhile(event => event.type !== 'message' || event.data.type !== 'resync'),
               repeat(),
-              tapResponse({
-                next: event => {
-                  if (event.type !== 'message') {
-                    patchState(store, {
-                      connection: event.type === 'open' ? 'online' : event.type,
-                    });
+              tap(event => {
+                if (event.type !== 'message') {
+                  patchState(store, {
+                    connection: event.type === 'open' ? 'online' : event.type,
+                  });
 
-                    return;
-                  }
+                  return;
+                }
 
-                  const { id: revision, data: change } = event;
+                const { id: revision, data: change } = event;
 
-                  // a reconnect replays what the snapshot already holds
-                  if (change.type === 'resync' || revision <= (store.revision() ?? 0)) {
-                    return;
-                  }
+                // a reconnect replays what the snapshot already holds
+                if (change.type === 'resync' || revision <= (store.revision() ?? 0)) {
+                  return;
+                }
 
-                  applyChange(change);
-                  patchState(store, { revision });
-                  store._changes$$.next({ data: change, revision });
+                applyChange(change);
+                patchState(store, { revision });
+                store._changes$$.next({ data: change, revision });
+              }),
+              // a stream that breaks (e.g. on a change it can't parse or apply) starts over from a fresh snapshot
+              retry({
+                delay: () => {
+                  patchState(store, { connection: 'reconnecting' });
+
+                  return timer(SNAPSHOT_RETRY_MS);
                 },
-                error: () => patchState(store, { status: 'error', connection: 'offline' }),
               }),
             );
           }),

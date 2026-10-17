@@ -216,6 +216,22 @@ describe('MenuStore', () => {
     expect(api.snapshots).toHaveLength(2);
   });
 
+  it('starts over from a fresh snapshot when the stream breaks', () => {
+    api.respond(menu);
+    api.push({ type: 'open' });
+    api.streams[0]?.events.error(new Error('unexpected change'));
+
+    expect(store.connection()).toBe('reconnecting');
+    expect(store.status()).toBe('loaded');
+
+    vi.advanceTimersByTime(3000);
+    api.respond(menu, 50);
+    api.push({ type: 'open' });
+
+    expect(api.streams[1]?.since).toBe(50);
+    expect(store.connection()).toBe('online');
+  });
+
   it('applies its own edit before the stream echoes it, leaving the revision to the stream', () => {
     api.respond(menu);
     store.applyEditResult(43, { type: 'item.updated', item: { ...tomYum, available: false } });
