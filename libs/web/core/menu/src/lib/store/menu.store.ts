@@ -96,7 +96,7 @@ export const MenuStore = signalStore(
                 next: event => {
                   if (event.type !== 'message') {
                     patchState(store, {
-                      connection: event.type === 'open' ? 'online' : 'reconnecting',
+                      connection: event.type === 'open' ? 'online' : event.type,
                     });
 
                     return;

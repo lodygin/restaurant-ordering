@@ -125,6 +125,20 @@ describe('ServerEvents', () => {
     expect(FakeEventSource.instances).toHaveLength(3);
   });
 
+  it('closes the stream while the browser is offline and resumes from the last event', () => {
+    latest().open();
+    latest().emit(12, {});
+    window.dispatchEvent(new Event('offline'));
+
+    expect(events.at(-1)).toEqual({ type: 'offline' });
+    expect(latest().closed).toBe(true);
+
+    window.dispatchEvent(new Event('online'));
+
+    expect(FakeEventSource.instances).toHaveLength(2);
+    expect(latest().url).toBe('http://api/menu/events?since=12');
+  });
+
   it('closes the stream on unsubscribe', () => {
     subscription.unsubscribe();
 

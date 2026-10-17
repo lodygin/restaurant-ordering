@@ -1,5 +1,17 @@
 import { inject, Injectable } from '@angular/core';
-import { defer, Observable, retry, timer } from 'rxjs';
+import {
+  defer,
+  distinctUntilChanged,
+  fromEvent,
+  map,
+  merge,
+  Observable,
+  of,
+  retry,
+  startWith,
+  switchMap,
+  timer,
+} from 'rxjs';
 
 import { API_URL } from '@restaurant-ordering/web/infrastructure/http';
 
@@ -11,13 +23,14 @@ const MAX_RETRY_DELAY_MS = 10_000;
 export class ServerEvents {
   private readonly apiUrl = inject(API_URL);
 
-  // the browser retries a dropped stream itself; one it gave up on is reopened here from the last id
+  // the browser retries a dropped stream itself; one it gave up on is reopened here from the last id,
+  // and while the browser is offline the stream stays closed
   connect(path: string, since: number): Observable<ServerEvent<unknown>> {
     return defer(() => {
       let lastId = since;
       let failures = 0;
 
-      return new Observable<ServerEvent<unknown>>(subscriber => {
+      const stream$ = new Observable<ServerEvent<unknown>>(subscriber => {
         const source = new EventSource(`${this.apiUrl}${path}?since=${lastId}`);
 
         source.onopen = () => {
@@ -40,6 +53,15 @@ export class ServerEvents {
 
         return () => source.close();
       }).pipe(retry({ delay: () => timer(Math.min(500 * 2 ** failures++, MAX_RETRY_DELAY_MS)) }));
+
+      return merge(
+        fromEvent(window, 'online').pipe(map(() => true)),
+        fromEvent(window, 'offline').pipe(map(() => false)),
+      ).pipe(
+        startWith(navigator.onLine),
+        distinctUntilChanged(),
+        switchMap(online => (online ? stream$ : of<ServerEvent<unknown>>({ type: 'offline' }))),
+      );
     });
   }
 }

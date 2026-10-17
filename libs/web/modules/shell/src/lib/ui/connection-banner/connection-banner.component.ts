@@ -6,7 +6,7 @@ const MESSAGES: Record<MenuConnection, string | null> = {
   connecting: null,
   online: null,
   reconnecting: 'Reconnecting… Catching up on what changed.',
-  offline: 'Live updates stopped. Reload the page to get them back.',
+  offline: 'You’re offline. Showing the menu as it was; changes will appear once you’re back.',
 };
 
 @Component({

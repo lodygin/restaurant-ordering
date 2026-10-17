@@ -121,6 +121,10 @@ describe('MenuStore', () => {
     api.push({ type: 'reconnecting' });
 
     expect(store.connection()).toBe('reconnecting');
+
+    api.push({ type: 'offline' });
+
+    expect(store.connection()).toBe('offline');
   });
 
   it('applies item changes and moves the revision', () => {
