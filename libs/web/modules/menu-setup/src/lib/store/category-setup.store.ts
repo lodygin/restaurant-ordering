@@ -9,7 +9,11 @@ import { MenuApi, MenuStore } from '@restaurant-ordering/web/core/menu';
 import { apiErrorMessage } from '@restaurant-ordering/web/infrastructure/http';
 import { ToastService } from '@restaurant-ordering/web/ui/toast';
 
-import { type CategorySetupState } from '../types';
+type CategorySetupState = {
+  selectedId: string | null;
+  creating: boolean;
+  removing: string[];
+};
 
 const initialState: CategorySetupState = { selectedId: null, creating: false, removing: [] };
 

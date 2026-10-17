@@ -6,7 +6,11 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
 import { MenuStore, type MenuSection } from '@restaurant-ordering/web/core/menu';
 
-import { type GuestMenuState, type MenuRow } from '../types';
+import { type MenuRow } from '../types';
+
+type GuestMenuState = {
+  query: string;
+};
 
 const initialState: GuestMenuState = { query: '' };
 

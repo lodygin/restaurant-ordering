@@ -17,7 +17,12 @@ import { apiErrorMessage } from '@restaurant-ordering/web/infrastructure/http';
 import { ToastService } from '@restaurant-ordering/web/ui/toast';
 
 import { DEFAULT_ITEM_PRICE, NEW_ITEM_NAME } from '../constants';
-import { type ItemSetupState } from '../types';
+
+type ItemSetupState = {
+  creating: boolean;
+  edits: Record<string, Partial<MenuItemInput>>;
+  removing: string[];
+};
 
 const initialState: ItemSetupState = { creating: false, edits: {}, removing: [] };
 

@@ -18,10 +18,18 @@ import { OrdersApi, type OrderChange } from '@restaurant-ordering/web/core/order
 import { apiErrorMessage } from '@restaurant-ordering/web/infrastructure/http';
 import { ToastService } from '@restaurant-ordering/web/ui/toast';
 
-import { type CartChange, type CartLine, type CartLineIssue, type CartState } from '../types';
+import { type CartChange, type CartLine, type CartLineIssue } from '../types';
 
 const LOST_RESPONSE_RETRIES = 3;
 const LOST_RESPONSE_RETRY_MS = 1000;
+
+type CartState = {
+  lines: CartLine[];
+  discount: number;
+  requestKey: string | null;
+  placing: boolean;
+  placedNumber: number | null;
+};
 
 const initialState: CartState = {
   lines: [],

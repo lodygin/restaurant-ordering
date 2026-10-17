@@ -16,7 +16,13 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
 import { MenuApi } from '../api/menu.api';
 import { type Category, type MenuEntityChange, type MenuItem } from '../models';
-import { type MenuSection, type MenuState, type Revised } from '../types';
+import { type MenuConnection, type MenuSection, type MenuStatus, type Revised } from '../types';
+
+type MenuState = {
+  status: MenuStatus;
+  connection: MenuConnection;
+  revision: number | null;
+};
 
 const SNAPSHOT_RETRY_MS = 3000;
 
