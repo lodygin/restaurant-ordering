@@ -1,5 +1,7 @@
+import { createNoopScrollStrategy } from '@angular/cdk/overlay';
 import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialog } from '@angular/material/dialog';
 
 import { MenuStore } from '@restaurant-ordering/web/core/menu';
 import { InputComponent } from '@restaurant-ordering/web/ui/form';
@@ -20,7 +22,15 @@ import { MenuListComponent } from '../menu-list';
     CategoryScrollDirective,
     MenuListComponent,
   ],
-  providers: [GuestMenuStore],
+  providers: [
+    GuestMenuStore,
+    // blocking the page scroll resets the window to the top, and the virtual list renders the wrong rows
+    MatDialog,
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: { scrollStrategy: createNoopScrollStrategy() },
+    },
+  ],
   styleUrl: './menu.component.scss',
   template: `
     <section class="menu" aria-label="Menu">
