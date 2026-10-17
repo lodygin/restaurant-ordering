@@ -111,7 +111,7 @@ export const MenuStore = signalStore(
                 patchState(store, { revision });
                 store._changes$$.next({ data: change, revision });
               }),
-              // a stream that breaks (e.g. on a change it can't parse or apply) starts over from a fresh snapshot
+              // a broken stream starts over from a fresh snapshot
               retry({
                 delay: () => {
                   patchState(store, { connection: 'reconnecting' });

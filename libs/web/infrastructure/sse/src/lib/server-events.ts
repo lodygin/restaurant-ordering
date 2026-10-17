@@ -23,8 +23,7 @@ const MAX_RETRY_DELAY_MS = 10_000;
 export class ServerEvents {
   private readonly apiUrl = inject(API_URL);
 
-  // the browser retries a dropped stream itself; one it gave up on is reopened here from the last id,
-  // and while the browser is offline the stream stays closed
+  // a stream the browser gave up on reopens from the last id; offline it stays closed
   connect(path: string, since: number): Observable<ServerEvent<unknown>> {
     return defer(() => {
       let lastId = since;
