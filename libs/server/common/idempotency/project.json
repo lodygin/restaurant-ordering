@@ -1,0 +1,8 @@
+{
+  "name": "server-common-idempotency",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/server/common/idempotency/src",
+  "projectType": "library",
+  "tags": ["platform:server"],
+  "targets": {}
+}

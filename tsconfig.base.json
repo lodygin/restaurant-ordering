@@ -23,6 +23,9 @@
     "isolatedModules": true,
     "paths": {
       "@restaurant-ordering/server/common/http": ["./libs/server/common/http/src/index.ts"],
+      "@restaurant-ordering/server/common/idempotency": [
+        "./libs/server/common/idempotency/src/index.ts"
+      ],
       "@restaurant-ordering/server/infrastructure/sse": [
         "./libs/server/infrastructure/sse/src/index.ts"
       ],
@@ -36,6 +39,7 @@
       "@restaurant-ordering/server/modules/menu-revision": [
         "./libs/server/modules/menu-revision/src/index.ts"
       ],
+      "@restaurant-ordering/server/modules/orders": ["./libs/server/modules/orders/src/index.ts"],
       "@restaurant-ordering/shared/categories": ["./libs/shared/categories/src/index.ts"],
       "@restaurant-ordering/shared/menu-items": ["./libs/shared/menu-items/src/index.ts"],
       "@restaurant-ordering/shared/money": ["./libs/shared/money/src/index.ts"],

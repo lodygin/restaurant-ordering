@@ -42,6 +42,10 @@ export class MenuItemsService {
     return [...this.items.values()];
   }
 
+  find(id: string): MenuItem | undefined {
+    return this.items.get(id);
+  }
+
   create(input: CreateMenuItemInput): Revised<MenuItem> {
     this.assertCategoryExists(input.categoryId);
 
@@ -100,7 +104,7 @@ export class MenuItemsService {
   }
 
   private get(id: string): MenuItem {
-    const item = this.items.get(id);
+    const item = this.find(id);
 
     if (!item) {
       throw new NotFoundException('Menu item not found.');

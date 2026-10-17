@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
 
 import { MenuModule } from '@restaurant-ordering/server/modules/menu';
+import { OrdersModule } from '@restaurant-ordering/server/modules/orders';
 
 import appConfig from './app.config';
 
@@ -14,6 +15,7 @@ import appConfig from './app.config';
       load: [appConfig],
     }),
     MenuModule,
+    OrdersModule,
   ],
   providers: [
     {
