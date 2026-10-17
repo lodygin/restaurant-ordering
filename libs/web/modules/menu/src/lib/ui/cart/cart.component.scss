@@ -70,12 +70,17 @@ h2 {
   }
 }
 
+.foot {
+  display: grid;
+  gap: 12px;
+  padding: 16px 20px 20px;
+}
+
 .totals {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 4px;
   margin: 0;
-  padding: 16px 20px 20px;
 
   dt {
     color: var(--color-muted);

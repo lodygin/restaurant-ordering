@@ -1,0 +1,20 @@
+:host {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  align-items: center;
+  gap: 8px;
+}
+
+label {
+  font: var(--text-body-strong);
+}
+
+.hint {
+  grid-column: 1 / -1;
+  font: var(--text-caption);
+  color: var(--color-muted);
+
+  &.error {
+    color: var(--color-danger);
+  }
+}

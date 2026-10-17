@@ -1,2 +1,2 @@
 export { formatPrice } from './lib/format-price';
-export { parsePrice } from './lib/parse-price';
+export { parsePrice, PRICE_PATTERN } from './lib/parse-price';

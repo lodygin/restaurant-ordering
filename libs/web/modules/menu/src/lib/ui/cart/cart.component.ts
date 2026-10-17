@@ -5,10 +5,11 @@ import { MoneyPipe } from '@restaurant-ordering/web/common/money';
 import { QuantityStepperComponent } from '@restaurant-ordering/web/ui/form';
 
 import { CartStore } from '../../store/cart.store';
+import { DiscountFieldComponent } from '../discount-field';
 
 @Component({
   selector: 'app-cart',
-  imports: [MatButton, MoneyPipe, QuantityStepperComponent],
+  imports: [MatButton, MoneyPipe, QuantityStepperComponent, DiscountFieldComponent],
   host: { 'aria-labelledby': 'cart-title' },
   styleUrl: './cart.component.scss',
   template: `
@@ -66,12 +67,18 @@ import { CartStore } from '../../store/cart.store';
         }
       </ul>
 
-      <dl class="totals">
-        <dt>Subtotal</dt>
-        <dd>{{ cart.subtotal() | money }}</dd>
-        <dt class="grand">Total</dt>
-        <dd class="grand">{{ cart.total() | money }}</dd>
-      </dl>
+      <div class="foot">
+        <app-discount-field />
+
+        <dl class="totals">
+          <dt>Subtotal</dt>
+          <dd>{{ cart.subtotal() | money }}</dd>
+          <dt>Discount</dt>
+          <dd>{{ cart.appliedDiscount() ? '−' : '' }}{{ cart.appliedDiscount() | money }}</dd>
+          <dt class="grand">Total</dt>
+          <dd class="grand">{{ cart.total() | money }}</dd>
+        </dl>
+      </div>
     } @else {
       <p class="empty">Nothing here yet. Add dishes from the menu.</p>
     }
