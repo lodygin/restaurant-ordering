@@ -98,6 +98,21 @@ h2 {
   }
 }
 
+.notice {
+  padding: 10px 12px;
+  border-radius: var(--radius-s);
+  background: var(--color-accent-soft);
+  font: var(--text-small);
+
+  &.placed {
+    margin: 20px 20px 0;
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
 .empty {
   padding: 32px 20px;
   color: var(--color-muted);

@@ -1,0 +1,23 @@
+ul {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  padding: 10px 12px;
+  border-radius: var(--radius-s);
+  background: var(--color-flag-soft);
+  color: var(--color-ink);
+
+  &.gone {
+    background: var(--color-danger-soft);
+  }
+}
+
+strong {
+  display: block;
+  font: var(--text-body-strong);
+}
