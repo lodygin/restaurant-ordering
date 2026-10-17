@@ -5,14 +5,25 @@ import { MatIcon } from '@angular/material/icon';
 @Component({
   selector: 'app-quantity-stepper',
   imports: [MatIconButton, MatIcon],
-  host: { role: 'group', '[attr.aria-label]': '"Quantity of " + label()' },
+  host: {
+    role: 'group',
+    '[attr.aria-label]': '"Quantity of " + label()',
+    '[attr.aria-disabled]': 'disabled() || null',
+  },
   styleUrl: './quantity-stepper.component.scss',
   template: `
-    <button matIconButton aria-label="Remove one" (click)="decreased.emit()">
+    <button
+      matIconButton
+      aria-label="Remove one"
+      [disabled]="disabled()"
+      (click)="decreased.emit()"
+    >
       <mat-icon>remove</mat-icon>
     </button>
+
     <output>{{ value() }}</output>
-    <button matIconButton aria-label="Add one" (click)="increased.emit()">
+
+    <button matIconButton aria-label="Add one" [disabled]="disabled()" (click)="increased.emit()">
       <mat-icon>add</mat-icon>
     </button>
   `,
@@ -20,6 +31,7 @@ import { MatIcon } from '@angular/material/icon';
 export class QuantityStepperComponent {
   readonly value = input.required<number>();
   readonly label = input.required<string>();
+  readonly disabled = input(false);
 
   readonly decreased = output();
   readonly increased = output();

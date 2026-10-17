@@ -29,7 +29,9 @@ import { DiscountFieldComponent } from '../discount-field';
             </div>
             <div class="total">{{ line.unitPrice * line.qty | money }}</div>
 
-            @if (cart.issues().get(line.lineId); as issue) {
+            @let issue = cart.issues().get(line.lineId);
+
+            @if (issue) {
               @switch (issue.type) {
                 @case ('unavailable') {
                   <p class="issue gone">
@@ -60,6 +62,7 @@ import { DiscountFieldComponent } from '../discount-field';
               <app-quantity-stepper
                 [value]="line.qty"
                 [label]="line.name"
+                [disabled]="issue?.type === 'unavailable' || issue?.type === 'now-open'"
                 (decreased)="cart.changeQty(line.lineId, -1)"
                 (increased)="cart.changeQty(line.lineId, 1)"
               />

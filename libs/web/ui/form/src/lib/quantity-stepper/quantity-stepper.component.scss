@@ -8,6 +8,10 @@
   color: var(--color-accent);
 }
 
+:host([aria-disabled]) {
+  opacity: 0.55;
+}
+
 button {
   --mat-icon-button-state-layer-size: 34px;
   --mat-icon-button-icon-color: var(--color-accent);
