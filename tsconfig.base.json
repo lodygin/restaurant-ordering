@@ -51,6 +51,7 @@
       "@restaurant-ordering/web/common/money": ["./libs/web/common/money/src/index.ts"],
       "@restaurant-ordering/web/common/zod": ["./libs/web/common/zod/src/index.ts"],
       "@restaurant-ordering/web/core/menu": ["./libs/web/core/menu/src/index.ts"],
+      "@restaurant-ordering/web/core/orders": ["./libs/web/core/orders/src/index.ts"],
       "@restaurant-ordering/web/infrastructure/http": [
         "./libs/web/infrastructure/http/src/index.ts"
       ],
