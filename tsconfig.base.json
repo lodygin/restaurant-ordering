@@ -63,6 +63,7 @@
       "@restaurant-ordering/web/modules/menu-setup": ["./libs/web/modules/menu-setup/src/index.ts"],
       "@restaurant-ordering/web/modules/orders": ["./libs/web/modules/orders/src/index.ts"],
       "@restaurant-ordering/web/modules/shell": ["./libs/web/modules/shell/src/index.ts"],
+      "@restaurant-ordering/web/ui/confirm": ["./libs/web/ui/confirm/src/index.ts"],
       "@restaurant-ordering/web/ui/form": ["./libs/web/ui/form/src/index.ts"],
       "@restaurant-ordering/web/ui/highlight": ["./libs/web/ui/highlight/src/index.ts"],
       "@restaurant-ordering/web/ui/toast": ["./libs/web/ui/toast/src/index.ts"]

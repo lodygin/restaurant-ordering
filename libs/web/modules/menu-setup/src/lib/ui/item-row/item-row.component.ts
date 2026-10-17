@@ -1,4 +1,5 @@
-import { Component, computed, effect, inject, input, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, input, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -9,6 +10,7 @@ import { ITEM_MAX_PRICE, ITEM_NAME_MAX_LENGTH } from '@restaurant-ordering/share
 import { formatPrice, parsePrice } from '@restaurant-ordering/shared/money';
 import { disableControl, priceValidator } from '@restaurant-ordering/web/common/form';
 import { type MenuItem, type MenuItemInput } from '@restaurant-ordering/web/core/menu';
+import { ConfirmService } from '@restaurant-ordering/web/ui/confirm';
 import {
   FocusableDirective,
   InputComponent,
@@ -76,7 +78,7 @@ import { ItemSetupStore } from '../../store/item-setup.store';
         matButton
         class="quiet"
         [disabled]="disabled() || items.removing().includes(item().id)"
-        (click)="items.remove(item().id)"
+        (click)="remove()"
       >
         Remove
       </button>
@@ -109,6 +111,8 @@ export class ItemRowComponent {
   });
 
   private readonly highlighter = inject(HighlightDirective);
+  private readonly confirm = inject(ConfirmService);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly changes$: Observable<Partial<MenuItemInput>> = defer(() => {
     const { name, price, available, openPrice } = this.form.controls;
@@ -150,6 +154,19 @@ export class ItemRowComponent {
 
   highlight(): void {
     this.highlighter.highlight();
+  }
+
+  protected remove(): void {
+    const { id, name } = this.item();
+
+    this.confirm
+      .ask({
+        title: `Remove ${name}?`,
+        message: 'It disappears from the menu for guests right away.',
+        action: 'Remove',
+      })
+      .pipe(filter(Boolean), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.items.remove(id));
   }
 
   private syncForm(item: MenuItem, locked: boolean): void {
