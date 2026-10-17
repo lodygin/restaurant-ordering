@@ -5,6 +5,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DEFAULT_OPTIONS, MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialog } from '@angular/material/dialog';
 
+import { MediaDirective } from '@restaurant-ordering/web/common/media';
 import { MenuStore } from '@restaurant-ordering/web/core/menu';
 import { InputComponent } from '@restaurant-ordering/web/ui/form';
 
@@ -21,6 +22,7 @@ import { MenuListComponent } from '../menu-list';
   selector: 'app-menu',
   imports: [
     ReactiveFormsModule,
+    MediaDirective,
     InputComponent,
     CartComponent,
     CartBarComponent,
@@ -79,8 +81,8 @@ import { MenuListComponent } from '../menu-list';
       }
     </section>
 
-    <app-cart class="cart" />
-    <app-cart-bar class="cart-bar" />
+    <app-cart-bar *appMedia="'(width <= 960px)'; else wide" />
+    <ng-template #wide><app-cart class="cart" /></ng-template>
   `,
 })
 export class MenuComponent {

@@ -1,0 +1,18 @@
+{
+  "name": "web-common-media",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/common/media/src",
+  "projectType": "library",
+  "prefix": "app",
+  "tags": ["platform:web"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "command": "ngc -p libs/web/common/media/tsconfig.lib.json --noEmit"
+      }
+    }
+  }
+}
