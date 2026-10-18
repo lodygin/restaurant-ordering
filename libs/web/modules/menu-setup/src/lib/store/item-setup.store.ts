@@ -5,7 +5,7 @@ import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
-import { formatPrice } from '@restaurant-ordering/shared/money';
+import { formatMoney } from '@restaurant-ordering/web/common/money';
 import { concatMapBy, exhaustMapBy } from '@restaurant-ordering/web/common/rxjs';
 import {
   MenuApi,
@@ -140,11 +140,11 @@ function describeEdit(changes: Partial<MenuItemInput>, item: MenuItem): string {
   if (changes.openPrice !== undefined) {
     return item.openPrice
       ? `${item.name}: price is now entered when ordering`
-      : `${item.name}: fixed price $${formatPrice(DEFAULT_ITEM_PRICE)}, adjust it if needed`;
+      : `${item.name}: fixed price ${formatMoney(DEFAULT_ITEM_PRICE)}, adjust it if needed`;
   }
 
   if (changes.price !== undefined && item.price !== null) {
-    return `${item.name} is now $${formatPrice(item.price)}`;
+    return `${item.name} is now ${formatMoney(item.price)}`;
   }
 
   if (changes.available !== undefined) {

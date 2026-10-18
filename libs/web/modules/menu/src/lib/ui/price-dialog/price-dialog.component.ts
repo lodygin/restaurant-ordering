@@ -11,14 +11,14 @@ import {
 } from '@angular/material/dialog';
 
 import { ITEM_MAX_PRICE } from '@restaurant-ordering/shared/menu-items';
-import { formatPrice, parsePrice } from '@restaurant-ordering/shared/money';
+import { parsePrice } from '@restaurant-ordering/shared/money';
 import { ORDER_LINE_MAX_QTY } from '@restaurant-ordering/shared/orders';
 import {
   disableControl,
   priceValidator,
   WhenFormValid,
 } from '@restaurant-ordering/web/common/form';
-import { MoneyPipe } from '@restaurant-ordering/web/common/money';
+import { formatMoney, MoneyPipe } from '@restaurant-ordering/web/common/money';
 import { MenuStore, type MenuItem } from '@restaurant-ordering/web/core/menu';
 import { InputComponent, MoneyFieldComponent } from '@restaurant-ordering/web/ui/form';
 import { ToastService } from '@restaurant-ordering/web/ui/toast';
@@ -103,7 +103,7 @@ export class PriceDialogComponent {
     const item = this.item();
 
     return item?.available && item.price !== null
-      ? `Add at $${formatPrice(item.price)}`
+      ? `Add at ${formatMoney(item.price)}`
       : 'Add to order';
   });
 
@@ -151,7 +151,7 @@ export class PriceDialogComponent {
     }
 
     this.cart.add(item, qty, unitPrice);
-    this.toast.show(`${item.name} added at $${formatPrice(unitPrice)}`);
+    this.toast.show(`${item.name} added at ${formatMoney(unitPrice)}`);
     this.dialogRef.close();
   }
 }
