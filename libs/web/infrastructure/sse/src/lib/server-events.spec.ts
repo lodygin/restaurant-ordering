@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { type Subscription } from 'rxjs';
 
+import { type ServerEvent } from '@restaurant-ordering/web/common/sync';
 import { API_URL } from '@restaurant-ordering/web/infrastructure/http';
 
 import { ServerEvents } from './server-events';
-import { type ServerEvent } from './types';
 
 class FakeEventSource {
   static readonly CONNECTING = 0;

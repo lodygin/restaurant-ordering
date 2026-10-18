@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 
-import { type StreamConnection } from '@restaurant-ordering/web/infrastructure/sse';
+import { type StreamConnection } from '@restaurant-ordering/web/common/sync';
 
 const LABELS: Record<StreamConnection, string> = {
   connecting: 'Connecting',

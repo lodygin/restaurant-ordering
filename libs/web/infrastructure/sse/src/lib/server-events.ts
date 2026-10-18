@@ -13,9 +13,8 @@ import {
   timer,
 } from 'rxjs';
 
+import { type ServerEvent } from '@restaurant-ordering/web/common/sync';
 import { API_URL } from '@restaurant-ordering/web/infrastructure/http';
-
-import { type ServerEvent } from './types';
 
 const MAX_RETRY_DELAY_MS = 10_000;
 

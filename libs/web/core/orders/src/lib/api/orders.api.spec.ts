@@ -3,7 +3,8 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Subject, toArray } from 'rxjs';
 
-import { ServerEvents, type ServerEvent } from '@restaurant-ordering/web/infrastructure/sse';
+import { type ServerEvent } from '@restaurant-ordering/web/common/sync';
+import { ServerEvents } from '@restaurant-ordering/web/infrastructure/sse';
 
 import { type Order } from '../models';
 import { OrdersApi } from './orders.api';

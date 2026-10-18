@@ -4,14 +4,10 @@ import { map, type Observable } from 'rxjs';
 
 import * as z from 'zod/mini';
 
-import { parse } from '@restaurant-ordering/web/common/zod';
+import { type Revised, type ServerEvent } from '@restaurant-ordering/web/common/sync';
+import { parse, parseEvents } from '@restaurant-ordering/web/common/zod';
 import { ApiService } from '@restaurant-ordering/web/infrastructure/rest';
-import {
-  parseEvents,
-  ServerEvents,
-  type Revised,
-  type ServerEvent,
-} from '@restaurant-ordering/web/infrastructure/sse';
+import { ServerEvents } from '@restaurant-ordering/web/infrastructure/sse';
 
 import {
   orderConflictSchema,

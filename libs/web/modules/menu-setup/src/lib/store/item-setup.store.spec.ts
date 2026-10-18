@@ -3,13 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 
+import { type Revised } from '@restaurant-ordering/web/common/sync';
 import {
   MenuApi,
   MenuStore,
   type MenuEntityChange,
   type MenuItem,
 } from '@restaurant-ordering/web/core/menu';
-import { type Revised } from '@restaurant-ordering/web/infrastructure/sse';
 
 import { ItemSetupStore } from './item-setup.store';
 

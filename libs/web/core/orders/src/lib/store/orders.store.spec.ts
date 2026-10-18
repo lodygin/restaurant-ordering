@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { defer, Subject, type Observable } from 'rxjs';
 
-import { type Revised, type ServerEvent } from '@restaurant-ordering/web/infrastructure/sse';
+import { type Revised, type ServerEvent } from '@restaurant-ordering/web/common/sync';
 
 import { OrdersApi } from '../api/orders.api';
 import { type Order, type OrderEvent } from '../models';

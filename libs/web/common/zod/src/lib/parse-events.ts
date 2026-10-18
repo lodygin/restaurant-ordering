@@ -2,7 +2,7 @@ import { map, type OperatorFunction } from 'rxjs';
 
 import type * as z from 'zod/mini';
 
-import { type ServerEvent } from './types';
+import { type ServerEvent } from '@restaurant-ordering/web/common/sync';
 
 export function parseEvents<T>(
   schema: z.ZodMiniType<T>,

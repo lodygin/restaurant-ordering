@@ -14,7 +14,7 @@ import {
 import { removeEntity, setAllEntities, setEntity, withEntities } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
-import { type Revised, type StreamConnection } from '@restaurant-ordering/web/infrastructure/sse';
+import { type Revised, type StreamConnection } from '@restaurant-ordering/web/common/sync';
 
 import { MenuApi } from '../api/menu.api';
 import { type Category, type MenuEntityChange, type MenuItem } from '../models';

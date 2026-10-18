@@ -13,7 +13,7 @@ import {
 import { setAllEntities, setEntity, withEntities } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
-import { type StreamConnection } from '@restaurant-ordering/web/infrastructure/sse';
+import { type StreamConnection } from '@restaurant-ordering/web/common/sync';
 
 import { OrdersApi } from '../api/orders.api';
 import { type Order } from '../models';
