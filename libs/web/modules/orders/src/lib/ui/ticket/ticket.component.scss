@@ -1,0 +1,86 @@
+:host {
+  --tooth: 10px;
+
+  display: block;
+  padding: 18px 18px 28px;
+  font: var(--text-caption);
+  font-variant-numeric: tabular-nums;
+  background: var(--color-surface);
+  filter: drop-shadow(0 2px 3px rgb(36 20 26 / 12%));
+  mask:
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / var(--tooth)
+      100%,
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--tooth) / 2) no-repeat;
+  mask-composite: add;
+}
+
+:host([data-done]) {
+  opacity: 0.6;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block-end: 12px;
+  border-block-end: 1px dashed var(--color-muted);
+}
+
+.number {
+  display: block;
+  font: var(--text-heading);
+}
+
+.time {
+  color: var(--color-muted);
+}
+
+.lines {
+  display: grid;
+  gap: 2px;
+  margin-block: 12px;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 6px;
+  }
+}
+
+.sums {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding-block-start: 10px;
+  border-block-start: 1px dashed var(--color-muted);
+
+  dd {
+    text-align: end;
+  }
+
+  .total {
+    font: var(--text-body-strong);
+  }
+}
+
+.progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-block-start: 16px;
+  padding: 0;
+  list-style: none;
+  color: var(--color-muted);
+
+  li {
+    padding-block-start: 6px;
+    border-block-start: 3px solid var(--color-line);
+  }
+
+  [data-reached] {
+    color: var(--color-ink);
+    border-block-start-color: var(--color-accent);
+  }
+}

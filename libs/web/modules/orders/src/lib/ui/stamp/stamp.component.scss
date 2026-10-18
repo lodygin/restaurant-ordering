@@ -1,0 +1,18 @@
+:host {
+  flex: none;
+  padding: 2px 10px;
+  border: 2.5px solid currentColor;
+  border-radius: 4px;
+  font: var(--text-subheading);
+  color: var(--color-muted);
+  background: rgb(255 255 255 / 85%);
+  transform: rotate(-6deg);
+}
+
+:host([data-status='preparing']) {
+  color: var(--color-flag);
+}
+
+:host([data-status='ready']) {
+  color: var(--color-accent);
+}
