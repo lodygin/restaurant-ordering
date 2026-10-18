@@ -1,0 +1,27 @@
+{
+  "name": "web-common-rxjs",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web/common/rxjs/src",
+  "projectType": "library",
+  "tags": ["platform:web"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "parallel": false,
+        "commands": [
+          "tsc -p libs/web/common/rxjs/tsconfig.lib.json --noEmit",
+          "tsc -p libs/web/common/rxjs/tsconfig.spec.json --noEmit"
+        ]
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --config libs/web/common/rxjs/vitest.config.mts"
+      }
+    }
+  }
+}

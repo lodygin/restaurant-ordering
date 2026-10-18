@@ -1,11 +1,12 @@
 import { inject } from '@angular/core';
-import { concatMap, exhaustMap, filter, groupBy, map, mergeMap, pipe, Subject } from 'rxjs';
+import { exhaustMap, filter, map, pipe, Subject } from 'rxjs';
 
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
 import { formatPrice } from '@restaurant-ordering/shared/money';
+import { concatMapBy, exhaustMapBy } from '@restaurant-ordering/web/common/rxjs';
 import {
   MenuApi,
   MenuStore,
@@ -74,69 +75,60 @@ export const ItemSetupStore = signalStore(
           ),
         ),
 
-        // edits of one item run in order, different items in parallel
         update: rxMethod<{ id: string; changes: Partial<MenuItemInput> }>(
-          pipe(
-            groupBy(({ id }) => id),
-            mergeMap(edits =>
-              edits.pipe(
-                concatMap(({ id, changes }) => {
-                  patchState(store, state => ({
-                    edits: { ...state.edits, [id]: { ...state.edits[id], ...changes } },
-                  }));
+          concatMapBy(
+            ({ id }) => id,
+            ({ id, changes }) => {
+              patchState(store, state => ({
+                edits: { ...state.edits, [id]: { ...state.edits[id], ...changes } },
+              }));
 
-                  return api.updateItem(id, changes).pipe(
-                    tapResponse({
-                      next: ({ data, revision }) => {
-                        // remembered until its echo arrives, unless the echo already did
-                        if (revision > (menu.revision() ?? 0)) {
-                          store._ownRevisions.add(revision);
-                        }
+              return api.updateItem(id, changes).pipe(
+                tapResponse({
+                  next: ({ data, revision }) => {
+                    // remembered until its echo arrives, unless the echo already did
+                    if (revision > (menu.revision() ?? 0)) {
+                      store._ownRevisions.add(revision);
+                    }
 
-                        menu.applyEditResult(revision, { type: 'item.updated', item: data });
-                        toast.show(describeEdit(changes, data));
-                      },
-                      error: report,
-                      finalize: () =>
-                        patchState(store, state => ({
-                          edits: Object.fromEntries(
-                            Object.entries(state.edits).filter(([key]) => key !== id),
-                          ),
-                        })),
-                    }),
-                  );
+                    menu.applyEditResult(revision, { type: 'item.updated', item: data });
+                    toast.show(describeEdit(changes, data));
+                  },
+                  error: report,
+                  finalize: () =>
+                    patchState(store, state => ({
+                      edits: Object.fromEntries(
+                        Object.entries(state.edits).filter(([key]) => key !== id),
+                      ),
+                    })),
                 }),
-              ),
-            ),
+              );
+            },
           ),
         ),
 
         remove: rxMethod<string>(
-          pipe(
-            groupBy(id => id),
-            mergeMap(ids =>
-              ids.pipe(
-                exhaustMap(id => {
-                  const { name } = menu.itemEntityMap()[id] ?? { name: 'Item' };
+          exhaustMapBy(
+            id => id,
+            id => {
+              const { name } = menu.itemEntityMap()[id] ?? { name: 'Item' };
 
-                  patchState(store, state => ({ removing: [...state.removing, id] }));
+              patchState(store, state => ({ removing: [...state.removing, id] }));
 
-                  return api.removeItem(id).pipe(
-                    tapResponse({
-                      next: revision => {
-                        menu.applyEditResult(revision, { type: 'item.deleted', itemId: id });
-                        toast.show(`${name} removed`);
-                      },
-                      error: report,
-                      finalize: () =>
-                        patchState(store, state => ({
-                          removing: state.removing.filter(removing => removing !== id),
-                        })),
-                    }),
-                  );
+              return api.removeItem(id).pipe(
+                tapResponse({
+                  next: revision => {
+                    menu.applyEditResult(revision, { type: 'item.deleted', itemId: id });
+                    toast.show(`${name} removed`);
+                  },
+                  error: report,
+                  finalize: () =>
+                    patchState(store, state => ({
+                      removing: state.removing.filter(removing => removing !== id),
+                    })),
                 }),
-              ),
-            ),
+              );
+            },
           ),
         ),
       };

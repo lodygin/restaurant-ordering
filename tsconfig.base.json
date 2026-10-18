@@ -48,6 +48,7 @@
       ],
       "@restaurant-ordering/web/common/media": ["./libs/web/common/media/src/index.ts"],
       "@restaurant-ordering/web/common/money": ["./libs/web/common/money/src/index.ts"],
+      "@restaurant-ordering/web/common/rxjs": ["./libs/web/common/rxjs/src/index.ts"],
       "@restaurant-ordering/web/common/sync": ["./libs/web/common/sync/src/index.ts"],
       "@restaurant-ordering/web/common/zod": ["./libs/web/common/zod/src/index.ts"],
       "@restaurant-ordering/web/core/menu": ["./libs/web/core/menu/src/index.ts"],
