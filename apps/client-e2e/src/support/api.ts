@@ -30,6 +30,20 @@ export class Api {
     await this.request.patch(`${API}/menu/items/${id}`, { data: changes });
   }
 
+  async placeOrder(item: SeededItem, qty = 1): Promise<number> {
+    const response = await this.request.post(`${API}/orders`, {
+      headers: { 'Idempotency-Key': crypto.randomUUID() },
+      data: {
+        lines: [{ lineId: item.id, itemId: item.id, unitPrice: item.price, qty, openPrice: false }],
+        discount: 0,
+      },
+    });
+
+    const { data } = (await response.json()) as { data: PlacedOrder };
+
+    return data.number;
+  }
+
   async ordersWith(itemName: string): Promise<PlacedOrder[]> {
     const response = await this.request.get(`${API}/orders`);
     const { data } = (await response.json()) as { data: PlacedOrder[] };
