@@ -21,7 +21,7 @@ import {
 export class OrdersService {
   private readonly orders = new Map<string, Order>();
   private readonly orderIdByKey = new Map<string, string>();
-  private readonly log = new ChangeLog<OrderEvent>();
+  private readonly changes = new ChangeLog<OrderEvent>();
   private readonly placed$$ = new Subject<Order>();
 
   readonly placed$: Observable<Order> = this.placed$$.asObservable();
@@ -33,11 +33,11 @@ export class OrdersService {
   }
 
   currentRevision(): number {
-    return this.log.current();
+    return this.changes.current();
   }
 
   events(lastRevision?: number): Observable<MessageEvent> {
-    return this.log.events(lastRevision);
+    return this.changes.events(lastRevision);
   }
 
   place(idempotencyKey: string, input: PlaceOrderInput): Order {
@@ -47,7 +47,7 @@ export class OrdersService {
       return this.orders.get(placedId) as Order;
     }
 
-    const changes: OrderChange[] = [];
+    const conflicts: OrderChange[] = [];
     const lines: OrderLine[] = [];
 
     for (const line of input.lines) {
@@ -55,16 +55,16 @@ export class OrdersService {
       const change = detectLineChange(line, item);
 
       if (change) {
-        changes.push(toOrderChange(line, change));
+        conflicts.push(toOrderChange(line, change));
       } else if (item) {
         lines.push({ itemId: item.id, name: item.name, unitPrice: line.unitPrice, qty: line.qty });
       }
     }
 
-    if (changes.length) {
+    if (conflicts.length) {
       throw new ConflictException({
         message: 'The menu changed while you were ordering.',
-        changes,
+        changes: conflicts,
       });
     }
 
@@ -79,7 +79,7 @@ export class OrdersService {
 
     this.orders.set(order.id, order);
     this.orderIdByKey.set(idempotencyKey, order.id);
-    this.log.commit({ type: 'order.placed', order });
+    this.changes.commit({ type: 'order.placed', order });
     this.placed$$.next(order);
 
     return order;
@@ -95,7 +95,7 @@ export class OrdersService {
     const order = { ...current, status };
 
     this.orders.set(id, order);
-    this.log.commit({ type: 'order.updated', order });
+    this.changes.commit({ type: 'order.updated', order });
   }
 }
 
