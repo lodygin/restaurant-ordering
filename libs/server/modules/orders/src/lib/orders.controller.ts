@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  Post,
-  Query,
-  Sse,
-  type MessageEvent,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Sse, type MessageEvent } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -21,7 +12,7 @@ import {
 import { type Observable } from 'rxjs';
 
 import { IdempotencyKey } from '@restaurant-ordering/server/common/idempotency';
-import { EventsQueryDto, ResyncEventDto } from '@restaurant-ordering/server/common/sync';
+import { ResumeFrom, ResyncEventDto } from '@restaurant-ordering/server/common/sync';
 
 import {
   OrderConflictDto,
@@ -49,11 +40,8 @@ export class OrdersController {
 
   @Sse('events')
   @ApiExcludeEndpoint()
-  events(
-    @Query() query: EventsQueryDto,
-    @Headers('last-event-id') lastEventId?: string,
-  ): Observable<MessageEvent> {
-    return this.orders.events(lastEventId ? Number(lastEventId) : query.since);
+  events(@ResumeFrom() since?: number): Observable<MessageEvent> {
+    return this.orders.events(since);
   }
 
   @Post()

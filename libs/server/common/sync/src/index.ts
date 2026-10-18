@@ -1,2 +1,3 @@
 export { ChangeLog } from './lib/change-log';
-export { EventsQueryDto, ResyncEventDto } from './lib/dtos';
+export { ResyncEventDto } from './lib/dtos';
+export { ResumeFrom } from './lib/resume-from.decorator';

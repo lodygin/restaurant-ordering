@@ -1,8 +1,8 @@
-import { Controller, Get, Headers, Query, Sse, type MessageEvent } from '@nestjs/common';
+import { Controller, Get, Sse, type MessageEvent } from '@nestjs/common';
 import { ApiExcludeEndpoint, ApiExtraModels, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { type Observable } from 'rxjs';
 
-import { EventsQueryDto, ResyncEventDto } from '@restaurant-ordering/server/common/sync';
+import { ResumeFrom, ResyncEventDto } from '@restaurant-ordering/server/common/sync';
 import { CategoriesService } from '@restaurant-ordering/server/modules/categories';
 import { MenuItemsService } from '@restaurant-ordering/server/modules/menu-items';
 import { MenuRevisionService } from '@restaurant-ordering/server/modules/menu-revision';
@@ -46,10 +46,7 @@ export class MenuController {
   // EventSource, not HttpClient: kept out of the spec so orval does not generate a method for it
   @Sse('events')
   @ApiExcludeEndpoint()
-  events(
-    @Query() query: EventsQueryDto,
-    @Headers('last-event-id') lastEventId?: string,
-  ): Observable<MessageEvent> {
-    return this.revision.events(lastEventId ? Number(lastEventId) : query.since);
+  events(@ResumeFrom() since?: number): Observable<MessageEvent> {
+    return this.revision.events(since);
   }
 }
