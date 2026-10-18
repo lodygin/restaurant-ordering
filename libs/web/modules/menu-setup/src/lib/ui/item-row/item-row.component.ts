@@ -8,7 +8,11 @@ import { defer, filter, map, merge, type Observable } from 'rxjs';
 
 import { ITEM_MAX_PRICE, ITEM_NAME_MAX_LENGTH } from '@restaurant-ordering/shared/menu-items';
 import { formatPrice, parsePrice } from '@restaurant-ordering/shared/money';
-import { disableControl, priceValidator } from '@restaurant-ordering/web/common/form';
+import {
+  disableControl,
+  nameValidators,
+  priceValidator,
+} from '@restaurant-ordering/web/common/form';
 import { type MenuItem, type MenuItemInput } from '@restaurant-ordering/web/core/menu';
 import { ConfirmService } from '@restaurant-ordering/web/ui/confirm';
 import {
@@ -94,11 +98,7 @@ export class ItemRowComponent {
   protected readonly form = new FormGroup({
     name: new FormControl('', {
       nonNullable: true,
-      validators: [
-        Validators.required,
-        Validators.pattern(/\S/),
-        Validators.maxLength(ITEM_NAME_MAX_LENGTH),
-      ],
+      validators: nameValidators(ITEM_NAME_MAX_LENGTH),
       updateOn: 'blur',
     }),
     price: new FormControl('', {

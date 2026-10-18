@@ -1,9 +1,13 @@
 import { Component, effect, inject, input } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 
 import { CATEGORY_NAME_MAX_LENGTH } from '@restaurant-ordering/shared/categories';
-import { disableControl, WhenFormValid } from '@restaurant-ordering/web/common/form';
+import {
+  disableControl,
+  nameValidators,
+  WhenFormValid,
+} from '@restaurant-ordering/web/common/form';
 import { InputComponent } from '@restaurant-ordering/web/ui/form';
 
 import { CategorySetupStore } from '../../store/category-setup.store';
@@ -33,11 +37,7 @@ export class NewCategoryFormComponent {
     {
       name: new FormControl('', {
         nonNullable: true,
-        validators: [
-          Validators.required,
-          Validators.pattern(/\S/),
-          Validators.maxLength(CATEGORY_NAME_MAX_LENGTH),
-        ],
+        validators: nameValidators(CATEGORY_NAME_MAX_LENGTH),
       }),
     },
     { updateOn: 'submit' },

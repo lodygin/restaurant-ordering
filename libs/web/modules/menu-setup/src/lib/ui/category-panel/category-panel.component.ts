@@ -9,12 +9,12 @@ import {
   viewChildren,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { filter, map } from 'rxjs';
 
 import { CATEGORY_NAME_MAX_LENGTH } from '@restaurant-ordering/shared/categories';
-import { disableControl } from '@restaurant-ordering/web/common/form';
+import { disableControl, nameValidators } from '@restaurant-ordering/web/common/form';
 import { type MenuSection } from '@restaurant-ordering/web/core/menu';
 import { ConfirmService } from '@restaurant-ordering/web/ui/confirm';
 import { InputComponent } from '@restaurant-ordering/web/ui/form';
@@ -93,11 +93,7 @@ export class CategoryPanelComponent {
 
   protected readonly name = new FormControl('', {
     nonNullable: true,
-    validators: [
-      Validators.required,
-      Validators.pattern(/\S/),
-      Validators.maxLength(CATEGORY_NAME_MAX_LENGTH),
-    ],
+    validators: nameValidators(CATEGORY_NAME_MAX_LENGTH),
     updateOn: 'blur',
   });
 
