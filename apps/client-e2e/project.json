@@ -1,0 +1,24 @@
+{
+  "name": "client-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/client-e2e/src",
+  "tags": ["platform:web"],
+  "implicitDependencies": ["client", "server"],
+  "targets": {
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "command": "tsc -p apps/client-e2e/tsconfig.json --noEmit"
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test --config apps/client-e2e/playwright.config.ts"
+      }
+    }
+  }
+}
