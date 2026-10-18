@@ -43,6 +43,7 @@ class FakeOrdersApi {
       id: crypto.randomUUID(),
       number,
       createdAt: new Date().toISOString(),
+      status: 'received',
       lines: [],
       subtotal: 0,
       discount: 0,
