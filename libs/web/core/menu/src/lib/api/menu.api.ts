@@ -5,7 +5,11 @@ import * as z from 'zod/mini';
 
 import { parse } from '@restaurant-ordering/web/common/zod';
 import { ApiService } from '@restaurant-ordering/web/infrastructure/rest';
-import { ServerEvents, type ServerEvent } from '@restaurant-ordering/web/infrastructure/sse';
+import {
+  ServerEvents,
+  type Revised,
+  type ServerEvent,
+} from '@restaurant-ordering/web/infrastructure/sse';
 
 import {
   categorySchema,
@@ -17,7 +21,7 @@ import {
   type MenuChange,
   type MenuItem,
 } from '../models';
-import { type CategoryInput, type MenuItemInput, type Revised } from '../types';
+import { type CategoryInput, type MenuItemInput } from '../types';
 
 const metaSchema = z.object({ revision: z.int() });
 

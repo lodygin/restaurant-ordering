@@ -3,9 +3,7 @@ export { type Category, type Menu, type MenuEntityChange, type MenuItem } from '
 export { MenuStore } from './lib/store/menu.store';
 export {
   type CategoryInput,
-  type MenuConnection,
   type MenuItemInput,
   type MenuSection,
   type MenuStatus,
-  type Revised,
 } from './lib/types';

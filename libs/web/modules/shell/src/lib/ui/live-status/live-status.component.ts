@@ -1,8 +1,8 @@
 import { Component, computed, input } from '@angular/core';
 
-import { type MenuConnection } from '@restaurant-ordering/web/core/menu';
+import { type StreamConnection } from '@restaurant-ordering/web/infrastructure/sse';
 
-const LABELS: Record<MenuConnection, string> = {
+const LABELS: Record<StreamConnection, string> = {
   connecting: 'Connecting',
   online: 'Live',
   reconnecting: 'Reconnecting',
@@ -16,7 +16,7 @@ const LABELS: Record<MenuConnection, string> = {
   template: `<span class="label">{{ label() }}</span>`,
 })
 export class LiveStatusComponent {
-  readonly connection = input.required<MenuConnection>();
+  readonly connection = input.required<StreamConnection>();
 
   protected readonly label = computed(() => LABELS[this.connection()]);
 }

@@ -1,8 +1,8 @@
 import { Component, computed, input } from '@angular/core';
 
-import { type MenuConnection } from '@restaurant-ordering/web/core/menu';
+import { type StreamConnection } from '@restaurant-ordering/web/infrastructure/sse';
 
-const MESSAGES: Record<MenuConnection, string | null> = {
+const MESSAGES: Record<StreamConnection, string | null> = {
   connecting: null,
   online: null,
   reconnecting: 'Reconnecting… Catching up on what changed.',
@@ -20,7 +20,7 @@ const MESSAGES: Record<MenuConnection, string | null> = {
   `,
 })
 export class ConnectionBannerComponent {
-  readonly connection = input.required<MenuConnection>();
+  readonly connection = input.required<StreamConnection>();
 
   protected readonly message = computed(() => MESSAGES[this.connection()]);
 }

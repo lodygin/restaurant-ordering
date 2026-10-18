@@ -1,11 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { defer, Subject, type Observable } from 'rxjs';
 
-import { type ServerEvent } from '@restaurant-ordering/web/infrastructure/sse';
+import { type Revised, type ServerEvent } from '@restaurant-ordering/web/infrastructure/sse';
 
 import { MenuApi } from '../api/menu.api';
 import { type Category, type Menu, type MenuChange, type MenuItem } from '../models';
-import { type Revised } from '../types';
 import { MenuStore } from './menu.store';
 
 const soups: Category = { id: crypto.randomUUID(), name: 'Soups' };

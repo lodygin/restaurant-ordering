@@ -14,13 +14,15 @@ import {
 import { removeEntity, setAllEntities, setEntity, withEntities } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
+import { type Revised, type StreamConnection } from '@restaurant-ordering/web/infrastructure/sse';
+
 import { MenuApi } from '../api/menu.api';
 import { type Category, type MenuEntityChange, type MenuItem } from '../models';
-import { type MenuConnection, type MenuSection, type MenuStatus, type Revised } from '../types';
+import { type MenuSection, type MenuStatus } from '../types';
 
 type MenuState = {
   status: MenuStatus;
-  connection: MenuConnection;
+  connection: StreamConnection;
   revision: number | null;
 };
 

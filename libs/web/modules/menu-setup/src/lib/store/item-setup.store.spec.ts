@@ -8,8 +8,8 @@ import {
   MenuStore,
   type MenuEntityChange,
   type MenuItem,
-  type Revised,
 } from '@restaurant-ordering/web/core/menu';
+import { type Revised } from '@restaurant-ordering/web/infrastructure/sse';
 
 import { ItemSetupStore } from './item-setup.store';
 
