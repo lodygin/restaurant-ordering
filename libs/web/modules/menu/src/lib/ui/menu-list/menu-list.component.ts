@@ -50,9 +50,9 @@ export class MenuListComponent {
 
   constructor() {
     inject(MenuStore)
-      .changes$.pipe(
-        map(({ data }) =>
-          data.type === 'item.created' || data.type === 'item.updated' ? data.item.id : null,
+      .remoteChanges$.pipe(
+        map(change =>
+          change.type === 'item.created' || change.type === 'item.updated' ? change.item.id : null,
         ),
         filter(id => id !== null),
         takeUntilDestroyed(),

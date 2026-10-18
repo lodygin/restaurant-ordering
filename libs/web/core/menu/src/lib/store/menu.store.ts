@@ -19,7 +19,7 @@ import {
   type NamedEntityState,
 } from '@ngrx/signals/entities';
 
-import { withLiveSync, type Revised } from '@restaurant-ordering/web/common/sync';
+import { withLiveSync } from '@restaurant-ordering/web/common/sync';
 
 import { MenuApi } from '../api/menu.api';
 import { type Category, type MenuEntityChange, type MenuItem } from '../models';
@@ -38,8 +38,11 @@ export const MenuStore = signalStore(
     sections: computed(() => toSections(categoryEntities(), itemEntities())),
   })),
 
-  withProps(() => ({ _changes$$: new Subject<Revised<MenuEntityChange>>() })),
-  withProps(({ _changes$$ }) => ({ changes$: _changes$$.asObservable() })),
+  withProps(() => ({
+    _remoteChanges$$: new Subject<MenuEntityChange>(),
+    _ownRevisions: new Set<number>(),
+  })),
+  withProps(({ _remoteChanges$$ }) => ({ remoteChanges$: _remoteChanges$$.asObservable() })),
 
   withFeature((store, api = inject(MenuApi)) =>
     withLiveSync({
@@ -53,16 +56,20 @@ export const MenuStore = signalStore(
         ),
       applyEvent: (change, revision) => {
         applyChange(store, change);
-        store._changes$$.next({ data: change, revision });
+
+        if (!store._ownRevisions.delete(revision)) {
+          store._remoteChanges$$.next(change);
+        }
       },
     }),
   ),
 
   withMethods(store => ({
-    // the stream may already be past this edit; the revision itself stays the stream's
+    // the stream may already be past this edit; if not, its echo is recognised as own
     applyEditResult(revision: number, change: MenuEntityChange): void {
       if (revision > (store.revision() ?? 0)) {
         applyChange(store, change);
+        store._ownRevisions.add(revision);
       }
     },
   })),

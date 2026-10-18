@@ -30,10 +30,7 @@ const initialState: ItemSetupState = { creating: false, edits: {}, removing: [] 
 export const ItemSetupStore = signalStore(
   withState(initialState),
 
-  withProps(() => ({
-    _created$$: new Subject<MenuItem>(),
-    _ownRevisions: new Set<number>(),
-  })),
+  withProps(() => ({ _created$$: new Subject<MenuItem>() })),
   withProps(({ _created$$ }) => ({ created$: _created$$.asObservable() })),
 
   withMethods(
@@ -59,10 +56,6 @@ export const ItemSetupStore = signalStore(
                 .pipe(
                   tapResponse({
                     next: ({ data, revision }) => {
-                      if (revision > (menu.revision() ?? 0)) {
-                        store._ownRevisions.add(revision);
-                      }
-
                       menu.applyEditResult(revision, { type: 'item.created', item: data });
                       store._created$$.next(data);
                       toast.show('New items start as unavailable, switch them on when ready');
@@ -86,11 +79,6 @@ export const ItemSetupStore = signalStore(
               return api.updateItem(id, changes).pipe(
                 tapResponse({
                   next: ({ data, revision }) => {
-                    // remembered until its echo arrives, unless the echo already did
-                    if (revision > (menu.revision() ?? 0)) {
-                      store._ownRevisions.add(revision);
-                    }
-
                     menu.applyEditResult(revision, { type: 'item.updated', item: data });
                     toast.show(describeEdit(changes, data));
                   },
@@ -135,11 +123,9 @@ export const ItemSetupStore = signalStore(
     },
   ),
 
-  // an echo of an edit made here comes after its answer (own revision) or before it (in flight)
-  withProps(({ _ownRevisions, edits, creating }) => ({
-    remoteChanges$: inject(MenuStore).changes$.pipe(
-      filter(({ revision }) => !_ownRevisions.delete(revision)),
-      map(({ data }) => data),
+  // the echo of an edit still in flight comes before its answer, so the store can't tell it is own
+  withProps(({ edits, creating }) => ({
+    remoteChanges$: inject(MenuStore).remoteChanges$.pipe(
       filter(
         (change): change is Extract<MenuEntityChange, { item: MenuItem }> =>
           (change.type === 'item.created' && !creating()) ||

@@ -181,17 +181,29 @@ describe('MenuStore', () => {
   });
 
   it('announces every change it applies from the stream', () => {
-    const changes = vi.fn();
+    const remote = vi.fn();
 
-    store.changes$.subscribe(changes);
+    store.remoteChanges$.subscribe(remote);
     api.respond(menu);
     api.push({ type: 'message', id: 42, data: { type: 'item.deleted', itemId: tomYum.id } });
     api.push({ type: 'message', id: 43, data: { type: 'item.deleted', itemId: borscht.id } });
 
-    expect(changes).toHaveBeenCalledOnce();
-    expect(changes).toHaveBeenCalledWith({
-      data: { type: 'item.deleted', itemId: borscht.id },
-      revision: 43,
-    });
+    expect(remote).toHaveBeenCalledOnce();
+    expect(remote).toHaveBeenCalledWith({ type: 'item.deleted', itemId: borscht.id });
+  });
+
+  it('keeps the echo of its own edit to itself', () => {
+    const remote = vi.fn();
+
+    store.remoteChanges$.subscribe(remote);
+    api.respond(menu);
+    store.applyEditResult(43, { type: 'item.deleted', itemId: tomYum.id });
+    api.push({ type: 'message', id: 43, data: { type: 'item.deleted', itemId: tomYum.id } });
+
+    expect(remote).not.toHaveBeenCalled();
+
+    api.push({ type: 'message', id: 44, data: { type: 'item.deleted', itemId: borscht.id } });
+
+    expect(remote).toHaveBeenCalledWith({ type: 'item.deleted', itemId: borscht.id });
   });
 });
