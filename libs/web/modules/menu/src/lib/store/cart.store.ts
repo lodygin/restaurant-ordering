@@ -171,7 +171,7 @@ export const CartStore = signalStore(
               tapResponse({
                 next: ({ number }) => patchState(store, { ...initialState, placedNumber: number }),
                 error: (error: unknown) => {
-                  const changes = api.readConflict(error);
+                  const changes = OrdersApi.readConflict(error);
 
                   if (changes) {
                     applyConflict(changes);

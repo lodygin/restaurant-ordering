@@ -4,12 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { defer, Subject, type Observable } from 'rxjs';
 
 import { MenuStore, type MenuItem } from '@restaurant-ordering/web/core/menu';
-import {
-  OrdersApi,
-  type Order,
-  type OrderChange,
-  type OrderInput,
-} from '@restaurant-ordering/web/core/orders';
+import { OrdersApi, type Order, type OrderInput } from '@restaurant-ordering/web/core/orders';
 import { ToastService } from '@restaurant-ordering/web/ui/toast';
 
 import { CartStore } from './cart.store';
@@ -39,12 +34,6 @@ class FakeOrdersApi {
 
       return response;
     });
-  }
-
-  readConflict(error: unknown): OrderChange[] | null {
-    return error instanceof HttpErrorResponse && error.status === 409
-      ? (error.error as { changes: OrderChange[] }).changes
-      : null;
   }
 
   respond(number = 1001): void {

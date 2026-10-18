@@ -22,7 +22,7 @@ export class OrdersApi {
   }
 
   // what changed in the menu, when a 409 says the order was refused for it
-  readConflict(error: unknown): OrderChange[] | null {
+  static readConflict(error: unknown): OrderChange[] | null {
     if (!(error instanceof HttpErrorResponse) || error.status !== 409) {
       return null;
     }
