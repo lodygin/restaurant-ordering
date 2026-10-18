@@ -19,6 +19,7 @@ export default defineConfig({
   webServer: [
     {
       command: 'pnpm nx run server:serve',
+      env: { KITCHEN_TIME_SCALE: '0.02' },
       url: `${SERVER_URL}/api/v1/menu`,
       reuseExistingServer: !process.env['CI'],
       timeout: 120_000,
