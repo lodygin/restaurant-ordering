@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { ConflictException, Injectable, type MessageEvent } from '@nestjs/common';
-import { timer, type Observable } from 'rxjs';
+import { Subject, type Observable } from 'rxjs';
 
 import { ChangeLog } from '@restaurant-ordering/server/common/sync';
 import { MenuItemsService } from '@restaurant-ordering/server/modules/menu-items';
 import { detectLineChange, priceOrder, type LineChange } from '@restaurant-ordering/shared/orders';
 
-import { FIRST_ORDER_NUMBER, KITCHEN_TIMELINE_MS } from './constants';
+import { FIRST_ORDER_NUMBER } from './constants';
 import {
   type CartLine,
   type Order,
@@ -22,6 +22,9 @@ export class OrdersService {
   private readonly orders = new Map<string, Order>();
   private readonly orderIdByKey = new Map<string, string>();
   private readonly log = new ChangeLog<OrderEvent>();
+  private readonly placed$$ = new Subject<Order>();
+
+  readonly placed$: Observable<Order> = this.placed$$.asObservable();
 
   constructor(private readonly items: MenuItemsService) {}
 
@@ -77,15 +80,12 @@ export class OrdersService {
     this.orders.set(order.id, order);
     this.orderIdByKey.set(idempotencyKey, order.id);
     this.log.commit({ type: 'order.placed', order });
-
-    for (const [status, delay] of KITCHEN_TIMELINE_MS) {
-      timer(delay).subscribe(() => this.updateStatus(order.id, status));
-    }
+    this.placed$$.next(order);
 
     return order;
   }
 
-  private updateStatus(id: string, status: OrderStatus): void {
+  updateStatus(id: string, status: OrderStatus): void {
     const current = this.orders.get(id);
 
     if (!current) {
