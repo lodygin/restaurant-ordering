@@ -1,7 +1,7 @@
 import { Injectable, type MessageEvent } from '@nestjs/common';
 import { merge, type Observable } from 'rxjs';
 
-import { EventStream } from '@restaurant-ordering/server/infrastructure/sse';
+import { EventStream } from '@restaurant-ordering/server/common/sync';
 import { CategoriesService } from '@restaurant-ordering/server/modules/categories';
 import { MenuItemsService } from '@restaurant-ordering/server/modules/menu-items';
 import { MenuRevisionService } from '@restaurant-ordering/server/modules/menu-revision';

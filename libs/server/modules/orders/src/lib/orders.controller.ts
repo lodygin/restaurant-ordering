@@ -21,7 +21,7 @@ import {
 import { type Observable } from 'rxjs';
 
 import { IdempotencyKey } from '@restaurant-ordering/server/common/idempotency';
-import { EventsQueryDto, ResyncEventDto } from '@restaurant-ordering/server/infrastructure/sse';
+import { EventsQueryDto, ResyncEventDto } from '@restaurant-ordering/server/common/sync';
 
 import {
   OrderConflictDto,

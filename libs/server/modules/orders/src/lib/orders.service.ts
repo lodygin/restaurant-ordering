@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { ConflictException, Injectable, type MessageEvent } from '@nestjs/common';
 import { timer, type Observable } from 'rxjs';
 
-import { EventStream, Revision } from '@restaurant-ordering/server/infrastructure/sse';
+import { EventStream, Revision } from '@restaurant-ordering/server/common/sync';
 import { MenuItemsService, type MenuItem } from '@restaurant-ordering/server/modules/menu-items';
 
 import { FIRST_ORDER_NUMBER, KITCHEN_TIMELINE_MS } from './constants';

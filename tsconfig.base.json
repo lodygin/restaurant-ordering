@@ -26,9 +26,7 @@
       "@restaurant-ordering/server/common/idempotency": [
         "./libs/server/common/idempotency/src/index.ts"
       ],
-      "@restaurant-ordering/server/infrastructure/sse": [
-        "./libs/server/infrastructure/sse/src/index.ts"
-      ],
+      "@restaurant-ordering/server/common/sync": ["./libs/server/common/sync/src/index.ts"],
       "@restaurant-ordering/server/modules/categories": [
         "./libs/server/modules/categories/src/index.ts"
       ],

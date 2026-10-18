@@ -2,7 +2,7 @@ import { Controller, Get, Headers, Query, Sse, type MessageEvent } from '@nestjs
 import { ApiExcludeEndpoint, ApiExtraModels, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { type Observable } from 'rxjs';
 
-import { EventsQueryDto, ResyncEventDto } from '@restaurant-ordering/server/infrastructure/sse';
+import { EventsQueryDto, ResyncEventDto } from '@restaurant-ordering/server/common/sync';
 import { CategoriesService } from '@restaurant-ordering/server/modules/categories';
 import { MenuItemsService } from '@restaurant-ordering/server/modules/menu-items';
 import { MenuRevisionService } from '@restaurant-ordering/server/modules/menu-revision';

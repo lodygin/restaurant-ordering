@@ -1,7 +1,7 @@
 {
-  "name": "server-infrastructure-sse",
+  "name": "server-common-sync",
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/server/infrastructure/sse/src",
+  "sourceRoot": "libs/server/common/sync/src",
   "projectType": "library",
   "tags": ["platform:server"],
   "targets": {}
