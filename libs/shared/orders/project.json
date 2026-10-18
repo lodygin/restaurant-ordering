@@ -10,7 +10,17 @@
       "cache": true,
       "inputs": ["default", "^default"],
       "options": {
-        "command": "tsc -p libs/shared/orders/tsconfig.lib.json --noEmit"
+        "parallel": false,
+        "commands": [
+          "tsc -p libs/shared/orders/tsconfig.lib.json --noEmit",
+          "tsc -p libs/shared/orders/tsconfig.spec.json --noEmit"
+        ]
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --config libs/shared/orders/vitest.config.mts"
       }
     }
   }

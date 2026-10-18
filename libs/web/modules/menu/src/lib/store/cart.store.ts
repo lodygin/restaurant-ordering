@@ -13,12 +13,13 @@ import {
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
+import { detectLineChange, priceOrder, type LineChange } from '@restaurant-ordering/shared/orders';
 import { MenuStore, type MenuItem } from '@restaurant-ordering/web/core/menu';
 import { OrdersApi, type OrderChange } from '@restaurant-ordering/web/core/orders';
 import { apiErrorMessage } from '@restaurant-ordering/web/infrastructure/http';
 import { ToastService } from '@restaurant-ordering/web/ui/toast';
 
-import { type CartChange, type CartLine, type CartLineIssue } from '../types';
+import { type CartChange, type CartLine } from '../types';
 
 const LOST_RESPONSE_RETRIES = 3;
 const LOST_RESPONSE_RETRY_MS = 1000;
@@ -44,16 +45,12 @@ export const CartStore = signalStore(
   withState(initialState),
 
   withComputed(({ lines, discount }, menu = inject(MenuStore)) => {
-    const subtotal = computed(() =>
-      lines().reduce((sum, line) => sum + line.unitPrice * line.qty, 0),
-    );
-
-    const appliedDiscount = computed(() => Math.min(discount(), subtotal()));
+    const totals = computed(() => priceOrder(lines(), discount()));
 
     return {
-      subtotal,
-      appliedDiscount,
-      total: computed(() => subtotal() - appliedDiscount()),
+      subtotal: computed(() => totals().subtotal),
+      appliedDiscount: computed(() => totals().discount),
+      total: computed(() => totals().total),
       count: computed(() => lines().reduce((sum, line) => sum + line.qty, 0)),
       qtyByItem: computed(() => {
         const qtyByItem = new Map<string, number>();
@@ -66,10 +63,10 @@ export const CartStore = signalStore(
       }),
       issues: computed(() => {
         const items = menu.itemEntityMap();
-        const issues = new Map<string, CartLineIssue>();
+        const issues = new Map<string, LineChange>();
 
         for (const line of lines()) {
-          const issue = findIssue(line, items[line.itemId]);
+          const issue = detectLineChange(line, items[line.itemId]);
 
           if (issue) {
             issues.set(line.lineId, issue);
@@ -190,23 +187,6 @@ export const CartStore = signalStore(
     };
   }),
 );
-
-// mirrors the server's checkout check, so the guest sees a change before placing the order
-function findIssue(line: CartLine, item: MenuItem | undefined): CartLineIssue | null {
-  if (!item?.available) {
-    return { type: 'unavailable' };
-  }
-
-  if (item.price === null) {
-    return line.openPrice ? null : { type: 'now-open' };
-  }
-
-  if (line.openPrice) {
-    return { type: 'now-fixed', price: item.price };
-  }
-
-  return item.price === line.unitPrice ? null : { type: 'price', price: item.price };
-}
 
 function reconcile(lines: CartLine[], changes: OrderChange[]): CartLine[] {
   const changeByLine = new Map(changes.map(change => [change.lineId, change]));

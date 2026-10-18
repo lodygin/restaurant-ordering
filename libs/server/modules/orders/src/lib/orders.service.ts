@@ -3,7 +3,8 @@ import { ConflictException, Injectable, type MessageEvent } from '@nestjs/common
 import { timer, type Observable } from 'rxjs';
 
 import { EventStream, Revision } from '@restaurant-ordering/server/common/sync';
-import { MenuItemsService, type MenuItem } from '@restaurant-ordering/server/modules/menu-items';
+import { MenuItemsService } from '@restaurant-ordering/server/modules/menu-items';
+import { detectLineChange, priceOrder, type LineChange } from '@restaurant-ordering/shared/orders';
 
 import { FIRST_ORDER_NUMBER, KITCHEN_TIMELINE_MS } from './constants';
 import {
@@ -49,20 +50,13 @@ export class OrdersService {
 
     for (const line of input.lines) {
       const item = this.items.find(line.itemId);
-
-      if (!item) {
-        changes.push({ type: 'unavailable', lineId: line.lineId });
-        continue;
-      }
-
-      const change = changeOf(line, item);
+      const change = detectLineChange(line, item);
 
       if (change) {
-        changes.push(change);
-        continue;
+        changes.push(toOrderChange(line, change));
+      } else if (item) {
+        lines.push({ itemId: item.id, name: item.name, unitPrice: line.unitPrice, qty: line.qty });
       }
-
-      lines.push({ itemId: item.id, name: item.name, unitPrice: line.unitPrice, qty: line.qty });
     }
 
     if (changes.length) {
@@ -72,17 +66,13 @@ export class OrdersService {
       });
     }
 
-    const subtotal = lines.reduce((sum, line) => sum + line.unitPrice * line.qty, 0);
-    const discount = Math.min(input.discount, subtotal);
     const order: Order = {
       id: randomUUID(),
       number: FIRST_ORDER_NUMBER + this.orders.size,
       createdAt: new Date().toISOString(),
       status: 'received',
       lines,
-      subtotal,
-      discount,
-      total: subtotal - discount,
+      ...priceOrder(lines, input.discount),
     };
 
     this.orders.set(order.id, order);
@@ -114,20 +104,8 @@ export class OrdersService {
   }
 }
 
-function changeOf({ lineId, unitPrice, openPrice }: CartLine, item: MenuItem): OrderChange | null {
-  if (!item.available) {
-    return { type: 'unavailable', lineId };
-  }
-
-  if (item.price === null) {
-    return openPrice ? null : { type: 'now-open', lineId };
-  }
-
-  if (openPrice) {
-    return { type: 'now-fixed', lineId, from: unitPrice, to: item.price };
-  }
-
-  return item.price === unitPrice
-    ? null
-    : { type: 'price', lineId, from: unitPrice, to: item.price };
+function toOrderChange({ lineId, unitPrice }: CartLine, change: LineChange): OrderChange {
+  return change.type === 'price' || change.type === 'now-fixed'
+    ? { type: change.type, lineId, from: unitPrice, to: change.price }
+    : { type: change.type, lineId };
 }
