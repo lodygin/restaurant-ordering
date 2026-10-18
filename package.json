@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nx run-many -t serve -p server client",
     "build": "nx run-many -t build",
+    "analyze": "nx build client --stats-json && esbuild-visualizer --metadata dist/apps/client/browser-stats.json --filename dist/apps/client/bundle.html --title \"My Kitchen bundle\" --open",
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",
     "e2e": "nx e2e client-e2e",
@@ -70,6 +71,7 @@
     "@types/node": "^22.0.0",
     "@typescript-eslint/utils": "^8.58.0",
     "angular-eslint": "^22.1.0",
+    "esbuild-visualizer": "^0.7.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "husky": "^9.1.7",
