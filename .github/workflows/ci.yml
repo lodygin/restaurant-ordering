@@ -52,6 +52,7 @@ jobs:
         run: pnpm build
 
   e2e:
+    needs: [static, test, build]
     runs-on: ubuntu-latest
 
     steps:

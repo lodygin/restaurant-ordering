@@ -16,6 +16,7 @@
     },
     "e2e": {
       "executor": "nx:run-commands",
+      "dependsOn": ["^codegen"],
       "options": {
         "command": "playwright test --config apps/client-e2e/playwright.config.ts"
       }

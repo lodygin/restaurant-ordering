@@ -68,7 +68,7 @@
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "defaultConfiguration": "development",
-      "dependsOn": ["server:serve"],
+      "dependsOn": ["server:serve", "^codegen"],
       "configurations": {
         "production": {
           "buildTarget": "client:build:production"
