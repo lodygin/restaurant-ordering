@@ -24,10 +24,7 @@ import { TicketComponent } from '../ticket';
     </header>
 
     @if (store.staleSince(); as staleSince) {
-      <p class="stale" role="status">
-        Statuses as of {{ staleSince | date: 'HH:mm' }}; they will update once the connection is
-        back.
-      </p>
+      <p class="stale" role="status">Statuses as of {{ staleSince | date: 'HH:mm' }}.</p>
     }
 
     @if (store.ids().length) {

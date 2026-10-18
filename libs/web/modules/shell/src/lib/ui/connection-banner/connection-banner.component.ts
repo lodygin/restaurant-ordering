@@ -6,7 +6,7 @@ const MESSAGES: Record<StreamConnection, string | null> = {
   connecting: null,
   online: null,
   reconnecting: 'Reconnecting… Catching up on what changed.',
-  offline: 'You’re offline. Showing the menu as it was; changes will appear once you’re back.',
+  offline: 'You’re offline. Showing what was last loaded; changes will appear once you’re back.',
 };
 
 @Component({
