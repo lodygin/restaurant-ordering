@@ -1,1 +1,1 @@
-export { provideIcons } from './lib/provide-icons';
+export { provideIcons } from './lib/icons.provider';
