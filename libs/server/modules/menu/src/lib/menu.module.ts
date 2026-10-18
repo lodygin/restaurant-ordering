@@ -4,12 +4,10 @@ import { CategoriesModule } from '@restaurant-ordering/server/modules/categories
 import { MenuItemsModule } from '@restaurant-ordering/server/modules/menu-items';
 import { MenuRevisionModule } from '@restaurant-ordering/server/modules/menu-revision';
 
-import { MenuChangesService } from './menu-changes.service';
 import { MenuController } from './menu.controller';
 
 @Module({
   imports: [CategoriesModule, MenuItemsModule, MenuRevisionModule],
   controllers: [MenuController],
-  providers: [MenuChangesService],
 })
 export class MenuModule {}

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { ConflictException, Injectable, type MessageEvent } from '@nestjs/common';
 import { timer, type Observable } from 'rxjs';
 
-import { EventStream, Revision } from '@restaurant-ordering/server/common/sync';
+import { ChangeLog } from '@restaurant-ordering/server/common/sync';
 import { MenuItemsService } from '@restaurant-ordering/server/modules/menu-items';
 import { detectLineChange, priceOrder, type LineChange } from '@restaurant-ordering/shared/orders';
 
@@ -21,8 +21,7 @@ import {
 export class OrdersService {
   private readonly orders = new Map<string, Order>();
   private readonly orderIdByKey = new Map<string, string>();
-  private readonly stream = new EventStream<OrderEvent>();
-  private readonly revision = new Revision();
+  private readonly log = new ChangeLog<OrderEvent>();
 
   constructor(private readonly items: MenuItemsService) {}
 
@@ -31,11 +30,11 @@ export class OrdersService {
   }
 
   currentRevision(): number {
-    return this.revision.current();
+    return this.log.current();
   }
 
   events(lastRevision?: number): Observable<MessageEvent> {
-    return this.stream.subscribe(lastRevision, this.revision.current());
+    return this.log.events(lastRevision);
   }
 
   place(idempotencyKey: string, input: PlaceOrderInput): Order {
@@ -77,7 +76,7 @@ export class OrdersService {
 
     this.orders.set(order.id, order);
     this.orderIdByKey.set(idempotencyKey, order.id);
-    this.publish({ type: 'order.placed', order });
+    this.log.commit({ type: 'order.placed', order });
 
     for (const [status, delay] of KITCHEN_TIMELINE_MS) {
       timer(delay).subscribe(() => this.updateStatus(order.id, status));
@@ -96,11 +95,7 @@ export class OrdersService {
     const order = { ...current, status };
 
     this.orders.set(id, order);
-    this.publish({ type: 'order.updated', order });
-  }
-
-  private publish(event: OrderEvent): void {
-    this.stream.publish(this.revision.next(), event);
+    this.log.commit({ type: 'order.updated', order });
   }
 }
 

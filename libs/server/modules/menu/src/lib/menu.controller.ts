@@ -14,7 +14,6 @@ import {
   MenuItemSavedEventDto,
   MenuResponseDto,
 } from './dtos';
-import { MenuChangesService } from './menu-changes.service';
 
 @ApiTags('menu')
 @ApiExtraModels(
@@ -29,7 +28,6 @@ export class MenuController {
   constructor(
     private readonly categories: CategoriesService,
     private readonly items: MenuItemsService,
-    private readonly changes: MenuChangesService,
     private readonly revision: MenuRevisionService,
   ) {}
 
@@ -52,6 +50,6 @@ export class MenuController {
     @Query() query: EventsQueryDto,
     @Headers('last-event-id') lastEventId?: string,
   ): Observable<MessageEvent> {
-    return this.changes.events(lastEventId ? Number(lastEventId) : query.since);
+    return this.revision.events(lastEventId ? Number(lastEventId) : query.since);
   }
 }

@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { Subject, type Observable } from 'rxjs';
 
 import {
   MenuRevisionService,
@@ -20,9 +19,6 @@ import {
 export class CategoriesService {
   private readonly categories = new Map<string, Category>();
   private readonly usages: CategoryUsage[] = [];
-  private readonly changes$$ = new Subject<Revised<CategoryChange>>();
-
-  readonly changes$: Observable<Revised<CategoryChange>> = this.changes$$.asObservable();
 
   constructor(private readonly revision: MenuRevisionService) {
     seedCategories().forEach(category => this.categories.set(category.id, category));
@@ -45,7 +41,10 @@ export class CategoriesService {
 
     this.categories.set(category.id, category);
 
-    return { data: category, revision: this.commit({ type: 'category.created', category }) };
+    return {
+      data: category,
+      revision: this.revision.commit<CategoryChange>({ type: 'category.created', category }),
+    };
   }
 
   update(id: string, input: UpdateCategoryInput): Revised<Category> {
@@ -53,7 +52,10 @@ export class CategoriesService {
 
     this.categories.set(id, category);
 
-    return { data: category, revision: this.commit({ type: 'category.updated', category }) };
+    return {
+      data: category,
+      revision: this.revision.commit<CategoryChange>({ type: 'category.updated', category }),
+    };
   }
 
   remove(id: string): number {
@@ -70,15 +72,7 @@ export class CategoriesService {
 
     this.categories.delete(id);
 
-    return this.commit({ type: 'category.deleted', categoryId: id });
-  }
-
-  private commit(change: CategoryChange): number {
-    const revision = this.revision.next();
-
-    this.changes$$.next({ data: change, revision });
-
-    return revision;
+    return this.revision.commit<CategoryChange>({ type: 'category.deleted', categoryId: id });
   }
 
   private get(id: string): Category {

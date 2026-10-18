@@ -5,7 +5,6 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Subject, type Observable } from 'rxjs';
 
 import { CategoriesService } from '@restaurant-ordering/server/modules/categories';
 import {
@@ -26,9 +25,6 @@ type Pricing = Pick<MenuItem, 'openPrice' | 'price'>;
 @Injectable()
 export class MenuItemsService {
   private readonly items = new Map<string, MenuItem>();
-  private readonly changes$$ = new Subject<Revised<MenuItemChange>>();
-
-  readonly changes$: Observable<Revised<MenuItemChange>> = this.changes$$.asObservable();
 
   constructor(
     private readonly categories: CategoriesService,
@@ -60,7 +56,10 @@ export class MenuItemsService {
 
     this.items.set(item.id, item);
 
-    return { data: item, revision: this.commit({ type: 'item.created', item }) };
+    return {
+      data: item,
+      revision: this.revision.commit<MenuItemChange>({ type: 'item.created', item }),
+    };
   }
 
   update(id: string, input: UpdateMenuItemInput): Revised<MenuItem> {
@@ -81,22 +80,17 @@ export class MenuItemsService {
 
     this.items.set(id, item);
 
-    return { data: item, revision: this.commit({ type: 'item.updated', item }) };
+    return {
+      data: item,
+      revision: this.revision.commit<MenuItemChange>({ type: 'item.updated', item }),
+    };
   }
 
   remove(id: string): number {
     this.get(id);
     this.items.delete(id);
 
-    return this.commit({ type: 'item.deleted', itemId: id });
-  }
-
-  private commit(change: MenuItemChange): number {
-    const revision = this.revision.next();
-
-    this.changes$$.next({ data: change, revision });
-
-    return revision;
+    return this.revision.commit<MenuItemChange>({ type: 'item.deleted', itemId: id });
   }
 
   private countIn(categoryId: string): number {
