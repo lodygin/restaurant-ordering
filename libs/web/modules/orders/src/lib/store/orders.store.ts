@@ -4,9 +4,7 @@ import { patchState, signalStore, type, withComputed, withFeature } from '@ngrx/
 import { setAllEntities, setEntity, withEntities } from '@ngrx/signals/entities';
 
 import { withLiveSync } from '@restaurant-ordering/web/common/sync';
-
-import { OrdersApi } from '../api/orders.api';
-import { type Order } from '../models';
+import { OrdersApi, type Order } from '@restaurant-ordering/web/core/orders';
 
 export const OrdersStore = signalStore(
   withEntities({ entity: type<Order>() }),

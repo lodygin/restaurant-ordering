@@ -2,8 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { OrdersStore } from '@restaurant-ordering/web/core/orders';
-
+import { OrdersStore } from '../../store/orders.store';
 import { TicketComponent } from '../ticket';
 
 @Component({
