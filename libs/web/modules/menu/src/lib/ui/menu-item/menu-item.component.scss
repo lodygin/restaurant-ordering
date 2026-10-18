@@ -11,10 +11,6 @@
     align-content: center;
     gap: 2px 12px;
 
-    .description {
-      display: none;
-    }
-
     .price {
       grid-row: 2;
       font: var(--text-caption-strong);
@@ -28,21 +24,11 @@
   }
 }
 
-.name,
-.description {
-  display: block;
+.name {
+  font: var(--text-body-strong);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.name {
-  font: var(--text-body-strong);
-}
-
-.description {
-  font: var(--text-caption);
-  color: var(--color-muted);
 }
 
 .price {

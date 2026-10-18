@@ -19,12 +19,7 @@ import { PriceDialogComponent } from '../price-dialog';
   template: `
     @let menuItem = item();
 
-    <div class="main">
-      <span class="name">{{ menuItem.name }}</span>
-      @if (menuItem.description) {
-        <span class="description">{{ menuItem.description }}</span>
-      }
-    </div>
+    <span class="name">{{ menuItem.name }}</span>
 
     @if (menuItem.price === null) {
       <span class="price open">Price set when ordering</span>

@@ -17,7 +17,6 @@ const pho: MenuItem = {
   id: crypto.randomUUID(),
   categoryId: crypto.randomUUID(),
   name: 'Pho',
-  description: '',
   price: 1100,
   available: false,
   openPrice: false,
@@ -136,7 +135,6 @@ describe('ItemSetupStore', () => {
     expect(createItem).toHaveBeenCalledWith({
       categoryId: pho.categoryId,
       name: 'New item',
-      description: '',
       price: 1000,
       available: false,
       openPrice: false,

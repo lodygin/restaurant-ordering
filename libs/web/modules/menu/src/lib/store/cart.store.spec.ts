@@ -14,7 +14,6 @@ function item(name: string, changes: Partial<MenuItem> = {}): MenuItem {
     id: crypto.randomUUID(),
     categoryId: crypto.randomUUID(),
     name,
-    description: '',
     price: 900,
     available: true,
     openPrice: false,

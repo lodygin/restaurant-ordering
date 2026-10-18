@@ -16,7 +16,6 @@ function item(name: string, category: Category): MenuItem {
     id: crypto.randomUUID(),
     categoryId: category.id,
     name,
-    description: '',
     price: 900,
     available: true,
     openPrice: false,

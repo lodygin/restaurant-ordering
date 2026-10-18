@@ -95,7 +95,6 @@ describe('MenuApi', () => {
       id: crypto.randomUUID(),
       categoryId: crypto.randomUUID(),
       name: 'Pho',
-      description: '',
       price: 1100,
       available: false,
       openPrice: false,

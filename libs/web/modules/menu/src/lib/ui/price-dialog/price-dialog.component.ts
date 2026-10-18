@@ -45,10 +45,6 @@ import { CartStore } from '../../store/cart.store';
     <h2 mat-dialog-title>{{ liveItem?.name ?? opened.name }}</h2>
 
     <mat-dialog-content>
-      @if (liveItem?.description; as description) {
-        <p class="description">{{ description }}</p>
-      }
-
       @if (!liveItem?.available) {
         <p class="notice error" role="status">This item is no longer available.</p>
       } @else if (liveItem?.price; as price) {

@@ -19,13 +19,10 @@ const PORTIONS: { suffix: string; factor: number }[] = [
   { suffix: 'to share', factor: 1.8 },
 ];
 
-const OPEN_PRICE_ITEMS: Record<string, { name: string; description: string }> = {
-  Grill: { name: 'Catch of the day', description: 'Market price, weighed at the counter' },
-  Desserts: { name: 'Celebration cake', description: 'Made to order, price agreed with staff' },
-  'Wine by the glass': {
-    name: 'Bottle from the cellar',
-    description: 'Ask for the list, price set when ordering',
-  },
+const OPEN_PRICE_ITEMS: Record<string, string> = {
+  Grill: 'Catch of the day',
+  Desserts: 'Celebration cake',
+  'Wine by the glass': 'Bottle from the cellar',
 };
 
 const CATALOG: CatalogCategory[] = [
@@ -321,15 +318,15 @@ export function seedMenuItems(categories: Category[]): MenuItem[] {
       continue;
     }
 
-    const openPriceItem = OPEN_PRICE_ITEMS[entry.category];
+    const openPriceName = OPEN_PRICE_ITEMS[entry.category];
     const [min, max] = entry.priceRange;
     const portions = entry.portions ? PORTIONS : PORTIONS.slice(0, 1);
 
-    if (openPriceItem) {
+    if (openPriceName) {
       items.push({
         id: randomUUID(),
         categoryId,
-        ...openPriceItem,
+        name: openPriceName,
         price: null,
         available: true,
         openPrice: true,
@@ -347,7 +344,6 @@ export function seedMenuItems(categories: Category[]): MenuItem[] {
             id: randomUUID(),
             categoryId,
             name,
-            description: '',
             price: roundPrice((base + step * 150) * portion.factor),
             available: random() > 0.06,
             openPrice: false,

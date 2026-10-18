@@ -9,8 +9,6 @@ export class MenuItemDto {
 
   name!: string;
 
-  description!: string;
-
   @ApiProperty({
     type: 'integer',
     nullable: true,

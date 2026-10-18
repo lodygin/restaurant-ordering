@@ -48,7 +48,6 @@ export const ItemSetupStore = signalStore(
                 .createItem({
                   categoryId,
                   name: NEW_ITEM_NAME,
-                  description: '',
                   price: DEFAULT_ITEM_PRICE,
                   available: false,
                   openPrice: false,

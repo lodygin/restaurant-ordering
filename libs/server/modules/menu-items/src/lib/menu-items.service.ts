@@ -49,7 +49,6 @@ export class MenuItemsService {
       id: randomUUID(),
       categoryId: input.categoryId,
       name: input.name,
-      description: input.description ?? '',
       available: input.available ?? true,
       ...resolvePricing({ openPrice: false, price: null }, input),
     };
@@ -73,7 +72,6 @@ export class MenuItemsService {
       id,
       categoryId: input.categoryId ?? current.categoryId,
       name: input.name ?? current.name,
-      description: input.description ?? current.description,
       available: input.available ?? current.available,
       ...resolvePricing(current, input),
     };
