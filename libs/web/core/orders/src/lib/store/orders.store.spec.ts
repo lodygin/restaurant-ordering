@@ -63,7 +63,6 @@ describe('OrdersStore', () => {
   let api: FakeOrdersApi;
 
   beforeEach(() => {
-    vi.useFakeTimers();
     api = new FakeOrdersApi();
 
     TestBed.configureTestingModule({
@@ -72,8 +71,6 @@ describe('OrdersStore', () => {
 
     store = TestBed.inject(OrdersStore);
   });
-
-  afterEach(() => vi.useRealTimers());
 
   it('loads the orders, then follows the stream from their revision', () => {
     expect(store.status()).toBe('loading');
@@ -104,56 +101,5 @@ describe('OrdersStore', () => {
       [1001, 'collected'],
     ]);
     expect(store.revision()).toBe(12);
-  });
-
-  it('skips events the snapshot already contains', () => {
-    api.respond([second, first]);
-    api.push({
-      type: 'message',
-      id: 10,
-      data: { type: 'order.updated', order: { ...second, status: 'received' } },
-    });
-
-    expect(store.entityMap()[second.id]?.status).toBe('preparing');
-  });
-
-  it('remembers since when the statuses are stale', () => {
-    vi.setSystemTime(new Date('2026-10-18T10:05:00Z'));
-    api.respond([second]);
-    api.push({ type: 'open' });
-
-    expect(store.staleSince()).toBeNull();
-
-    api.push({ type: 'reconnecting' });
-    vi.advanceTimersByTime(60_000);
-    api.push({ type: 'offline' });
-
-    expect(store.connection()).toBe('offline');
-    expect(store.staleSince()).toBe(new Date('2026-10-18T10:05:00Z').getTime());
-
-    api.push({ type: 'open' });
-
-    expect(store.staleSince()).toBeNull();
-  });
-
-  it('reloads the orders and reconnects from them on resync', () => {
-    api.respond([second]);
-    api.push({ type: 'message', id: 30, data: { type: 'resync' } });
-    api.respond([second, first], 30);
-
-    expect(store.orders()).toHaveLength(2);
-    expect(api.streams[1]?.since).toBe(30);
-  });
-
-  it('starts over from a fresh snapshot when the stream breaks', () => {
-    api.respond([second]);
-    api.streams[0]?.events.error(new Error('unexpected event'));
-
-    expect(store.connection()).toBe('reconnecting');
-
-    vi.advanceTimersByTime(3000);
-    api.respond([second], 15);
-
-    expect(api.streams[1]?.since).toBe(15);
   });
 });

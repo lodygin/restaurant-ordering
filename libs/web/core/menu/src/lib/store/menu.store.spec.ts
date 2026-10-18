@@ -72,15 +72,12 @@ describe('MenuStore', () => {
   let api: FakeMenuApi;
 
   beforeEach(() => {
-    vi.useFakeTimers();
     api = new FakeMenuApi();
 
     TestBed.configureTestingModule({ providers: [{ provide: MenuApi, useValue: api }] });
 
     store = TestBed.inject(MenuStore);
   });
-
-  afterEach(() => vi.useRealTimers());
 
   it('loads the snapshot, then follows changes from its revision', () => {
     expect(store.status()).toBe('loading');
@@ -107,23 +104,6 @@ describe('MenuStore', () => {
     expect(first?.items.map(entry => entry.name)).toEqual(['Tom yum', 'Borscht']);
     expect(second?.items.map(entry => entry.name)).toEqual(['Tiramisu']);
     expect(third?.items).toEqual([]);
-  });
-
-  it('tracks the connection', () => {
-    expect(store.connection()).toBe('connecting');
-
-    api.respond(menu);
-    api.push({ type: 'open' });
-
-    expect(store.connection()).toBe('online');
-
-    api.push({ type: 'reconnecting' });
-
-    expect(store.connection()).toBe('reconnecting');
-
-    api.push({ type: 'offline' });
-
-    expect(store.connection()).toBe('offline');
   });
 
   it('applies item changes and moves the revision', () => {
@@ -178,57 +158,6 @@ describe('MenuStore', () => {
       'Desserts',
       'Drinks',
     ]);
-  });
-
-  it('skips events the snapshot already contains', () => {
-    api.respond(menu);
-    api.push({ type: 'message', id: 42, data: { type: 'item.deleted', itemId: tomYum.id } });
-
-    expect(store.itemIds()).toContain(tomYum.id);
-    expect(store.revision()).toBe(42);
-  });
-
-  it('reloads the snapshot in the background and reconnects from it on resync', () => {
-    api.respond(menu);
-    api.push({ type: 'message', id: 90, data: { type: 'resync' } });
-
-    expect(store.status()).toBe('loaded');
-    expect(api.snapshots).toHaveLength(2);
-    expect(api.streams[0]?.events.observed).toBe(false);
-
-    api.respond({ ...menu, items: [tomYum] }, 90);
-
-    expect(store.itemIds()).toEqual([tomYum.id]);
-    expect(api.streams[1]?.since).toBe(90);
-  });
-
-  it('keeps retrying the snapshot while the server is unavailable', () => {
-    api.snapshots[0]?.error(new Error('offline'));
-
-    expect(store.status()).toBe('error');
-    expect(store.connection()).toBe('reconnecting');
-
-    vi.advanceTimersByTime(3000);
-    api.respond(menu);
-
-    expect(store.status()).toBe('loaded');
-    expect(api.snapshots).toHaveLength(2);
-  });
-
-  it('starts over from a fresh snapshot when the stream breaks', () => {
-    api.respond(menu);
-    api.push({ type: 'open' });
-    api.streams[0]?.events.error(new Error('unexpected change'));
-
-    expect(store.connection()).toBe('reconnecting');
-    expect(store.status()).toBe('loaded');
-
-    vi.advanceTimersByTime(3000);
-    api.respond(menu, 50);
-    api.push({ type: 'open' });
-
-    expect(api.streams[1]?.since).toBe(50);
-    expect(store.connection()).toBe('online');
   });
 
   it('applies its own edit before the stream echoes it, leaving the revision to the stream', () => {

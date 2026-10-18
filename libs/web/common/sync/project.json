@@ -11,7 +11,17 @@
       "cache": true,
       "inputs": ["default", "^default"],
       "options": {
-        "command": "ngc -p libs/web/common/sync/tsconfig.lib.json --noEmit"
+        "parallel": false,
+        "commands": [
+          "ngc -p libs/web/common/sync/tsconfig.lib.json --noEmit",
+          "ngc -p libs/web/common/sync/tsconfig.spec.json --noEmit"
+        ]
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --config libs/web/common/sync/vitest.config.mts"
       }
     }
   }
