@@ -1,9 +1,11 @@
 import { test as base } from '@playwright/test';
 
+import { MenuPage } from '../pages/menu.page';
 import { Api } from './api';
 
-export const test = base.extend<{ api: Api }>({
+export const test = base.extend<{ api: Api; menuPage: MenuPage }>({
   api: async ({ request }, use) => use(new Api(request)),
+  menuPage: async ({ page }, use) => use(new MenuPage(page)),
 });
 
 export { expect } from '@playwright/test';

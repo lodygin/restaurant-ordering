@@ -1,6 +1,6 @@
 import { type APIRequestContext } from '@playwright/test';
 
-import { type PlacedOrder, type SeededItem } from './types';
+import { type ItemSeed, type PlacedOrder, type SeededItem } from './types';
 
 const API = 'http://localhost:3000/api/v1';
 
@@ -15,14 +15,19 @@ export class Api {
     return data.id;
   }
 
-  async createItem(categoryId: string, name: string, price = 1000): Promise<SeededItem> {
+  async createItem(categoryId: string, name: string, seed: ItemSeed = {}): Promise<SeededItem> {
+    const { openPrice = false, price = openPrice ? null : 1000, available = true } = seed;
     const response = await this.request.post(`${API}/menu/items`, {
-      data: { categoryId, name, price, available: true },
+      data: { categoryId, name, price, openPrice, available },
     });
 
     const { data } = (await response.json()) as { data: SeededItem };
 
     return data;
+  }
+
+  async updateItem(id: string, changes: ItemSeed): Promise<void> {
+    await this.request.patch(`${API}/menu/items/${id}`, { data: changes });
   }
 
   async ordersWith(itemName: string): Promise<PlacedOrder[]> {
