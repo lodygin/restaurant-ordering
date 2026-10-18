@@ -2,8 +2,12 @@ import { createNoopScrollStrategy } from '@angular/cdk/overlay';
 import { Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MAT_BOTTOM_SHEET_DEFAULT_OPTIONS, MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MAT_DIALOG_DEFAULT_OPTIONS, MatDialog } from '@angular/material/dialog';
+import {
+  MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
+  MatBottomSheet,
+  MatBottomSheetConfig,
+} from '@angular/material/bottom-sheet';
+import { MAT_DIALOG_SCROLL_STRATEGY, MatDialog } from '@angular/material/dialog';
 
 import { MediaDirective } from '@restaurant-ordering/web/common/media';
 import { MenuStore } from '@restaurant-ordering/web/core/menu';
@@ -35,13 +39,11 @@ import { MenuListComponent } from '../menu-list';
     // blocking the page scroll resets the window to the top, and the virtual list renders the wrong rows
     MatDialog,
     MatBottomSheet,
-    {
-      provide: MAT_DIALOG_DEFAULT_OPTIONS,
-      useValue: { scrollStrategy: createNoopScrollStrategy() },
-    },
+    { provide: MAT_DIALOG_SCROLL_STRATEGY, useValue: createNoopScrollStrategy },
+    // default options replace Material's defaults (role, backdrop, focus) instead of merging
     {
       provide: MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
-      useValue: { scrollStrategy: createNoopScrollStrategy() },
+      useValue: { ...new MatBottomSheetConfig(), scrollStrategy: createNoopScrollStrategy() },
     },
   ],
   styleUrl: './menu.component.scss',
