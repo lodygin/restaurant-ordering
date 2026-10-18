@@ -18,13 +18,13 @@ import { MatIcon } from '@angular/material/icon';
       [disabled]="disabled()"
       (click)="decreased.emit()"
     >
-      <mat-icon>remove</mat-icon>
+      <mat-icon svgIcon="remove" />
     </button>
 
     <output>{{ value() }}</output>
 
     <button matIconButton aria-label="Add one" [disabled]="disabled()" (click)="increased.emit()">
-      <mat-icon>add</mat-icon>
+      <mat-icon svgIcon="add" />
     </button>
   `,
 })

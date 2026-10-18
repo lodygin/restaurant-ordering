@@ -67,6 +67,7 @@
       "@restaurant-ordering/web/ui/confirm": ["./libs/web/ui/confirm/src/index.ts"],
       "@restaurant-ordering/web/ui/form": ["./libs/web/ui/form/src/index.ts"],
       "@restaurant-ordering/web/ui/highlight": ["./libs/web/ui/highlight/src/index.ts"],
+      "@restaurant-ordering/web/ui/icon": ["./libs/web/ui/icon/src/index.ts"],
       "@restaurant-ordering/web/ui/toast": ["./libs/web/ui/toast/src/index.ts"]
     }
   },

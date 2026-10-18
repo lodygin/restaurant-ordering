@@ -26,7 +26,7 @@ import { type Category } from '@restaurant-ordering/web/core/menu';
   template: `
     <div class="arrow back" [inert]="!canScrollBack()">
       <button matIconButton tabindex="-1" aria-label="Earlier categories" (click)="scrollPage(-1)">
-        <mat-icon>chevron_left</mat-icon>
+        <mat-icon svgIcon="chevron_left" />
       </button>
     </div>
 
@@ -43,7 +43,7 @@ import { type Category } from '@restaurant-ordering/web/core/menu';
 
     <div class="arrow forward" [inert]="!canScrollForward()">
       <button matIconButton tabindex="-1" aria-label="More categories" (click)="scrollPage(1)">
-        <mat-icon>chevron_right</mat-icon>
+        <mat-icon svgIcon="chevron_right" />
       </button>
     </div>
   `,
