@@ -1,0 +1,41 @@
+:host {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 12px;
+  padding-block: 14px;
+  border-block-end: 1px solid var(--color-line);
+}
+
+.name {
+  font: var(--text-body-strong);
+}
+
+.unit {
+  font: var(--text-caption);
+  color: var(--color-muted);
+}
+
+.total {
+  font: var(--text-body-strong);
+  text-align: end;
+}
+
+.issue {
+  grid-column: 1 / -1;
+  padding: 6px 10px;
+  border-radius: var(--radius-s);
+  background: var(--color-flag-soft);
+  font: var(--text-caption);
+
+  &.gone {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+  }
+}
+
+.controls {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

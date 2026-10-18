@@ -4,14 +4,14 @@ import { RouterLink } from '@angular/router';
 
 import { MoneyPipe } from '@restaurant-ordering/web/common/money';
 import { MenuStore } from '@restaurant-ordering/web/core/menu';
-import { QuantityStepperComponent } from '@restaurant-ordering/web/ui/form';
 
 import { CartStore } from '../../store/cart.store';
+import { CartLineComponent } from '../cart-line';
 import { DiscountFieldComponent } from '../discount-field';
 
 @Component({
   selector: 'app-cart',
-  imports: [MatButton, RouterLink, MoneyPipe, QuantityStepperComponent, DiscountFieldComponent],
+  imports: [MatButton, RouterLink, MoneyPipe, CartLineComponent, DiscountFieldComponent],
   host: { 'aria-labelledby': 'cart-title' },
   styleUrl: './cart.component.scss',
   template: `
@@ -20,55 +20,7 @@ import { DiscountFieldComponent } from '../discount-field';
     @if (cart.lines().length) {
       <ul class="lines">
         @for (line of cart.lines(); track line.lineId) {
-          <li class="line">
-            <div>
-              <div class="name">{{ line.name }}</div>
-              <div class="unit">
-                {{ line.unitPrice | money }} each{{ line.openPrice ? ', price you entered' : '' }}
-              </div>
-            </div>
-            <div class="total">{{ line.unitPrice * line.qty | money }}</div>
-
-            @let issue = cart.issues().get(line.lineId);
-
-            @if (issue) {
-              @switch (issue.type) {
-                @case ('unavailable') {
-                  <p class="issue gone">
-                    No longer available. It will be removed when you place the order.
-                  </p>
-                }
-                @case ('now-open') {
-                  <p class="issue gone">
-                    Now priced when ordering. It will be removed; add it again with a price.
-                  </p>
-                }
-                @case ('now-fixed') {
-                  <p class="issue">
-                    Now has a fixed price of {{ issue.price | money }} instead of the price you
-                    entered. You’ll confirm it before the order is placed.
-                  </p>
-                }
-                @case ('price') {
-                  <p class="issue">
-                    Price changed to {{ issue.price | money }}. You’ll confirm it before the order
-                    is placed.
-                  </p>
-                }
-              }
-            }
-
-            <div class="controls">
-              <app-quantity-stepper
-                [value]="line.qty"
-                [label]="line.name"
-                [disabled]="issue?.type === 'unavailable' || issue?.type === 'now-open'"
-                (decreased)="cart.changeQty(line.lineId, -1)"
-                (increased)="cart.changeQty(line.lineId, 1)"
-              />
-              <button matButton class="quiet" (click)="cart.remove(line.lineId)">Remove</button>
-            </div>
-          </li>
+          <li appCartLine [line]="line" [issue]="cart.issues().get(line.lineId)"></li>
         }
       </ul>
 
