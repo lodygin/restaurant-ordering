@@ -21,7 +21,6 @@ type LiveSyncState = {
   status: SyncStatus;
   connection: StreamConnection;
   revision: number | null;
-  /** When the data stopped being live; null while the stream is open. */
   staleSince: number | null;
 };
 

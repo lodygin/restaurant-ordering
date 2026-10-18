@@ -8,7 +8,6 @@ import { withLiveSync } from '@restaurant-ordering/web/common/sync';
 import { OrdersApi } from '../api/orders.api';
 import { type Order } from '../models';
 
-// lives with the orders page: the stream stays open only while someone looks at it
 export const OrdersStore = signalStore(
   withEntities({ entity: type<Order>() }),
 
