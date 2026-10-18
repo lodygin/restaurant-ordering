@@ -6,6 +6,7 @@ import * as z from 'zod/mini';
 import { parse } from '@restaurant-ordering/web/common/zod';
 import { ApiService } from '@restaurant-ordering/web/infrastructure/rest';
 import {
+  parseEvents,
   ServerEvents,
   type Revised,
   type ServerEvent,
@@ -37,11 +38,7 @@ export class MenuApi {
   changes(since: number): Observable<ServerEvent<MenuChange>> {
     return this.serverEvents
       .connect('/api/v1/menu/events', since)
-      .pipe(
-        map(event =>
-          event.type === 'message' ? { ...event, data: menuChangeSchema.parse(event.data) } : event,
-        ),
-      );
+      .pipe(parseEvents(menuChangeSchema));
   }
 
   createCategory(input: CategoryInput): Observable<Revised<Category>> {
