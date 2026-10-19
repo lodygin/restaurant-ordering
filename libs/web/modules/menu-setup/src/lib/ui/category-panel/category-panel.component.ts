@@ -6,6 +6,7 @@ import {
   inject,
   Injector,
   input,
+  signal,
   viewChildren,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -37,6 +38,8 @@ import { ItemRowComponent } from '../item-row';
         aria-label="Category name"
         title="A category needs a name"
         [formControl]="name"
+        (focus)="editing.set(true)"
+        (blur)="editing.set(false)"
       />
       <button
         matButton="outlined"
@@ -97,9 +100,15 @@ export class CategoryPanelComponent {
     updateOn: 'blur',
   });
 
+  // a remote update must not wipe what is being typed; the field catches up on blur
+  protected readonly editing = signal(false);
+
   constructor() {
     effect(() => {
-      this.name.setValue(this.section().category.name, { emitEvent: false });
+      if (!this.editing() && !(this.name.dirty && this.name.invalid)) {
+        this.name.setValue(this.section().category.name, { emitEvent: false });
+      }
+
       disableControl(this.name, this.disabled(), { emitEvent: false });
     });
 

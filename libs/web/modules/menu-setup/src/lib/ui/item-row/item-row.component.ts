@@ -1,4 +1,13 @@
-import { Component, computed, DestroyRef, effect, inject, input, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
@@ -44,6 +53,8 @@ import { ItemSetupStore } from '../../store/item-setup.store';
         appInput
         appFocusable
         [formControl]="form.controls.name"
+        (focus)="editing.set('name')"
+        (blur)="editing.set(null)"
         [attr.aria-label]="'Name of ' + item().name"
         title="An item needs a name"
       />
@@ -55,6 +66,8 @@ import { ItemSetupStore } from '../../store/item-setup.store';
           appInput
           inputmode="decimal"
           [formControl]="form.controls.price"
+          (focus)="editing.set('price')"
+          (blur)="editing.set(null)"
           [placeholder]="form.controls.openPrice.value ? 'At order' : ''"
           [attr.aria-label]="'Price of ' + item().name"
           title="Enter a price above zero, like 12.50"
@@ -110,6 +123,9 @@ export class ItemRowComponent {
     openPrice: new FormControl(false, { nonNullable: true }),
   });
 
+  // a remote update must not wipe what is being typed; the field catches up on blur
+  protected readonly editing = signal<'name' | 'price' | null>(null);
+
   private readonly highlighter = inject(HighlightDirective);
   private readonly confirm = inject(ConfirmService);
   private readonly destroyRef = inject(DestroyRef);
@@ -142,7 +158,7 @@ export class ItemRowComponent {
   }));
 
   constructor() {
-    effect(() => this.syncForm(this.editedItem(), this.disabled()));
+    effect(() => this.syncForm(this.editedItem(), this.disabled(), this.editing()));
 
     this.items.update(this.changes$.pipe(map(changes => ({ id: this.item().id, changes }))));
   }
@@ -169,14 +185,14 @@ export class ItemRowComponent {
       .subscribe(() => this.items.remove(id));
   }
 
-  private syncForm(item: MenuItem, locked: boolean): void {
+  private syncForm(item: MenuItem, locked: boolean, editing: 'name' | 'price' | null): void {
     const { name, price, available, openPrice } = this.form.controls;
 
-    if (!(name.dirty && name.invalid)) {
+    if (editing !== 'name' && !(name.dirty && name.invalid)) {
       name.setValue(item.name, { emitEvent: false });
     }
 
-    if (!(price.dirty && price.invalid)) {
+    if (editing !== 'price' && !(price.dirty && price.invalid)) {
       price.setValue(item.price === null ? '' : formatPrice(item.price), {
         emitEvent: false,
       });

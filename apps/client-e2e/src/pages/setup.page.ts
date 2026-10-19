@@ -15,9 +15,13 @@ export class SetupPage {
     await this.page.getByRole('button', { name }).click();
   }
 
+  field(label: string): Locator {
+    return this.page.getByLabel(label, { exact: true });
+  }
+
   // fields save on blur, like a person tabbing out of them
   async editField(label: string, value: string): Promise<void> {
-    const field = this.page.getByLabel(label, { exact: true });
+    const field = this.field(label);
 
     await field.fill(value);
     await field.blur();

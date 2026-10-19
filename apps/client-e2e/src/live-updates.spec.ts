@@ -29,6 +29,30 @@ test.describe('live updates', () => {
     await expect(await guestMenu.find(renamed)).toBeVisible();
   });
 
+  test('a remote edit does not wipe a name being typed', async ({ page, api, setupPage }) => {
+    const category = unique('Typing');
+    const ramen = await api.createItem(await api.createCategory(category), unique('Ramen'));
+    const renamed = unique('Tonkotsu');
+
+    await setupPage.open();
+    await setupPage.selectCategory(category);
+
+    const name = setupPage.field(`Name of ${ramen.name}`);
+
+    await name.fill(renamed);
+    await api.updateItem(ramen.id, { price: 1250, available: false });
+
+    await expect(setupPage.availability(ramen.name)).not.toBeChecked();
+    await expect(setupPage.field(`Price of ${ramen.name}`)).toHaveValue('12.50');
+    await expect(name).toHaveValue(renamed);
+
+    await name.blur();
+    await page.reload();
+    await setupPage.selectCategory(category);
+
+    await expect(setupPage.field(`Name of ${renamed}`)).toHaveValue(renamed);
+  });
+
   test('an order moves through the kitchen statuses without a reload', async ({
     api,
     ordersPage,
